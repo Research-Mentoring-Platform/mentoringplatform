@@ -4,7 +4,7 @@ from django.contrib.admin.sites import AlreadyRegistered
 
 from .models import *
 
-for model in apps.get_app_config('users').models.values():
+for model in apps.get_app_config('mentor').models.values():
     try:
         admin.site.register(model)
     except AlreadyRegistered:
