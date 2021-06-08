@@ -1,0 +1,17 @@
+{
+  "mentor": {
+    "values": [
+      "Computer Science and Artificial Intelligence",
+      "Computer Science and Design",
+      "Computer Science and Engineering",
+      "Computer Science and Mathematics",
+      "Computer Science and Social Sciences",
+      "Electronics and Communication Engineering"
+    ]
+  },
+  "mentee": {
+    "same_as_mentor": true,
+    "values": []
+  }
+}
+

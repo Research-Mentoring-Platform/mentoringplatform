@@ -1,7 +1,5 @@
-import uuid
-
-from django.core.exceptions import ValidationError
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
+from django.core.exceptions import ValidationError
 
 from mentor.models import *
 from mentee.models import *

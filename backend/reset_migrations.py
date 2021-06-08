@@ -4,26 +4,25 @@ from django.conf import settings
 
 
 def reset():
+    # https://stackoverflow.com/questions/15556499/django-db-settings-improperly-configured-error/46516080
     if getattr(settings, 'PRODUCTION_SERVER', False):
         print('This file should not be executed on the production server. Please use migrations/fixtures instead.')
-        print('Exiting...')
+        print('Exiting')
         return
 
-    confirm = input('Are you sure to continue? (y/n): ').lower()
-    if confirm == 'n':
+    confirm = input('Are you sure you wish to continue? (y/n): ').lower()
+    if confirm != 'y':
         print('Cancelling operation')
         return
 
-    for file in glob('*/migrations/000*.py'):
-        print('removing', str(file))
+    for file in glob('*/migrations/[!_]*.py'):
+        print('Removing', file)
         os.remove(file)
 
     os.system('python manage.py makemigrations')
+    print('Done')
 
 
 if __name__ == '__main__':
-    print('Must always run this from a Django console as follows:\n')
-    file_name = os.path.basename(__file__).split('.')[0]
-    print('python manage.py shell')
-    print('>> import {}'.format(file_name))
-    print('>> {}.reset()'.format(file_name))
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "main.settings")
+    reset()

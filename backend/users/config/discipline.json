@@ -1,0 +1,36 @@
+{
+  "mentor": {
+    "values": [
+      "Algorithms and Complexity",
+      "Artificial Intelligence",
+      "Computational Bio and Bioinformatics",
+      "Computer Architecture",
+      "Computer Graphics",
+      "Computer Networks",
+      "Computer Security",
+      "Computer Vision",
+      "Cryptography",
+      "Databases",
+      "Design Automation",
+      "Economics and Computation",
+      "Embedded and Real-Time Systems",
+      "High-Performance Computing",
+      "Human-Computer Interaction",
+      "Logic and Verification",
+      "Machine Learning and Data Mining",
+      "Measurement and Performance Analysis",
+      "Mobile Computing",
+      "Natural Language Processing",
+      "Operating Systems",
+      "Programming Languages",
+      "Robotics",
+      "Software Engineering",
+      "The Web and Information Retrieval",
+      "Visualization"
+    ]
+  },
+  "mentee": {
+    "same_as_mentor": true,
+    "values": []
+  }
+}

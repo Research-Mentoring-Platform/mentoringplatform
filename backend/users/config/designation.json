@@ -1,0 +1,18 @@
+{
+  "mentor": {
+    "values": [
+      "Industry Researcher",
+      "Faculty"
+    ]
+  },
+  "mentee": {
+    "same_as_mentor": false,
+    "values": [
+      "Industry Researcher",
+      "Faculty",
+      "PhD",
+      "MTech",
+      "BTech"
+    ]
+  }
+}

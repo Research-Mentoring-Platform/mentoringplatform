@@ -45,14 +45,6 @@ class MentorResponsibility(models.Model):
         return '{}(description={})'.format(self.__class__.__name__, self.description)
 
 
-class MentorDiscipline(models.Model):
-    uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    label = models.CharField(max_length=32, blank=False)
-
-    def __str__(self):
-        return '{}(label={})'.format(self.__class__.__name__, self.label)
-
-
 class MentorDepartment(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     label = models.CharField(max_length=32, blank=False)
@@ -67,3 +59,11 @@ class MentorDesignation(models.Model):
 
     def __str__(self):
         return '{}(email={})'.format(self.__class__.__name__, self.label)
+
+
+class MentorDiscipline(models.Model):
+    uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    label = models.CharField(max_length=32, blank=False)
+
+    def __str__(self):
+        return '{}(label={})'.format(self.__class__.__name__, self.label)
