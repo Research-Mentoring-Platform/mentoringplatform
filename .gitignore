@@ -133,8 +133,8 @@ dmypy.json
 *.sqlite3
 
 # Only for development
-**/migrations/**
-!**/migrations
-!**/migrations/__init__.py
+# **/migrations/**
+# !**/migrations
+# !**/migrations/__init__.py
 
 .DS_Store
