@@ -1,8 +1,7 @@
-from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
+import uuid
+from django.db import models
 from django.core.exceptions import ValidationError
-
-from mentor.models import *
-from mentee.models import *
+from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 
 
 class CustomUserManager(BaseUserManager):
