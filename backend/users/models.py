@@ -41,8 +41,8 @@ class CustomUser(AbstractBaseUser):
     date_of_birth = models.DateField(verbose_name='Date of birth')  # TODO [V] Max date (today-16), Min Date 1900
 
     # To be set in back-end (not shown in registration form)
-    is_mentor = models.BooleanField(verbose_name='Is mentor?', default=False)
-    is_mentee = models.BooleanField(verbose_name='Is mentee?', default=False)
+    is_mentor = models.BooleanField(verbose_name='Is mentor?', default=False, blank=True)
+    is_mentee = models.BooleanField(verbose_name='Is mentee?', default=False, blank=True)
     is_admin = models.BooleanField(verbose_name='Is admin?', default=False)
     email_verified = models.BooleanField(verbose_name='Email verified?', default=False)
 
