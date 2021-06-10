@@ -20,6 +20,8 @@ def reset():
         os.remove(file)
 
     os.system('python manage.py makemigrations')
+    os.system('python manage.py makemigrations mentor --name config_mentor --empty')
+    os.system('python manage.py makemigrations mentee --name config_mentee --empty')
     print('Done')
 
 
