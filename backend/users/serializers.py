@@ -13,7 +13,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('uid', 'first_name', 'last_name', 'email', 'username', 'password', 'date_of_birth')
+        fields = (
+        'uid', 'first_name', 'last_name', 'email', 'username', 'password', 'date_of_birth', 'is_mentor', 'is_mentee')
         read_only_fields = ('uid',)
 
     #  https://stackoverflow.com/a/27586289/5394180
@@ -33,3 +34,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
                 setattr(instance, attr, value)
         instance.save()
         return instance
+
+
+# https://stackoverflow.com/a/22133032/5394180
+class CustomUserUpdateSerializer(CustomUserSerializer):
+    class Meta(CustomUserSerializer.Meta):
+        fields = ('uid', 'first_name', 'last_name')
