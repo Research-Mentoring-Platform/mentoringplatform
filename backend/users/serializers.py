@@ -13,7 +13,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('first_name', 'last_name', 'email', 'username', 'password', 'date_of_birth')
+        fields = ('uid', 'first_name', 'last_name', 'email', 'username', 'password', 'date_of_birth')
+        read_only_fields = ('uid',)
 
     #  https://stackoverflow.com/a/27586289/5394180
     def create(self, validated_data):

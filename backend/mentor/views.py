@@ -1,3 +1,6 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from main.mixins import ViewSetPermissionByMethodMixin
 
-# Create your views here.
+
+class MentorViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
+    pass  # TODO

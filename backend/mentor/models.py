@@ -11,14 +11,19 @@ class Mentor(models.Model):  # TODO: Rename Mentor to MentorProfile?
     is_verified = models.BooleanField(default=False)
     about_self = models.TextField(max_length=512, blank=True)
 
-    designation = models.ForeignKey('mentor.MentorDesignation', on_delete=models.RESTRICT, related_name='designations')
-    department = models.ForeignKey('mentor.MentorDepartment', on_delete=models.RESTRICT, related_name='departments')
-    discipline = models.ForeignKey('mentor.MentorDiscipline', on_delete=models.RESTRICT, related_name='disciplines')
+    designation = models.ForeignKey('mentor.MentorDesignation', on_delete=models.RESTRICT, related_name='designations',
+                                    null=True)
+    department = models.ForeignKey('mentor.MentorDepartment', on_delete=models.RESTRICT, related_name='departments',
+                                   null=True)
+    discipline = models.ForeignKey('mentor.MentorDiscipline', on_delete=models.RESTRICT, related_name='disciplines',
+                                   null=True)
     specialization = models.TextField(max_length=256, blank=True)
     # Additional fields: Education, Research
 
-    expected_min_mentorship_duration = models.DurationField()  # 1 month / 2 month / No min duration
-    expected_max_mentorship_duration = models.DurationField()  # 3 month / 4 month / No max duration
+    expected_min_mentorship_duration = models.DurationField(null=True,
+                                                            blank=True)  # 1 month / 2 month / No min duration
+    expected_max_mentorship_duration = models.DurationField(null=True,
+                                                            blank=True)  # 3 month / 4 month / No max duration
     is_accepting_mentorship_requests = models.BooleanField(default=True)
 
     accepted_mentee_types = models.ManyToManyField('mentee.MenteeDesignation')

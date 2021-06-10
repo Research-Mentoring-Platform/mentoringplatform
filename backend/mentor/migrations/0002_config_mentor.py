@@ -1,3 +1,4 @@
+
 from django.db import migrations
 
 from config.update_db_using_configs import (

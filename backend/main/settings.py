@@ -1,6 +1,7 @@
 import os
 import dj_database_url
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -117,6 +118,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
+
+SIMPLE_JWT = dict(
+    ACCESS_TOKEN_LIFETIME=timedelta(days=1)  # TODO update/fix to a reasonable value
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
