@@ -4,7 +4,7 @@
 			<div class="container">
 				<div class="navbar-brand">
 					<router-link v-bind:to="{ name: 'Home' }" class="navbar-item">
-						<img src="https://bulma.io/images/bulma-type-white.png" alt="Logo">
+						<span class="is-size-3"><b>RMP</b></span>
 					</router-link>
 
 					<span class="navbar-burger"
@@ -21,23 +21,30 @@
 				<div id="navbarMenuHeroB" class="navbar-menu" v-bind:class="{ 'is-active': show_nav_bar_menu }">
 					<div class="navbar-end">
 
-						<div class="navbar-item has-dropdown is-hoverable">
-							<a class="navbar-link" style="color: #0A0A0A">
-								Register
+						<div v-if="logged_in" class="navbar-item">
+							<a class="navbar-item" v-on:click="logout">
+								Logout
 							</a>
-							<div class="navbar-dropdown">
-								<router-link v-bind:to="{ name: 'RegisterMentor' }" class="navbar-item">
-									As Mentor
-								</router-link>
-								<router-link v-bind:to="{ name: 'RegisterMentee' }" class="navbar-item">
-									As Mentee
-								</router-link>
-							</div>
 						</div>
+						<div v-else class="navbar-item">
+							<div class="navbar-item has-dropdown is-hoverable">
+								<a class="navbar-link" style="color: #0A0A0A">
+									Register
+								</a>
+								<div class="navbar-dropdown">
+									<router-link v-bind:to="{ name: 'RegisterMentor' }" class="navbar-item">
+										As Mentor
+									</router-link>
+									<router-link v-bind:to="{ name: 'RegisterMentee' }" class="navbar-item">
+										As Mentee
+									</router-link>
+								</div>
+							</div>
 
-						<router-link :to="{ name: 'Login' }" class="navbar-item">
-							Login
-						</router-link>
+							<router-link v-bind:to="{ name: 'Login' }" class="navbar-item">
+								Login
+							</router-link>
+						</div>
 
 						<span class="navbar-item">
 							<a class="button is-info is-inverted">
@@ -56,6 +63,8 @@
 
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
 	data() {
 		return {

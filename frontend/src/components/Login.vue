@@ -8,7 +8,7 @@
 					</div>
 
 					<div class="field">
-						<label class="label">Email</label>
+<!--						<label class="label">Email</label>-->
 						<p class="control has-icons-left">
 							<input v-model="user.email" class="input" type="email" placeholder="Email">
 							<span class="icon is-small is-left">
@@ -18,7 +18,7 @@
 					</div>
 
 					<div class="field">
-						<label class="label">Password</label>
+<!--						<label class="label">Password</label>-->
 						<p class="control has-icons-left">
 							<input v-model="user.password" class="input" type="password" placeholder="Password">
 							<span class="icon is-small is-left">
@@ -60,7 +60,7 @@
 
 
 <script>
-import axios from "axios";
+import axios from "../api/my-axios";
 
 export default {
 	data() {
@@ -71,7 +71,7 @@ export default {
 			}
 		}
 	},
-	method: {
+	methods: {
 		login() {
 			axios.post('/api/users/token/', this.user)
 			.then((response) => {
