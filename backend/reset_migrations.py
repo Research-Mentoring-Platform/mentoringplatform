@@ -1,7 +1,7 @@
 import os
 from glob import glob
 from django.conf import settings
-
+from shutil import copyfile
 
 def reset():
     # https://stackoverflow.com/questions/15556499/django-db-settings-improperly-configured-error/46516080
@@ -20,8 +20,8 @@ def reset():
         os.remove(file)
 
     os.system('python manage.py makemigrations')
-    os.system('python manage.py makemigrations mentor --name config_mentor --empty')
-    os.system('python manage.py makemigrations mentee --name config_mentee --empty')
+    copyfile('config/config_mentor_py.txt', 'mentor/migrations/0002_config_mentor.py')
+    copyfile('config/config_mentee_py.txt', 'mentee/migrations/0002_config_mentee.py')
     print('Done')
 
 

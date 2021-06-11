@@ -14,8 +14,14 @@ class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = (
-        'uid', 'first_name', 'last_name', 'email', 'username', 'password', 'date_of_birth', 'is_mentor', 'is_mentee')
+            'uid', 'first_name', 'last_name', 'email', 'username', 'password', 'date_of_birth', 'is_mentor',
+            'is_mentee')
         read_only_fields = ('uid',)
+
+    def validate(self, attrs):
+        if attrs['is_mentor'] and attrs['is_mentee']:
+            raise serializers.ValidationError('You cannot be both a mentor and a mentee.')
+        return attrs
 
     #  https://stackoverflow.com/a/27586289/5394180
     def create(self, validated_data):

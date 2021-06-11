@@ -1,7 +1,5 @@
 import uuid
-
 from django.db import models
-from django.core import validators
 
 
 class Mentee(models.Model):
@@ -9,9 +7,12 @@ class Mentee(models.Model):
     user = models.OneToOneField('users.CustomUser', on_delete=models.CASCADE)
     about_self = models.TextField(max_length=512, blank=True)
 
-    designation = models.ForeignKey('mentee.MenteeDesignation', on_delete=models.RESTRICT, related_name='designations')
-    department = models.ForeignKey('mentee.MenteeDepartment', on_delete=models.RESTRICT, related_name='departments')
-    discipline = models.ForeignKey('mentee.MenteeDiscipline', on_delete=models.RESTRICT, related_name='disciplines')
+    designation = models.ForeignKey('mentee.MenteeDesignation', on_delete=models.RESTRICT, related_name='designations',
+                                    null=True)
+    department = models.ForeignKey('mentee.MenteeDepartment', on_delete=models.RESTRICT, related_name='departments',
+                                   null=True)
+    discipline = models.ForeignKey('mentee.MenteeDiscipline', on_delete=models.RESTRICT, related_name='disciplines',
+                                   null=True)
     specialization = models.TextField(max_length=256, blank=True)
     # Additional fields: Education, Research
 
