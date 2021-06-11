@@ -14,22 +14,27 @@
 					</div>
 
 					<div class="field">
-						<label class="label">First Name</label>
-						<div class="control">
+<!--						<label class="label">First Name</label>-->
+						<div class="control has-icons-left">
 							<input v-model="user.first_name" class="input" type="text" placeholder="First name">
+							<span class="icon is-small is-left">
+							  	<i class="fas fa-user-circle"></i>
+							</span>
 						</div>
 					</div>
 
 					<div class="field">
-						<label class="label">Last Name</label>
-						<div class="control">
+<!--						<label class="label">Last Name</label>-->
+						<div class="control has-icons-left">
 							<input v-model="user.last_name" class="input" type="text" placeholder="Last name">
+							<span class="icon is-small is-left">
+							  	<i class="fas fa-user-circle"></i>
+							</span>
 						</div>
 					</div>
 
 					<div class="field">
-						<label class="label">Username</label>
-<!--						<div class="control has-icons-left has-icons-right">-->
+<!--						<label class="label">Username</label>-->
 						<div class="control has-icons-left">
 							<input v-model="user.username" class="input" type="text" placeholder="Username">
 							<span class="icon is-small is-left">
@@ -39,7 +44,7 @@
 					</div>
 
 					<div class="field">
-						<label class="label">Email</label>
+<!--						<label class="label">Email</label>-->
 						<div class="control has-icons-left">
 							<input v-model="user.email" class="input" type="email" placeholder="Email">
 							<span class="icon is-small is-left">
@@ -59,16 +64,22 @@
 					</div>
 
 					<div class="field">
-						<label class="label">Password</label>
-						<div class="control">
+<!--						<label class="label">Password</label>-->
+						<div class="control has-icons-left">
 							<input v-model="user.password" class="input" type="password" placeholder="Password">
+							<span class="icon is-small is-left">
+							  	<i class="fas fa-lock"></i>
+							</span>
 						</div>
 					</div>
 
 					<div class="field">
-						<label class="label">Confirm Password</label>
-						<div class="control">
+<!--						<label class="label">Confirm Password</label>-->
+						<div class="control has-icons-left">
 							<input v-model="confirm_password" class="input" type="password" placeholder="Confirm password">
+							<span class="icon is-small is-left">
+							  	<i class="fas fa-lock"></i>
+							</span>
 						</div>
 						<p class="help is-danger" v-if="confirm_password.length > 0 && user.password !== confirm_password">
 							Passwords do not match!
@@ -125,7 +136,7 @@
 				</ul>
 			</section>
 			<footer class="modal-card-foot">
-				<button class="button" v-on:click="show_tnc_dialog = !show_tnc_dialog">Cancel</button>
+				<button v-on:click="show_tnc_dialog = !show_tnc_dialog" class="button">Cancel</button>
 			</footer>
 		</div>
 	</div>
@@ -138,10 +149,6 @@ import axios from '../api/my-axios'
 
 export default {
 	props: {
-		request_url: {
-			type: String,
-			required: true
-		},
 		register_as_mentor: {
 			type: Boolean,
 			required: true
@@ -157,8 +164,11 @@ export default {
 				email: "",
 				date_of_birth: "",
 				password: "",
+				is_mentor: false,
+				is_mentee: false
 			},
-			confirm_password: ""
+			confirm_password: "",
+			max_dob: new Date().toISOString().split("T")[0]
 		};
 	},
 	methods: {

@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
 import About from '../views/About.vue';
 import Login from '../components/Login.vue';
@@ -16,12 +16,18 @@ const routes = [
 	{
 		path: '/about',
 		name: 'About',
-		component: About
+		component: About,
+		meta: {
+			requires_auth: false
+		}
 	},
 	{
 		path: '/login',
 		name: 'Login',
-		component: Login
+		component: Login,
+		meta: {
+			requires_visitor: true
+		}
 	},
 	{
 		path: '/register-mentor',
