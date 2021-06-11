@@ -6,6 +6,7 @@ class Mentee(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     user = models.OneToOneField('users.CustomUser', on_delete=models.CASCADE)
     about_self = models.TextField(max_length=512, blank=True)
+    profile_completed = models.BooleanField(default=False)
 
     designation = models.ForeignKey('mentee.MenteeDesignation', on_delete=models.RESTRICT, related_name='designations',
                                     null=True)

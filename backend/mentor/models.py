@@ -9,6 +9,7 @@ class Mentor(models.Model):  # TODO: Rename Mentor to MentorProfile?
 
     user = models.OneToOneField('users.CustomUser', on_delete=models.CASCADE)
     is_verified = models.BooleanField(default=False)
+    profile_completed = models.BooleanField(default=False)
     about_self = models.TextField(max_length=512, blank=True)
 
     designation = models.ForeignKey('mentor.MentorDesignation', on_delete=models.RESTRICT, related_name='designations',
