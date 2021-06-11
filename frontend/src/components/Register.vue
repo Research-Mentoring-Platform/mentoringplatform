@@ -117,23 +117,25 @@
 				<button class="delete" aria-label="close" v-on:click="show_tnc_dialog = !show_tnc_dialog"></button>
 			</header>
 			<section class="modal-card-body">
-				<ul>
-					<li>
-						While the mentee is looking for guidance from you, please treat the mentee with respect and follow the mentoring schedule you agree with the mentee.
-					</li>
-					<li>
-						Mentoring is exclusively to help the mentees in their research. Provide feedback on the mentee's work and ideas. Any ideas shared/discussed/given to the mentees, mentees have full right to use the idea as their own.
-					</li>
-					<li>
-						Ideas of mentees cannot be used or discussed with anyone else by the mentor. The mentor cannot work on research problems the mentee discusses with the mentor.
-					</li>
-					<li>
-						Mentee has the complete right to use or not use any suggestion/advice given.
-					</li>
-					<li>
-						Keep mentorship about research and related issues like career, and keep other issues (e.g. personal) outside the scope.
-					</li>
-				</ul>
+				<div class="content">
+					<ul>
+						<li>
+							While the mentee is looking for guidance from you, please treat the mentee with respect and follow the mentoring schedule you agree with the mentee.
+						</li>
+						<li>
+							Mentoring is exclusively to help the mentees in their research. Provide feedback on the mentee's work and ideas. Any ideas shared/discussed/given to the mentees, mentees have full right to use the idea as their own.
+						</li>
+						<li>
+							Ideas of mentees cannot be used or discussed with anyone else by the mentor. The mentor cannot work on research problems the mentee discusses with the mentor.
+						</li>
+						<li>
+							Mentee has the complete right to use or not use any suggestion/advice given.
+						</li>
+						<li>
+							Keep mentorship about research and related issues like career, and keep other issues (e.g. personal) outside the scope.
+						</li>
+					</ul>
+				</div>
 			</section>
 			<footer class="modal-card-foot">
 				<button v-on:click="show_tnc_dialog = !show_tnc_dialog" class="button">Cancel</button>
