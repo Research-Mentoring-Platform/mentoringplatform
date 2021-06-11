@@ -8,7 +8,10 @@ const routes = [
 	{
 		path: '/',
 		name: 'Home',
-		component: Home
+		component: Home,
+		meta: {
+			requires_auth: false
+		}
 	},
 	{
 		path: '/about',
@@ -23,20 +26,20 @@ const routes = [
 	{
 		path: '/register-mentor',
 		name: 'RegisterMentor',
-		props: {
-			request_url: "/api/users/user/register-mentor",
-			register_as_mentor: true,
-		},
-		component: Register
+		props: { register_as_mentor: true },
+		component: Register,
+		meta: {
+			requires_visitor: true
+		}
 	},
 	{
 		path: '/register-mentee',
 		name: 'RegisterMentee',
-		props: {
-			request_url: "/api/users/user/register-mentee",
-			register_as_mentor: false
-		},
-		component: Register
+		props: { register_as_mentor: false },
+		component: Register,
+		meta: {
+			requires_visitor: true
+		}
 	}
 ];
 

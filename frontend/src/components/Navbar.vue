@@ -61,6 +61,17 @@ export default {
 		return {
 			show_nav_bar_menu: false
 		};
+	},
+	computed: {
+		...mapGetters({
+			logged_in: 'logged_in'
+		})
+	},
+	methods: {
+		logout() {
+			this.$store.commit('destroy_token');
+			this.$router.replace({ name: 'Home' });
+		}
 	}
 }
 </script>

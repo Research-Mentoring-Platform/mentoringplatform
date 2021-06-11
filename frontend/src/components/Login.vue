@@ -10,7 +10,7 @@
 					<div class="field">
 						<label class="label">Email</label>
 						<p class="control has-icons-left">
-							<input v-model="user.username" class="input" type="email" placeholder="Email">
+							<input v-model="user.email" class="input" type="email" placeholder="Email">
 							<span class="icon is-small is-left">
 								<i class="fas fa-envelope"></i>
 							</span>
@@ -66,19 +66,17 @@ export default {
 	data() {
 		return {
 			user: {
-				username: "",
+				email: "",
 				password: ""
 			}
 		}
 	},
 	method: {
 		login() {
-			axios.post('/api/users/user/', this.user, {
-				headers: { 'Content-Type': 'application/json' }
-			})
+			axios.post('/api/users/token/', this.user)
 			.then((response) => {
-				console.log(response);
-				const storage = localStorage;
+				this.$store.commit('update_local_storage', response.data);
+				this.$router.replace({ name: 'Home' });
 			})
 			.catch((error) => {
 				console.error(error);

@@ -41,9 +41,19 @@
 					<div class="field">
 						<label class="label">Email</label>
 						<div class="control has-icons-left">
-							<input class="input" type="email" placeholder="Email">
+							<input v-model="user.email" class="input" type="email" placeholder="Email">
 							<span class="icon is-small is-left">
 							  	<i class="fas fa-envelope"></i>
+							</span>
+						</div>
+					</div>
+
+					<div class="field">
+<!--						<label class="label">Date of Birth</label>-->
+						<div class="control has-icons-left">
+							<input v-model="user.date_of_birth" class="input" type="date" v-bind:max="max_dob">
+							<span class="icon is-small is-left">
+							  	<i class="fas fa-calendar"></i>
 							</span>
 						</div>
 					</div>
@@ -81,7 +91,7 @@
 					<br/>
 
 					<div class="control">
-						<button class="button is-fullwidth is-success">Register</button>
+						<button class="button is-fullwidth is-success" v-on:click="register">Register</button>
 					</div>
 				</div>
 			</div>
@@ -123,7 +133,8 @@
 
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
+import axios from '../api/my-axios'
 
 export default {
 	props: {
@@ -144,6 +155,7 @@ export default {
 				last_name: "",
 				username: "",
 				email: "",
+				date_of_birth: "",
 				password: "",
 			},
 			confirm_password: ""
@@ -151,19 +163,18 @@ export default {
 	},
 	methods: {
 		register() {
-			if (this.user.password !== this.confirm_password) {
-				return;
-			}
+			this.user.is_mentor = this.register_as_mentor;
+			this.user.is_mentee = !this.register_as_mentor;
 
-				axios.post(this.request_url, this.user, {
-					headers: { 'Content-Type': 'application/json' }
-				})
-				.then(
+			if (this.user.password !== this.confirm_password) { return; }
 
-				)
-				.catch(
-
-				);
+			axios.post("/api/users/user/", this.user)
+			.then((response) => {
+				this.$router.replace({ name: 'Login' });
+			})
+			.catch((error) => {
+				console.error(error);
+			});
 		}
 	}
 }
