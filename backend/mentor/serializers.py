@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from mentee.models import MenteeDesignation
 from mentor.models import Mentor, MentorDesignation, MentorDepartment, MentorDiscipline, MentorResponsibility
 
@@ -42,5 +41,5 @@ class MentorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Mentor
-        fields = ('uid', 'user', 'about_self', 'designation', 'department', 'discipline', 'specialization', 'rating')
-        read_only_fields = ('uid', 'rating')
+        fields = '__all__'
+        read_only_fields = ('uid', 'rating', 'profile_completed')
