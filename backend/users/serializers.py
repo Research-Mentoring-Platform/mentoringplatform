@@ -1,6 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
+from django.core import exceptions as django_exceptions
 from rest_framework import serializers
+from rest_framework.fields import CurrentUserDefault
+from rest_framework import exceptions as rest_exceptions
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -33,10 +36,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
-        instance.set_password(validated_data.pop('password'))
+        validated_data.pop('password')  # Do not allow password to update from here
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-
         instance.save()
         return instance
 
@@ -45,3 +47,27 @@ class CustomUserSerializer(serializers.ModelSerializer):
 class CustomUserUpdateSerializer(CustomUserSerializer):
     class Meta(CustomUserSerializer.Meta):
         fields = ('uid', 'first_name', 'last_name')
+        read_only_fields = ('uid',)
+
+
+class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
+    current_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    class Meta:
+        model = get_user_model()
+
+    def validate(self, attrs):
+        user: get_user_model() = CurrentUserDefault()
+        if user.check_password(attrs['current_password']):
+            try:
+                validate_password(attrs['new_password'])
+            except django_exceptions.ValidationError as e:
+                raise rest_exceptions.ValidationError(dict(new_password=e.message))
+        raise rest_exceptions.ValidationError(dict(current_password='Invalid current password'))
+
+    def update(self, instance, validated_data):  # TODO do we need to override create as well?
+        instance.set_password(
+            validated_data['new_password'])  # TODO how to invalidate the existing tokens before expiry?
+        instance.save()
+        return instance
