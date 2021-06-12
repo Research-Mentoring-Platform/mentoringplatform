@@ -1,8 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
 import About from '../views/About.vue';
+import Base from '../views/Base.vue';
 import Login from '../components/Login.vue';
 import Register from '../components/Register.vue';
+import Profile from '../components/mentee/Profile.vue';
+
+
+//TODO Look for lazy loading for routes
 
 const routes = [
 	{
@@ -46,6 +51,20 @@ const routes = [
 		meta: {
 			requires_visitor: true
 		}
+	},
+	{
+		path: '/mentee',
+		component: Base,
+		children: [
+			{
+				path: 'profile',
+				name: 'MenteeProfile',
+				component: Profile,
+				meta: {
+					requires_auth: true
+				}
+			}
+		]
 	}
 ];
 

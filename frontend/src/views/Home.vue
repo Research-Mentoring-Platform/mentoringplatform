@@ -14,7 +14,6 @@
 					You are logged out
 				</p>
 				<p class="subtitle">
-
 				</p>
 			</div>
 		</div>

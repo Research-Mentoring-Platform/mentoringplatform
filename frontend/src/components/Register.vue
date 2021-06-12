@@ -181,7 +181,7 @@ export default {
 			if (this.user.password !== this.confirm_password) { return; }
 
 			axios.post("/api/users/user/", this.user)
-			.then((response) => {
+			.then((_) => {
 				this.$router.replace({ name: 'Login' });
 			})
 			.catch((error) => {

@@ -76,7 +76,7 @@ export default {
 			axios.post('/api/users/token/', this.user)
 			.then((response) => {
 				this.$store.commit('update_local_storage', response.data);
-				this.$router.replace({ name: 'Home' });
+				this.$router.replace({ name: 'MenteeProfile' });
 			})
 			.catch((error) => {
 				console.error(error);
