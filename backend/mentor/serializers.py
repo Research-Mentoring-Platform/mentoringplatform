@@ -43,3 +43,31 @@ class MentorSerializer(serializers.ModelSerializer):
         model = Mentor
         fields = '__all__'
         read_only_fields = ('uid', 'rating', 'profile_completed')
+
+
+class MentorResponsibilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MentorResponsibility
+        fields = '__all__'
+        read_only_fields = ('uid', 'description',)
+
+
+class MentorDepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MentorDepartment
+        fields = '__all__'
+        read_only_fields = ('uid', 'label',)
+
+
+class MentorDesignationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MentorDesignation
+        fields = '__all__'
+        read_only_fields = ('uid', 'label',)
+
+
+class MentorDisciplineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MentorDiscipline
+        fields = '__all__'
+        read_only_fields = ('uid', 'label',)
