@@ -28,7 +28,7 @@
 						</div>
 						<div v-else class="navbar-item">
 							<div class="navbar-item has-dropdown is-hoverable">
-								<a class="navbar-link" style="color: #0A0A0A">
+								<a class="navbar-link">
 									Register
 								</a>
 								<div class="navbar-dropdown">
