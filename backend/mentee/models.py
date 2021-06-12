@@ -21,6 +21,8 @@ class Mentee(models.Model):
                                  # validators=[validators.MinValueValidator(0.0), validators.MaxValueValidator(5.0)]
                                  )  # TODO Check if validators can be added here or only in DRF Serializers
 
+    # TODO rating must keep track of who rated whom
+
     def __str__(self):
         return '{}(email={})'.format(self.__class__.__name__, self.user.email)
 
