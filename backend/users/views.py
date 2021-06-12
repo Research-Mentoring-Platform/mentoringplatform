@@ -20,4 +20,4 @@ class CustomUserViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.request.method.lower() in ['put', 'patch']:  # certain fields shouldn't be changed later
             return CustomUserUpdateSerializer
-        return CustomUserSerializer
+        return self.serializer_class
