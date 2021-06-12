@@ -1,7 +1,8 @@
 <template>
+	<transition>
 	<div class="hero-body">
 		<div class="container">
-			<div class="columns is-centered p-5">
+			<div class="columns is-centered">
 				<div class="column is-one-third">
 					<div class="title is-1 has-text-centered">
 						Login
@@ -20,7 +21,7 @@
 					<div class="field">
 <!--						<label class="label">Password</label>-->
 						<p class="control has-icons-left">
-							<input v-model="user.password" class="input" type="password" placeholder="Password">
+							<input v-model="user.password" v-on:keyup.enter="login" class="input" type="password" placeholder="Password">
 							<span class="icon is-small is-left">
 								<i class="fas fa-lock"></i>
 							</span>
@@ -55,7 +56,7 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</div></transition>
 </template>
 
 
