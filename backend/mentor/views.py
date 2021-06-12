@@ -13,8 +13,8 @@ class MentorViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
     permission_action_classes = dict(
         list=(permissions.IsAuthenticated,),
         retrieve=(permissions.IsAuthenticated,),
-        destroy=(user_permissions.IsAdmin,),
-        create=(user_permissions.IsAdmin,)
+        destroy=(~permissions.AllowAny,),
+        create=(~permissions.AllowAny,)
     )
     queryset = Mentor.objects.all()
     serializer_class = MentorSerializer
@@ -22,7 +22,7 @@ class MentorViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
 
 
 class MentorResponsibilityViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
-    permission_classes = (user_permissions.IsAdmin,)
+    permission_classes = (~permissions.AllowAny,)
     permission_action_classes = dict(
         list=(permissions.IsAuthenticated,),
         retrieve=(permissions.IsAuthenticated,)
@@ -33,7 +33,7 @@ class MentorResponsibilityViewSet(ViewSetPermissionByMethodMixin, viewsets.Model
 
 
 class MentorDepartmentViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
-    permission_classes = (user_permissions.IsAdmin,)
+    permission_classes = (~permissions.AllowAny,)
     permission_action_classes = dict(
         list=(permissions.IsAuthenticated,),
         retrieve=(permissions.IsAuthenticated,)
@@ -44,7 +44,7 @@ class MentorDepartmentViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelView
 
 
 class MentorDesignationViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
-    permission_classes = (user_permissions.IsAdmin,)
+    permission_classes = (~permissions.AllowAny,)
     permission_action_classes = dict(
         list=(permissions.IsAuthenticated,),
         retrieve=(permissions.IsAuthenticated,)
@@ -55,7 +55,7 @@ class MentorDesignationViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelVie
 
 
 class MentorDisciplineViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
-    permission_classes = (user_permissions.IsAdmin,)
+    permission_classes = (~permissions.AllowAny,)
     permission_action_classes = dict(
         list=(permissions.IsAuthenticated,),
         retrieve=(permissions.IsAuthenticated,)
