@@ -5,5 +5,6 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('users/', include('users.urls'))
+    path('users/', include('users.urls')),
+    path('mentor/', include('mentor.urls')),
 ]

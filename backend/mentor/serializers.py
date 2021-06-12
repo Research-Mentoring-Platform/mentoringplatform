@@ -5,7 +5,6 @@ from mentor.models import Mentor, MentorDesignation, MentorDepartment, MentorDis
 
 class MentorSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(slug_field='uid',
-                                        queryset=Mentor.objects.all(),
                                         read_only=True)
 
     designation = serializers.SlugRelatedField(slug_field='uid',
@@ -41,5 +40,33 @@ class MentorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Mentor
-        fields = '__all__'
-        read_only_fields = ('uid', 'rating', 'profile_completed')
+        exclude = ('id',)
+        read_only_fields = ('uid', 'rating', 'profile_completed', 'is_verified', 'user')
+
+
+class MentorResponsibilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MentorResponsibility
+        exclude = ('id',)
+        read_only_fields = ('uid', 'description',)
+
+
+class MentorDepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MentorDepartment
+        exclude = ('id',)
+        read_only_fields = ('uid', 'label',)
+
+
+class MentorDesignationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MentorDesignation
+        exclude = ('id',)
+        read_only_fields = ('uid', 'label',)
+
+
+class MentorDisciplineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MentorDiscipline
+        exclude = ('id',)
+        read_only_fields = ('uid', 'label',)

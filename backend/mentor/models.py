@@ -34,6 +34,7 @@ class Mentor(models.Model):  # TODO: Rename Mentor to MentorProfile?
     rating = models.DecimalField(max_digits=3, decimal_places=2, null=True,
                                  # validators=[validators.MinValueValidator(0.0), validators.MaxValueValidator(5.0)]
                                  )  # TODO Check if validators can be added here or only in DRF Serializers
+    # TODO rating must keep track of who rated whom
 
     # TODO Add social_handles
 
