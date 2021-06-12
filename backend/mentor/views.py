@@ -10,7 +10,7 @@ from mentor.serializers import MentorSerializer, MentorResponsibilitySerializer,
 
 class MentorViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
     permission_classes = (mentor_permissions.CanAccessMentor,)
-    permission_access_classes = dict(
+    permission_action_classes = dict(
         list=(permissions.IsAuthenticated,),
         retrieve=(permissions.IsAuthenticated,),
         destroy=(permissions.IsAdminUser,),
@@ -23,7 +23,7 @@ class MentorViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
 
 class MentorResponsibilityViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
     permission_classes = (user_permissions.IsAdminUser,)
-    permission_classes_dict = dict(
+    permission_action_classes = dict(
         list=(permissions.IsAuthenticated,),
         retrieve=(permissions.IsAuthenticated,)
     )
@@ -34,7 +34,7 @@ class MentorResponsibilityViewSet(ViewSetPermissionByMethodMixin, viewsets.Model
 
 class MentorDepartmentViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
     permission_classes = (user_permissions.IsAdminUser,)
-    permission_classes_dict = dict(
+    permission_action_classes = dict(
         list=(permissions.IsAuthenticated,),
         retrieve=(permissions.IsAuthenticated,)
     )
@@ -45,7 +45,7 @@ class MentorDepartmentViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelView
 
 class MentorDesignationViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
     permission_classes = (user_permissions.IsAdminUser,)
-    permission_classes_dict = dict(
+    permission_action_classes = dict(
         list=(permissions.IsAuthenticated,),
         retrieve=(permissions.IsAuthenticated,)
     )
@@ -56,7 +56,7 @@ class MentorDesignationViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelVie
 
 class MentorDisciplineViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
     permission_classes = (user_permissions.IsAdminUser,)
-    permission_classes_dict = dict(
+    permission_action_classes = dict(
         list=(permissions.IsAuthenticated,),
         retrieve=(permissions.IsAuthenticated,)
     )
