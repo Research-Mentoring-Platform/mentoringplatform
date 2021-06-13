@@ -2,7 +2,7 @@
 <div>
 	<div class="title is-3 has-text-centered">
 		<span>
-			Edit profile
+			Experience
 		</span>
 	</div>
 
