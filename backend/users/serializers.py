@@ -1,6 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
+from django.core import exceptions as django_exceptions
 from rest_framework import serializers
+from rest_framework.fields import CurrentUserDefault
+from rest_framework import exceptions as rest_exceptions
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -33,15 +36,42 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
-        instance.set_password(validated_data.pop('password'))
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-
-        instance.save()
-        return instance
+        raise NotImplementedError('Do not allow updates.')
 
 
 # https://stackoverflow.com/a/22133032/5394180
 class CustomUserUpdateSerializer(CustomUserSerializer):
     class Meta(CustomUserSerializer.Meta):
         fields = ('uid', 'first_name', 'last_name')
+        read_only_fields = ('uid',)
+
+
+class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
+    current_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    class Meta:
+        model = get_user_model()
+        fields = ('current_password', 'new_password',)
+
+    def validate(self, attrs):
+        user = self.context['request'].user
+        if user.check_password(attrs['current_password']):
+            if user.check_password(attrs['new_password']):
+                raise rest_exceptions.ValidationError(dict(new_password='New password cannot be the same as the '
+                                                                        'previous password.'))
+            try:
+                validate_password(attrs['new_password'])
+                return attrs
+            except django_exceptions.ValidationError as e:
+                raise rest_exceptions.ValidationError(dict(new_password=' '.join(e.messages)))
+        raise rest_exceptions.ValidationError(dict(current_password='Invalid current password'))
+
+    def create(self, validated_data):
+        raise NotImplementedError('Do not allow creation.')
+
+    def update(self, instance, validated_data):
+        instance.set_password(
+            validated_data['new_password'])  # TODO how to invalidate the existing tokens before expiry?
+        instance.save()
+        return instance
