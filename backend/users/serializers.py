@@ -36,7 +36,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
-        raise NotImplementedError('Do not allow updates.')
+        raise NotImplementedError('Do not allow updates.')  # TODO is raising this a good idea? (500 server error)
 
 
 # https://stackoverflow.com/a/22133032/5394180
@@ -68,7 +68,7 @@ class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
         raise rest_exceptions.ValidationError(dict(current_password='Invalid current password'))
 
     def create(self, validated_data):
-        raise NotImplementedError('Do not allow creation.')
+        raise NotImplementedError('Do not allow creation.')  # TODO is raising this a good idea? (500 server error)
 
     def update(self, instance, validated_data):
         instance.set_password(
