@@ -1,9 +1,30 @@
 import json
 
+from django.contrib.auth.hashers import make_password
+
+from users.models import CustomUserManager
+
 PATH_CONFIG_DESIGNATION = 'config/designation.json'
 PATH_CONFIG_DEPARTMENT = 'config/department.json'
 PATH_CONFIG_DISCIPLINE = 'config/discipline.json'
 PATH_CONFIG_MENTOR_RESPONSIBILITY = 'config/mentor_responsibility.json'
+
+# TODO remove this in production!
+PATH_CONFIG_TEST_USER = 'config/test_users.json'
+
+
+# TODO remove this in production!
+def add_test_user(apps, schema_editor):
+    # TODO unregister send-email signal
+    with open(PATH_CONFIG_TEST_USER, 'r') as f:
+        config = json.load(f)
+
+    model = apps.get_model('users', 'CustomUser')
+    for user_dict in config['users']:
+        user = model.objects.create(**user_dict)
+        user.password = make_password(user_dict['password'])
+        user.email_verified = True
+        user.save()
 
 
 # TODO Add validation for the rows loaded using the config files
