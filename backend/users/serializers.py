@@ -36,11 +36,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
-        validated_data.pop('password')  # Do not allow password to update from here
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        return instance
+        raise NotImplementedError('Do not allow updates.')
 
 
 # https://stackoverflow.com/a/22133032/5394180
@@ -56,18 +52,25 @@ class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
+        fields = ('current_password', 'new_password',)
 
     def validate(self, attrs):
-        user: get_user_model() = CurrentUserDefault()
+        user = self.context['request'].user
         if user.check_password(attrs['current_password']):
+            if user.check_password(attrs['new_password']):
+                raise rest_exceptions.ValidationError(dict(new_password='New password cannot be the same as the '
+                                                                        'previous password.'))
             try:
                 validate_password(attrs['new_password'])
                 return attrs
             except django_exceptions.ValidationError as e:
-                raise rest_exceptions.ValidationError(dict(new_password=e.message))
+                raise rest_exceptions.ValidationError(dict(new_password=' '.join(e.messages)))
         raise rest_exceptions.ValidationError(dict(current_password='Invalid current password'))
 
-    def update(self, instance, validated_data):  # TODO do we need to override create as well?
+    def create(self, validated_data):
+        raise NotImplementedError('Do not allow creation.')
+
+    def update(self, instance, validated_data):
         instance.set_password(
             validated_data['new_password'])  # TODO how to invalidate the existing tokens before expiry?
         instance.save()

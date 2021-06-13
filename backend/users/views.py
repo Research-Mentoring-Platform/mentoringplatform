@@ -24,10 +24,11 @@ class CustomUserViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
             return CustomUserUpdateSerializer
         return self.serializer_class
 
-    @action(methods=['post'], detail=True, url_path='update-password', url_name='update-password',
+    @action(methods=['post'], detail=False, url_path='update-password', url_name='update-password',
             permission_classes=[user_permissions.CanChangeCustomUserPassword])
-    def update_password(self, request, pk=None):
-        serializer = CustomUserPasswordUpdateSerializer(request.data)
+    def update_password(self, request):
+        serializer = CustomUserPasswordUpdateSerializer(data=request.data, context=dict(request=request),
+                                                        instance=request.user)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)  # https://stackoverflow.com/a/31175629/5394180
         return Response(status=status.HTTP_200_OK)
