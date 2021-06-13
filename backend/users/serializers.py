@@ -65,6 +65,7 @@ class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
                 return attrs
             except django_exceptions.ValidationError as e:
                 raise rest_exceptions.ValidationError(dict(new_password=' '.join(e.messages)))
+
         raise rest_exceptions.ValidationError(dict(current_password='Invalid current password'))
 
     def create(self, validated_data):
