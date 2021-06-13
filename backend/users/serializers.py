@@ -1,9 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
-from rest_framework import serializers
-from rest_framework.fields import CurrentUserDefault
 from rest_framework import exceptions as rest_exceptions
+from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+from mentee.models import Mentee
+from mentor.models import Mentor
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -16,14 +19,13 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = (
-            'uid', 'first_name', 'last_name', 'email', 'username', 'password', 'date_of_birth', 'is_mentor',
-            'is_mentee')
+        fields = ('uid', 'first_name', 'last_name', 'email', 'username', 'password', 'date_of_birth',
+                  'is_mentor', 'is_mentee')
         read_only_fields = ('uid',)
 
     def validate(self, attrs):
-        if attrs['is_mentor'] and attrs['is_mentee']:
-            raise serializers.ValidationError('You cannot be both a mentor and a mentee.')
+        if attrs['is_mentor'] == attrs['is_mentee']:
+            raise serializers.ValidationError('You can be either mentor or mentee.')
         return attrs
 
     #  https://stackoverflow.com/a/27586289/5394180
@@ -76,3 +78,33 @@ class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
             validated_data['new_password'])  # TODO how to invalidate the existing tokens before expiry?
         instance.save()
         return instance
+
+
+# https://stackoverflow.com/a/55859751/5394180
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)  # this must be the first line (self.user initiates in super().validate())
+
+        if self.user.is_admin and (not self.user.is_mentor):
+            raise rest_exceptions.ValidationError('Non-mentor admins should use backend admin-login instead')
+
+        if not self.user.email_verified:
+            raise rest_exceptions.ValidationError('Email not verified.')
+
+        data['user_uid'] = self.user.uid
+        data['is_mentor'] = self.user.is_mentor
+        data['is_mentee'] = self.user.is_mentee
+
+        if self.user.is_mentor:
+            if not hasattr(self.user, 'mentor'):
+                Mentor.objects.create(user=self.user)
+
+            data['profile_uid'] = self.user.mentor.uid
+
+        else:  # is mentee
+            if not hasattr(self.user, 'mentee'):
+                Mentee.objects.create(user=self.user)
+
+            data['profile_uid'] = self.user.mentee.uid
+
+        return data
