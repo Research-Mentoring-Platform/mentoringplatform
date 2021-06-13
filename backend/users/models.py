@@ -3,6 +3,8 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 
+from users.methods import generate_email_verification_token
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, first_name, last_name, username, date_of_birth, password=None,
@@ -45,6 +47,7 @@ class CustomUser(AbstractBaseUser):
     is_mentee = models.BooleanField(verbose_name='Is mentee?', default=False, blank=True)
     is_admin = models.BooleanField(verbose_name='Is admin?', default=False)
     email_verified = models.BooleanField(verbose_name='Email verified?', default=False)
+    email_verification_token = models.CharField(max_length=32, default=generate_email_verification_token)
 
     # Django-specific fields
     objects = CustomUserManager()
