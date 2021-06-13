@@ -1,0 +1,49 @@
+{
+  "users": [
+    {
+      "first_name": "Super",
+      "last_name": "User",
+      "email": "super@super.super",
+      "username": "super",
+      "password": "pass4321",
+      "date_of_birth": "2000-01-01",
+      "is_admin": true
+    },
+    {
+      "first_name": "Mentee1",
+      "last_name": "Last",
+      "email": "mentee1@mentee1.mentee1",
+      "username": "mentee1",
+      "password": "pass4321",
+      "date_of_birth": "2000-01-01",
+      "is_mentee": true
+    },
+    {
+      "first_name": "Mentee2",
+      "last_name": "Last",
+      "email": "mentee2@mentee2.mentee2",
+      "username": "mentee2",
+      "password": "pass4321",
+      "date_of_birth": "2000-02-01",
+      "is_mentee": true
+    },
+    {
+      "first_name": "Mentor1",
+      "last_name": "Last",
+      "email": "mentor1@mentor1.mentor1",
+      "username": "mentor1",
+      "password": "pass4321",
+      "date_of_birth": "2000-01-01",
+      "is_mentor": true
+    },
+    {
+      "first_name": "Mentor2",
+      "last_name": "Last",
+      "email": "mentor2@mentor2.mentor2",
+      "username": "mentor2",
+      "password": "pass4321",
+      "date_of_birth": "2000-02-01",
+      "is_mentor": true
+    }
+  ]
+}

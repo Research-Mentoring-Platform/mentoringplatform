@@ -22,6 +22,9 @@ def reset():
     os.system('python manage.py makemigrations')
     copyfile('config/config_mentor_py.txt', 'mentor/migrations/0002_config_mentor.py')
     copyfile('config/config_mentee_py.txt', 'mentee/migrations/0002_config_mentee.py')
+
+    # TODO remove in production!
+    copyfile('config/config_test_users_py.txt', 'users/migrations/0002_test_users.py')
     print('Done')
 
 
