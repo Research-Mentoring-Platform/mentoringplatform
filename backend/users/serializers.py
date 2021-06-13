@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
 from rest_framework import serializers
-from rest_framework.fields import CurrentUserDefault
 from rest_framework import exceptions as rest_exceptions
 
 
@@ -40,8 +39,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 # https://stackoverflow.com/a/22133032/5394180
-class CustomUserUpdateSerializer(CustomUserSerializer):
+class CustomUserUpdateSerializer(serializers.ModelSerializer):
     class Meta(CustomUserSerializer.Meta):
+        model = get_user_model()
         fields = ('uid', 'first_name', 'last_name')
         read_only_fields = ('uid',)
 
