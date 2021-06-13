@@ -26,3 +26,24 @@ class MenteeSerializer(serializers.ModelSerializer):
         model = Mentee
         exclude = ('id',)
         read_only_fields = ('uid', 'rating', 'profile_completed')
+
+
+class MenteeDepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenteeDepartment
+        exclude = ('id',)
+        read_only_fields = ('uid', 'label',)
+
+
+class MenteeDesignationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenteeDesignation
+        exclude = ('id',)
+        read_only_fields = ('uid', 'label',)
+
+
+class MenteeDisciplineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenteeDiscipline
+        exclude = ('id',)
+        read_only_fields = ('uid', 'label',)
