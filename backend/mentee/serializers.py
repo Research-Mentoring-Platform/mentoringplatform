@@ -5,7 +5,6 @@ from mentee.models import Mentee, MenteeDesignation, MenteeDepartment, MenteeDis
 
 class MenteeSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(slug_field='uid',
-                                        queryset=Mentee.objects.all(),
                                         read_only=True)
     designation = serializers.SlugRelatedField(slug_field='uid',
                                                queryset=MenteeDesignation.objects.all(),
@@ -25,5 +24,26 @@ class MenteeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Mentee
-        fields = '__all__'
+        exclude = ('id',)
         read_only_fields = ('uid', 'rating', 'profile_completed')
+
+
+class MenteeDepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenteeDepartment
+        exclude = ('id',)
+        read_only_fields = ('uid', 'label',)
+
+
+class MenteeDesignationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenteeDesignation
+        exclude = ('id',)
+        read_only_fields = ('uid', 'label',)
+
+
+class MenteeDisciplineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenteeDiscipline
+        exclude = ('id',)
+        read_only_fields = ('uid', 'label',)
