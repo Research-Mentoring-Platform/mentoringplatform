@@ -1,7 +1,7 @@
 <template>
 	<div class="hero-body">
 		<div class="container">
-			<div class="columns is-centered p-5">
+			<div class="columns is-centered">
 				<div class="column is-one-third">
 
 					<div class="title is-1 has-text-centered">
@@ -16,7 +16,7 @@
 					<div class="field">
 <!--						<label class="label">First Name</label>-->
 						<div class="control has-icons-left">
-							<input v-model="user.first_name" class="input" type="text" placeholder="First name">
+							<input v-model="user.first_name" class="input" type="text" placeholder="First name" required>
 							<span class="icon is-small is-left">
 							  	<i class="fas fa-user-circle"></i>
 							</span>
@@ -146,8 +146,7 @@
 
 
 <script>
-// import axios from 'axios';
-import axios from '../api/my-axios'
+import axios from "../api/my-axios";
 
 export default {
 	props: {
@@ -175,14 +174,14 @@ export default {
 	},
 	methods: {
 		register() {
+			if (this.user.password !== this.confirm_password) { return; }
+
 			this.user.is_mentor = this.register_as_mentor;
 			this.user.is_mentee = !this.register_as_mentor;
 
-			if (this.user.password !== this.confirm_password) { return; }
-
 			axios.post("/api/users/user/", this.user)
 			.then((_) => {
-				this.$router.replace({ name: 'Login' });
+				this.$router.replace({ name: "Login" });
 			})
 			.catch((error) => {
 				console.error(error);

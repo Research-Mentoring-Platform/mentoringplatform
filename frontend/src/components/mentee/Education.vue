@@ -1,0 +1,228 @@
+<template>
+<div>
+	<div class="title level">
+		<div class="level-item has-text-centered">Education</div>
+		<button v-on:click="show_education_modal = true"
+				class="button px-4 is-rounded is-primary"
+				data-toggle="modal"
+				data-target="#education-modal">
+			<span class="icon">
+				<i class="fa fa-plus"></i>
+			</span>
+		</button>
+	</div>
+
+
+	<div v-for="(education, index) in educations" class="box pt-4 pb-3 px-4" style="overflow-wrap: anywhere;">
+		<div class="columns is-variable is-1 mb-1">
+			<div class="column is-one-third">
+				<span style="height: 100%;" class="box has-text-weight-bold pt-1 pb-2 px-2 has-background-light is-shadowless">
+					{{ education.qualification }}
+				</span>
+			</div>
+			<div class="column has-text-left">
+				<span style="height: 100%;" class="box pt-1 pb-2 px-2 has-background-light is-shadowless">
+					{{ education.organization }}
+				</span>
+			</div>
+		</div>
+
+		<div class="columns is-vcentered">
+			<div class="column has-text-left is-italic">
+				{{ education.start_date }} to
+
+				<span v-if="education.is_ongoing">Present</span>
+				<span v-else>{{ education.end_date  }}</span>
+			</div>
+
+			<div class="column has-text-right">
+				<button v-on:click="show_education_details(index)"
+						class="button px-4 py-0 mr-2 is-info"
+						data-toggle="modal"
+						data-target="#education-details-modal">
+					<span class="icon">
+						<i class="fas fa-info"></i>
+					</span>
+				</button>
+
+				<button v-on:click="edit_education(index)" class="button px-4 py-0 is-primary">
+					<span class="icon">
+						<i class="far fa-edit"></i>
+					</span>
+				</button>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- VIEW PARTICULAR EDUCATION DETAILS MODAL -->
+	<div v-bind:class="{ 'is-active': show_education_details_modal }" id="education-details-modal" class="modal is-rounded">
+		<div class="modal-background"></div>
+		<div class="modal-card">
+			<header class="modal-card-head">
+				<p class="modal-card-title">Education details</p>
+				<button v-on:click="show_education_details_modal = false" class="delete" aria-label="close"></button>
+			</header>
+
+			<div class="modal-card-body">
+				<p class="content is-medium has-text-left">{{ education_details }}</p>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- ADD/UPDATE EDUCATION MODAL -->
+	<div v-bind:class="{ 'is-active': show_education_modal }" id="education-modal" class="modal">
+		<div class="modal-background"></div>
+		<div class="modal-card">
+			<header class="modal-card-head">
+				<p class="modal-card-title">Add Education</p>
+				<button v-on:click="clear_and_close_education_modal" class="delete" aria-label="close">
+				</button>
+			</header>
+
+			<section class="modal-card-body">
+				<div class="content">
+
+					<div class="field has-text-left">
+						<label class="label">Qualification</label>
+						<div class="control has-icons-left">
+							<input v-model="modal.qualification" class="input" type="text" required>
+							<span class="icon is-small is-left">
+							  	<i class="fas fa-graduation-cap"></i>
+							</span>
+						</div>
+					</div>
+
+					<div class="field has-text-left">
+						<label class="label">Organization</label>
+						<div class="control has-icons-left">
+							<input v-model="modal.organization" class="input" type="text" required>
+							<span class="icon is-small is-left">
+							  	<i class="fas fa-school"></i>
+							</span>
+						</div>
+					</div>
+
+					<div class="columns">
+						<div class="column field has-text-left">
+							<label class="label">Start date</label>
+							<div class="control has-icons-left">
+								<input v-model="modal.start_date" class="input" type="month" required>
+								<span class="icon is-small is-left">
+									<i class="fas fa-calendar"></i>
+								</span>
+							</div>
+						</div>
+
+						<div class="column field has-text-left">
+							<label class="label">End date</label>
+							<div class="control has-icons-left">
+								<input v-model="modal.end_date"
+									   v-bind:disabled="modal.is_ongoing"
+									   class="input"
+									   type="month">
+								<span class="icon is-small is-left">
+									<i class="fas fa-calendar"></i>
+								</span>
+							</div>
+
+							<label class="checkbox mt-2">
+								<input v-model="modal.is_ongoing" type="checkbox"> Is ongoing
+							</label>
+						</div>
+					</div>
+
+					<div class="field has-text-left">
+						<label class="label">Details</label>
+						<div class="control has-icons-left">
+							<textarea v-model="modal.details" class="input textarea"></textarea>
+							<span class="icon is-small is-left">
+							  	<i class="fas fa-info-circle"></i>
+							</span>
+						</div>
+					</div>
+
+				</div>
+			</section>
+
+			<footer class="modal-card-foot" style="justify-content: flex-end">
+				<button v-if="edit_index >= 0" v-on:click="update_education" class="button is-success">Update</button>
+				<button v-else v-on:click="add_education" class="button is-success">Add</button>
+
+				<button v-on:click="clear_and_close_education_modal" class="button">Cancel</button>
+			</footer>
+		</div>
+	</div>
+</div>
+</template>
+
+
+<script>
+import axios from "@/api/my-axios";
+
+export default {
+	data() {
+		return {
+			show_education_details_modal: false,
+			education_details: null,
+
+			show_education_modal: false,
+			edit_index: -1, // For #education-modal
+
+			modal: {
+				qualification: null,
+				organization: null,
+				start_date: null,
+				end_date: null,
+				is_ongoing: false,
+				details: null
+			},
+			educations: []
+		}
+	},
+	methods: {
+		clear_education_modal() {
+			this.modal.qualification = null;
+			this.modal.organization = null;
+			this.modal.start_date = null;
+			this.modal.end_date = null;
+			this.modal.is_ongoing = false;
+			this.modal.details = null;
+		},
+		clear_and_close_education_modal() {
+			this.clear_education_modal();
+			this.show_education_modal = false;
+		},
+		show_education_details(index) {
+			if (index >= this.educations.length) { return; }
+			this.education_details = this.educations[index].details;
+			this.show_education_details_modal = true;
+		},
+		add_education() {
+			// axios.post("/api/", data);
+			// TODO Append data to this.educations after verification from back-end
+
+			this.educations.push({...this.modal}); // Make sure to push a copy
+			this.clear_and_close_education_modal();
+		},
+		edit_education(index) {
+			if (index >= this.educations.length) { return; }
+
+			this.edit_index = index;
+			this.modal = {...this.educations[this.edit_index]};
+			this.show_education_modal = true;
+		},
+		update_education() {
+			if (this.edit_index < 0 || this.edit_index >= this.educations.length) { return; }
+
+			this.educations[this.edit_index] = {...this.modal};
+			this.edit_index = -1;
+			this.clear_and_close_education_modal();
+		},
+		save() {
+			axios.post("/api/???", this.educations);
+		}
+	}
+}
+</script>
