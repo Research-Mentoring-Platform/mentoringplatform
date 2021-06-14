@@ -106,7 +106,7 @@ class CustomTokenObtainSlidingSerializer(TokenObtainSlidingSerializer):
         if not self.user.email_verified:
             raise rest_exceptions.ValidationError('Email not verified.')
 
-        data['user_uid'] = self.user.uid
+        data['uid'] = self.user.uid
 
         if self.user.is_mentor:
             if not hasattr(self.user, 'mentor'):
