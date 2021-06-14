@@ -1,13 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
-from rest_framework import serializers
 from rest_framework import exceptions as rest_exceptions
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from mentee.models import Mentee
 from mentor.models import Mentor
+from users.models import CustomUser
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -48,6 +48,9 @@ class CustomUserUpdateSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = ('uid', 'first_name', 'last_name')
         read_only_fields = ('uid',)
+
+    def create(self, validated_data):
+        raise NotImplementedError('Do not allow creation.')  # TODO is raising this a good idea? (500 server error)
 
 
 class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
@@ -110,3 +113,12 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             data['profile_uid'] = self.user.mentee.uid
 
         return data
+
+
+class CustomUserEmailVerificationSerializer(serializers.Serializer):
+    email_verification_token = serializers.CharField()
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        email_verification_token = data['email_verification_token']
+        user = CustomUser.objects.get(email_verification_token=email_verification_token)
