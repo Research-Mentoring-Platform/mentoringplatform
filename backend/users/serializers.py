@@ -97,8 +97,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             raise rest_exceptions.ValidationError('Email not verified.')
 
         data['user_uid'] = self.user.uid
-        data['is_mentor'] = self.user.is_mentor
-        data['is_mentee'] = self.user.is_mentee
 
         if self.user.is_mentor:
             if not hasattr(self.user, 'mentor'):
