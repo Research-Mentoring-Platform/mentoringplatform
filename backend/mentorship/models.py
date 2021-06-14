@@ -108,9 +108,9 @@ class Education(models.Model):
     user = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE, related_name='educations')
 
     qualification = models.CharField(max_length=128, blank=False)
+    organization = models.CharField(max_length=128, blank=False)
     start_date = models.DateField()
     end_date = models.DateField(null=True)  # null == True signifies ongoing
-    organization = models.CharField(max_length=128, blank=False)
     details = models.TextField(max_length=512, blank=True)  # TODO Convert to RichTextField
 
     def __str__(self):
@@ -122,9 +122,9 @@ class Research(models.Model):
     user = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE, related_name='researches')
 
     title = models.CharField(max_length=128, blank=False)
+    organization = models.CharField(max_length=128, blank=False)
     start_date = models.DateField()
     end_date = models.DateField(null=True)  # null == True signifies ongoing
-    organization = models.CharField(max_length=128, blank=False)
     details = models.TextField(max_length=512, blank=True)
 
     def __str__(self):
