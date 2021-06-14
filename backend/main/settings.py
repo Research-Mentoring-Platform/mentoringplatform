@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_extensions',
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
 
     # My apps
     'api',
@@ -133,7 +134,8 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'users.CustomUser'
 
 SIMPLE_JWT = dict(
-    ACCESS_TOKEN_LIFETIME=timedelta(days=1)  # TODO update/fix to a reasonable value
+    ACCESS_TOKEN_LIFETIME=timedelta(days=1),  # TODO update/fix to a reasonable value
+    AUTH_TOKEN_CLASSES=('rest_framework_simplejwt.tokens.SlidingToken',),
 )
 
 # Internationalization

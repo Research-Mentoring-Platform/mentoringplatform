@@ -4,11 +4,11 @@ from rest_framework import permissions, status
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainSlidingView
 
 from main.mixins import ViewSetPermissionByMethodMixin
 from users.serializers import CustomUserSerializer, CustomUserUpdateSerializer, CustomUserPasswordUpdateSerializer, \
-    CustomTokenObtainPairSerializer
+    CustomTokenObtainSlidingSerializer
 from . import permissions as user_permissions
 from .methods import send_email_async
 
@@ -58,5 +58,6 @@ class CustomUserViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
                          recipient_list=[user.email, ])
         return ret
 
-class CustomTokenObtainPairView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
+
+class CustomTokenObtainSlidingView(TokenObtainSlidingView):
+    serializer_class = CustomTokenObtainSlidingSerializer
