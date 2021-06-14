@@ -1,7 +1,6 @@
 import uuid
 
 from django.db import models
-from django.core import validators
 
 
 class Mentor(models.Model):  # TODO: Rename Mentor to MentorProfile?
@@ -12,11 +11,14 @@ class Mentor(models.Model):  # TODO: Rename Mentor to MentorProfile?
     profile_completed = models.BooleanField(default=False)
     about_self = models.TextField(max_length=512, blank=True)
 
-    designation = models.ForeignKey('mentor.MentorDesignation', on_delete=models.RESTRICT, related_name='designations',
+    designation = models.ForeignKey('mentor.MentorDesignation', on_delete=models.RESTRICT,
+                                    related_name='mentors_with_designation',
                                     null=True)
-    department = models.ForeignKey('mentor.MentorDepartment', on_delete=models.RESTRICT, related_name='departments',
+    department = models.ForeignKey('mentor.MentorDepartment', on_delete=models.RESTRICT,
+                                   related_name='mentors_with_department',
                                    null=True)
-    discipline = models.ForeignKey('mentor.MentorDiscipline', on_delete=models.RESTRICT, related_name='disciplines',
+    discipline = models.ForeignKey('mentor.MentorDiscipline', on_delete=models.RESTRICT,
+                                   related_name='mentors_with_discipline',
                                    null=True)
     specialization = models.TextField(max_length=256, blank=True)
     # Additional fields: Education, Research

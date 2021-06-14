@@ -102,6 +102,9 @@ class Milestone(models.Model):
 
 class Education(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+
+    # TODO convertable to GenericForeignKey to either of Mentee and Mentor models (
+    #  https://bhrigu.medium.com/django-how-to-add-foreignkey-to-multiple-models-394596f06e84)
     user = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE, related_name='educations')
 
     qualification = models.CharField(max_length=128, blank=False)

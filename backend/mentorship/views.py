@@ -1,3 +1,11 @@
-from django.shortcuts import render
+from rest_framework import permissions
+from rest_framework import viewsets
 
-# Create your views here.
+from mentorship.models import Education
+from mentorship.serializers import EducationSerializer
+
+
+class EducationViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = EducationSerializer
+    queryset = Education.objects.all()

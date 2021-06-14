@@ -1,4 +1,5 @@
 import uuid
+
 from django.db import models
 
 
@@ -8,11 +9,14 @@ class Mentee(models.Model):
     about_self = models.TextField(max_length=512, blank=True)
     profile_completed = models.BooleanField(default=False)
 
-    designation = models.ForeignKey('mentee.MenteeDesignation', on_delete=models.RESTRICT, related_name='designations',
+    designation = models.ForeignKey('mentee.MenteeDesignation', on_delete=models.RESTRICT,
+                                    related_name='mentees_with_designation',
                                     null=True)
-    department = models.ForeignKey('mentee.MenteeDepartment', on_delete=models.RESTRICT, related_name='departments',
+    department = models.ForeignKey('mentee.MenteeDepartment', on_delete=models.RESTRICT,
+                                   related_name='mentees_with_department',
                                    null=True)
-    discipline = models.ForeignKey('mentee.MenteeDiscipline', on_delete=models.RESTRICT, related_name='disciplines',
+    discipline = models.ForeignKey('mentee.MenteeDiscipline', on_delete=models.RESTRICT,
+                                   related_name='mentees_with_discipline',
                                    null=True)
     specialization = models.TextField(max_length=256, blank=True)
     # Additional fields: Education, Research
