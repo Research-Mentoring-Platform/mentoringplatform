@@ -1,3 +1,5 @@
+# TODO re-write permissions considering Admins cannot login
+
 from rest_framework import permissions
 
 
