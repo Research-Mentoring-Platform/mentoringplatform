@@ -7,6 +7,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from mentee.models import Mentee
 from mentor.models import Mentor
+from users.models import CustomUser
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -42,10 +43,14 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 # https://stackoverflow.com/a/22133032/5394180
-class CustomUserUpdateSerializer(CustomUserSerializer):
+class CustomUserUpdateSerializer(serializers.ModelSerializer):
     class Meta(CustomUserSerializer.Meta):
+        model = get_user_model()
         fields = ('uid', 'first_name', 'last_name')
         read_only_fields = ('uid',)
+
+    def create(self, validated_data):
+        raise NotImplementedError('Do not allow creation.')  # TODO is raising this a good idea? (500 server error)
 
 
 class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
@@ -108,3 +113,12 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             data['profile_uid'] = self.user.mentee.uid
 
         return data
+
+
+class CustomUserEmailVerificationSerializer(serializers.Serializer):
+    email_verification_token = serializers.CharField()
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        email_verification_token = data['email_verification_token']
+        user = CustomUser.objects.get(email_verification_token=email_verification_token)
