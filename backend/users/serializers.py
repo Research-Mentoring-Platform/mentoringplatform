@@ -3,7 +3,8 @@ from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
 from rest_framework import exceptions as rest_exceptions
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.serializers import TokenObtainSlidingSerializer
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 
 from mentee.models import Mentee
 from mentor.models import Mentor
@@ -82,11 +83,20 @@ class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
         instance.set_password(
             validated_data['new_password'])  # TODO how to invalidate the existing tokens before expiry?
         instance.save()
+
+        outstanding_tokens = OutstandingToken.objects.filter(user__pk=instance.pk)
+        for out_token in outstanding_tokens:
+            if hasattr(out_token, 'blacklistedtoken'):
+                # Token already blacklisted. Skip
+                continue
+
+            BlacklistedToken.objects.create(token=out_token)
+
         return instance
 
 
 # https://stackoverflow.com/a/55859751/5394180
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+class CustomTokenObtainSlidingSerializer(TokenObtainSlidingSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)  # this must be the first line (self.user initiates in super().validate())
 
@@ -96,7 +106,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         if not self.user.email_verified:
             raise rest_exceptions.ValidationError('Email not verified.')
 
-        data['user_uid'] = self.user.uid
+        data['uid'] = self.user.uid
 
         if self.user.is_mentor:
             if not hasattr(self.user, 'mentor'):
