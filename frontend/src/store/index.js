@@ -1,36 +1,71 @@
-import { createStore } from 'vuex';
+import { createStore } from "vuex";
 
-export default createStore({
+const store = createStore({
 	state: {
-		access_token: localStorage.getItem('rmp_access_token') || null,
-		refresh_token: localStorage.getItem('rmp_refresh_token') || null
+		token: localStorage.getItem("rmp_token"),
+		current_user: JSON.parse(localStorage.getItem("rmp_current_user")) || {
+			uid: null,
+			profile_uid: null,
+			email: null,
+			username: null,
+			first_name: null,
+			last_name: null,
+			date_of_birth: null,
+			is_mentor: false,
+			is_mentee: false,
+		}
 	},
 	getters: {
-		logged_in(state) {
-			return state.access_token != null; // Not using !==
+		logged_in(state)
+		{
+			return state.token != null; // Not using !==
 		}
 	},
 	mutations: {
-		update_local_storage (state, { access, refresh }) {
-			localStorage.setItem('rmp_access_token', access);
-			localStorage.setItem('rmp_refresh_token', refresh);
-			state.access_token = access;
-			state.refresh_token = refresh;
+		set_token(state, token)
+		{
+			localStorage.setItem("rmp_token", token);
+			state.token = token;
 		},
-		update_access (state, access) {
-			state.access_token = access;
+
+		set_current_user(state, data)
+		{
+			localStorage.setItem("rmp_current_user", JSON.stringify(data)); // Stringify is needed
+			for (const key in state.current_user) {
+				state.current_user[key] = data[key];
+			}
+
+			// TODO Logout and redirect to 'Home' if this is the case
+			// if (state.is_mentor === state.is_mentee) {  }
 		},
-		destroy_token (state) {
-			state.access_token = null;
-			state.refresh_token = null;
-			localStorage.removeItem('rmp_access_token');
-			localStorage.removeItem('rmp_refresh_token');
+
+		update_token(state, token)
+		{
+			state.token_token = token;
+		},
+
+		destroy_token(state)
+		{
+			state.token = null;
+			localStorage.removeItem("rmp_token");
+		},
+
+		destroy_current_user(state)
+		{
+			state.current_user = null;
+			localStorage.removeItem("rmp_current_user");
 		}
 	},
 	actions: {
-
+		logout(context)
+		{
+			context.commit("destroy_token");
+			context.commit("destroy_current_user");
+		}
 	},
 	modules: {
 
 	}
 });
+
+export default store;

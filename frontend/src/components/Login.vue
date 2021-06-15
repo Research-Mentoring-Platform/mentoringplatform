@@ -1,66 +1,66 @@
 <template>
-	<div class="hero-body">
-		<div class="container">
-			<div class="columns is-centered p-5">
-				<div class="column is-one-third">
-					<div class="title is-1 has-text-centered">
-						Login
-					</div>
+<div class="hero-body">
+	<div class="container">
+		<div class="columns is-centered">
+			<div class="column is-one-third">
+				<div class="title is-1 has-text-centered">
+					Login
+				</div>
 
-					<div class="field">
+				<div class="field">
 <!--						<label class="label">Email</label>-->
-						<p class="control has-icons-left">
-							<input v-model="user.email" class="input" type="email" placeholder="Email">
-							<span class="icon is-small is-left">
-								<i class="fas fa-envelope"></i>
-							</span>
-						</p>
-					</div>
+					<p class="control has-icons-left">
+						<input v-model="user.email" class="input" type="email" placeholder="Email">
+						<span class="icon is-small is-left">
+							<i class="fas fa-envelope"></i>
+						</span>
+					</p>
+				</div>
 
-					<div class="field">
+				<div class="field">
 <!--						<label class="label">Password</label>-->
-						<p class="control has-icons-left">
-							<input v-model="user.password" class="input" type="password" placeholder="Password">
-							<span class="icon is-small is-left">
-								<i class="fas fa-lock"></i>
-							</span>
-						</p>
-					</div>
+					<p class="control has-icons-left">
+						<input v-model="user.password" v-on:keyup.enter="login" class="input" type="password" placeholder="Password">
+						<span class="icon is-small is-left">
+							<i class="fas fa-lock"></i>
+						</span>
+					</p>
+				</div>
 
-					<br/>
+				<br/>
 
-					<div class="control">
-						<button v-on:click="login" class="button is-success is-fullwidth">
-							Login
-						</button>
-					</div>
+				<div class="control">
+					<button v-on:click="login" class="button is-success is-fullwidth">
+						Login
+					</button>
+				</div>
 
-					<div class="pt-3 has-text-centered">
-						<a class="has-text-centered" style="color:dodgerblue;">
-							Forgot password?
-						</a>
-					</div>
+				<div class="pt-3 has-text-centered">
+					<a class="has-text-centered" style="color:dodgerblue;">
+						Forgot password?
+					</a>
+				</div>
 
-					<div class="pt-3 has-text-centered">
-						Don't have an account? Register as a
-						<router-link v-bind:to="{ name: 'RegisterMentor' }" style="color:dodgerblue;">
-							mentor
-						</router-link>
-						or
-						<router-link v-bind:to="{ name: 'RegisterMentee' }" style="color: dodgerblue;">
-							mentee
-						</router-link>
-						.
-					</div>
+				<div class="pt-3 has-text-centered">
+					Don't have an account? Register as a
+					<router-link v-bind:to="{ name: 'RegisterMentor' }" class="hyperlink">
+						mentor
+					</router-link>
+					or
+					<router-link v-bind:to="{ name: 'RegisterMentee' }" class="hyperlink">
+						mentee
+					</router-link>
+					.
 				</div>
 			</div>
 		</div>
 	</div>
+</div>
 </template>
 
 
 <script>
-import axios from "../api/my-axios";
+import axios from "@/api/my-axios";
 
 export default {
 	data() {
@@ -69,18 +69,32 @@ export default {
 				email: "",
 				password: ""
 			}
-		}
+		};
 	},
 	methods: {
-		login() {
-			axios.post('/api/users/token/', this.user)
-			.then((response) => {
-				this.$store.commit('update_local_storage', response.data);
-				this.$router.replace({ name: 'Home' });
-			})
-			.catch((error) => {
-				console.error(error);
-			});
+		login()
+		{
+			// Get token
+			axios
+				.post("/api/users/token/", this.user)
+				.then(resp => {
+					this.$store.commit("set_token", resp.data.token);
+
+					// Get user details
+					axios
+						.get(`/api/users/user/${resp.data.uid}`) // TODO Get this changed to uid in backend
+						.then(user_data => {
+							user_data.data.profile_uid = resp.data.profile_uid;
+							this.$store.commit("set_current_user", user_data.data);
+							this.$router.replace({ name: "Profile" });
+						})
+						.catch(error => {
+							console.error(error);
+						});
+				})
+				.catch(error => {
+					console.error(error);
+				});
 		}
 	}
 }

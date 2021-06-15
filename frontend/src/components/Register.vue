@@ -1,7 +1,7 @@
 <template>
 	<div class="hero-body">
 		<div class="container">
-			<div class="columns is-centered p-5">
+			<div class="columns is-centered">
 				<div class="column is-one-third">
 
 					<div class="title is-1 has-text-centered">
@@ -16,7 +16,7 @@
 					<div class="field">
 <!--						<label class="label">First Name</label>-->
 						<div class="control has-icons-left">
-							<input v-model="user.first_name" class="input" type="text" placeholder="First name">
+							<input v-model="user.first_name" class="input" type="text" placeholder="First name" required>
 							<span class="icon is-small is-left">
 							  	<i class="fas fa-user-circle"></i>
 							</span>
@@ -81,7 +81,8 @@
 							  	<i class="fas fa-lock"></i>
 							</span>
 						</div>
-						<p class="help is-danger" v-if="confirm_password.length > 0 && user.password !== confirm_password">
+						<p v-if="confirm_password.length > 0 && user.password !== confirm_password"
+						   class="help is-danger">
 							Passwords do not match!
 						</p>
 					</div>
@@ -89,11 +90,10 @@
 					<div class="pt-3 has-text-centered">
 						<strong>
 							By registering you agree to the
-							<a
-								v-on:click="show_tnc_dialog = !show_tnc_dialog"
-							    data-toggle="modal"
-							    data-target="#tnc-modal"
-								style="color: dodgerblue;">
+							<a v-on:click="show_tnc_modal = true"
+							   class="hyperlink"
+							   data-toggle="modal"
+							   data-target="#tnc-modal">
 								Terms & Conditions
 							</a>
 						</strong>
@@ -102,41 +102,43 @@
 					<br/>
 
 					<div class="control">
-						<button class="button is-fullwidth is-success" v-on:click="register">Register</button>
+						<button v-on:click="register" class="button is-fullwidth is-success">Register</button>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div id="tnc-modal" class="modal" v-bind:class="{ 'is-active': show_tnc_dialog }">
+	<div v-bind:class="{ 'is-active': show_tnc_modal }" id="tnc-modal" class="modal">
 		<div class="modal-background"></div>
 		<div class="modal-card">
 			<header class="modal-card-head">
 				<p class="modal-card-title">Terms & Conditions</p>
-				<button class="delete" aria-label="close" v-on:click="show_tnc_dialog = !show_tnc_dialog"></button>
+				<button class="delete" aria-label="close" v-on:click="show_tnc_modal = !show_tnc_modal"></button>
 			</header>
 			<section class="modal-card-body">
-				<ul>
-					<li>
-						While the mentee is looking for guidance from you, please treat the mentee with respect and follow the mentoring schedule you agree with the mentee.
-					</li>
-					<li>
-						Mentoring is exclusively to help the mentees in their research. Provide feedback on the mentee's work and ideas. Any ideas shared/discussed/given to the mentees, mentees have full right to use the idea as their own.
-					</li>
-					<li>
-						Ideas of mentees cannot be used or discussed with anyone else by the mentor. The mentor cannot work on research problems the mentee discusses with the mentor.
-					</li>
-					<li>
-						Mentee has the complete right to use or not use any suggestion/advice given.
-					</li>
-					<li>
-						Keep mentorship about research and related issues like career, and keep other issues (e.g. personal) outside the scope.
-					</li>
-				</ul>
+				<div class="content">
+					<ul>
+						<li>
+							While the mentee is looking for guidance from you, please treat the mentee with respect and follow the mentoring schedule you agree with the mentee.
+						</li>
+						<li>
+							Mentoring is exclusively to help the mentees in their research. Provide feedback on the mentee's work and ideas. Any ideas shared/discussed/given to the mentees, mentees have full right to use the idea as their own.
+						</li>
+						<li>
+							Ideas of mentees cannot be used or discussed with anyone else by the mentor. The mentor cannot work on research problems the mentee discusses with the mentor.
+						</li>
+						<li>
+							Mentee has the complete right to use or not use any suggestion/advice given.
+						</li>
+						<li>
+							Keep mentorship about research and related issues like career, and keep other issues (e.g. personal) outside the scope.
+						</li>
+					</ul>
+				</div>
 			</section>
 			<footer class="modal-card-foot">
-				<button v-on:click="show_tnc_dialog = !show_tnc_dialog" class="button">Cancel</button>
+				<button v-on:click="show_tnc_modal = false" class="button">Cancel</button>
 			</footer>
 		</div>
 	</div>
@@ -144,8 +146,7 @@
 
 
 <script>
-// import axios from 'axios';
-import axios from '../api/my-axios'
+import axios from "@/api/my-axios";
 
 export default {
 	props: {
@@ -156,7 +157,7 @@ export default {
 	},
 	data() {
 		return {
-			show_tnc_dialog: false,
+			show_tnc_modal: false,
 			user: {
 				first_name: "",
 				last_name: "",
@@ -173,14 +174,14 @@ export default {
 	},
 	methods: {
 		register() {
+			if (this.user.password !== this.confirm_password) { return; }
+
 			this.user.is_mentor = this.register_as_mentor;
 			this.user.is_mentee = !this.register_as_mentor;
 
-			if (this.user.password !== this.confirm_password) { return; }
-
 			axios.post("/api/users/user/", this.user)
-			.then((response) => {
-				this.$router.replace({ name: 'Login' });
+			.then((_) => {
+				this.$router.replace({ name: "Login" });
 			})
 			.catch((error) => {
 				console.error(error);
