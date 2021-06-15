@@ -68,6 +68,12 @@ class MenteeEducationSerializer(serializers.ModelSerializer):
         data = super().validate(attrs)
         if self.context['request'].user != attrs['mentee'].user:
             raise rest_exceptions.PermissionDenied(dict(user='Incorrect User UID provided.'))
+
+        if data['end_date'] is not None:
+            if data['start_date'] > data['end_date']:
+                raise rest_exceptions.ValidationError(dict(start_date='It must not be later than the end date.',
+                                                           end_date='It must not be earlier than the start date.', ))
+
         return data
 
 
@@ -89,4 +95,10 @@ class MenteeResearchSerializer(serializers.ModelSerializer):
         data = super().validate(attrs)
         if self.context['request'].user != attrs['mentee'].user:
             raise rest_exceptions.PermissionDenied(dict(user='Incorrect User UID provided.'))
+
+        if data['end_date'] is not None:
+            if data['start_date'] > data['end_date']:
+                raise rest_exceptions.ValidationError(dict(start_date='It must not be later than the end date.',
+                                                           end_date='It must not be earlier than the start date.', ))
+
         return data

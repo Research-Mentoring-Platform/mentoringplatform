@@ -1,4 +1,7 @@
+import datetime
+
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
 from rest_framework import exceptions as rest_exceptions
@@ -105,6 +108,11 @@ class CustomTokenObtainSlidingSerializer(TokenObtainSlidingSerializer):
 
         if not self.user.email_verified:
             raise rest_exceptions.ValidationError('Email not verified.')
+
+        if (datetime.date.today() - data['date_of_birth']) <= datetime.timedelta(days=13 * 365):
+            raise rest_exceptions.ValidationError('You must be at least 13 years old to register on this platform.')
+
+        User
 
         data['uid'] = self.user.uid
 
