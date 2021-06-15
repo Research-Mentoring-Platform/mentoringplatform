@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
+    'django_filters',
 
     # My apps
     'api',
@@ -38,16 +39,6 @@ INSTALLED_APPS = [
     'mentee',
     'mentorship',
 ]
-
-# Django REST framework
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
-}
 
 # Cross Origin Resource Sharing (CORS)
 CORS_ALLOWED_ORIGINS = [
@@ -134,7 +125,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'users.CustomUser'
 
 SIMPLE_JWT = dict(
-    ACCESS_TOKEN_LIFETIME=timedelta(days=1),  # TODO update/fix to a reasonable value
+    SLIDING_TOKEN_LIFETIME=timedelta(days=1),  # TODO update/fix to a reasonable value
     AUTH_TOKEN_CLASSES=('rest_framework_simplejwt.tokens.SlidingToken',),
 )
 
