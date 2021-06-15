@@ -1,11 +1,12 @@
-from rest_framework import viewsets
-from main.mixins import ViewSetPermissionByMethodMixin
-import mentor.permissions as mentor_permissions
 from rest_framework import permissions
-from users import permissions as user_permissions
-from mentor.models import Mentor, MentorResponsibility, MentorDepartment, MentorDesignation, MentorDiscipline
+from rest_framework import viewsets
+
+import mentor.permissions as mentor_permissions
+from main.mixins import ViewSetPermissionByMethodMixin
+from mentor.models import Mentor, MentorResponsibility, MentorDepartment, MentorDesignation, MentorDiscipline, \
+    MentorEducation, MentorResearch
 from mentor.serializers import MentorSerializer, MentorResponsibilitySerializer, MentorDepartmentSerializer, \
-    MentorDesignationSerializer, MentorDisciplineSerializer
+    MentorDesignationSerializer, MentorDisciplineSerializer, MentorEducationSerializer, MentorResearchSerializer
 
 
 class MentorViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
@@ -62,4 +63,18 @@ class MentorDisciplineViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelView
     )
     queryset = MentorDiscipline.objects.all()
     serializer_class = MentorDisciplineSerializer
+    lookup_field = 'uid'
+
+
+class MentorEducationViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = MentorEducationSerializer
+    queryset = MentorEducation.objects.all()
+    lookup_field = 'uid'
+
+
+class MentorResearchViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = MentorResearchSerializer
+    queryset = MentorResearch.objects.all()
     lookup_field = 'uid'

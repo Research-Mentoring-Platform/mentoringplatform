@@ -1,6 +1,9 @@
+from rest_framework import exceptions as rest_exceptions
 from rest_framework import serializers
+
 from mentee.models import MenteeDesignation
-from mentor.models import Mentor, MentorDesignation, MentorDepartment, MentorDiscipline, MentorResponsibility
+from mentor.models import Mentor, MentorDesignation, MentorDepartment, MentorDiscipline, MentorResponsibility, \
+    MentorEducation, MentorResearch
 
 
 class MentorSerializer(serializers.ModelSerializer):
@@ -70,3 +73,45 @@ class MentorDisciplineSerializer(serializers.ModelSerializer):
         model = MentorDiscipline
         exclude = ('id',)
         read_only_fields = ('uid', 'label',)
+
+
+class MentorEducationSerializer(serializers.ModelSerializer):
+    start_date = serializers.DateField(input_formats=('%Y-%m',), format='%Y-%m')
+    end_date = serializers.DateField(input_formats=('%Y-%m',), format='%Y-%m', allow_null=True)
+    mentor = serializers.SlugRelatedField(slug_field='uid',
+                                          queryset=Mentor.objects.all(),
+                                          read_only=False,
+                                          required=True,
+                                          allow_null=False)
+
+    class Meta:
+        model = MentorEducation
+        fields = '__all__'
+        read_only_fields = ('uid',)
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        if self.context['request'].user != attrs['mentor'].user:
+            raise rest_exceptions.PermissionDenied(dict(user='Incorrect User UID provided.'))
+        return data
+
+
+class MentorResearchSerializer(serializers.ModelSerializer):
+    start_date = serializers.DateField(input_formats=('%Y-%m',), format='%Y-%m')
+    end_date = serializers.DateField(input_formats=('%Y-%m',), format='%Y-%m', allow_null=True)
+    mentor = serializers.SlugRelatedField(slug_field='uid',
+                                          queryset=Mentor.objects.all(),
+                                          read_only=False,
+                                          required=True,
+                                          allow_null=False)
+
+    class Meta:
+        model = MentorResearch
+        fields = '__all__'
+        read_only_fields = ('uid',)
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        if self.context['request'].user != attrs['mentor'].user:
+            raise rest_exceptions.PermissionDenied(dict(user='Incorrect User UID provided.'))
+        return data

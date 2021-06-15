@@ -99,35 +99,4 @@ class Milestone(models.Model):
                                                           self.mentorship.mentee.user.email,
                                                           self.date)
 
-
-class Education(models.Model):
-    uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-
-    # TODO convertable to GenericForeignKey to either of Mentee and Mentor models (
-    #  https://bhrigu.medium.com/django-how-to-add-foreignkey-to-multiple-models-394596f06e84)
-    user = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE, related_name='educations')
-
-    qualification = models.CharField(max_length=128, blank=False)
-    organization = models.CharField(max_length=128, blank=False)
-    start_date = models.DateField()
-    end_date = models.DateField(null=True)  # null == True signifies ongoing
-    details = models.TextField(max_length=512, blank=True)  # TODO Convert to RichTextField
-
-    def __str__(self):
-        return '{}(email={}, qualification={})'.format(self.__class__.__name__, self.user.email, self.qualification)
-
-
-class Research(models.Model):
-    uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    user = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE, related_name='researches')
-
-    title = models.CharField(max_length=128, blank=False)
-    organization = models.CharField(max_length=128, blank=False)
-    start_date = models.DateField()
-    end_date = models.DateField(null=True)  # null == True signifies ongoing
-    details = models.TextField(max_length=512, blank=True)
-
-    def __str__(self):
-        return '{}(email={}, title={})'.format(self.__class__.__name__, self.user.email, self.title)
-
 # TODO Add class DeletedMentorMenteeRelation(models.Model)
