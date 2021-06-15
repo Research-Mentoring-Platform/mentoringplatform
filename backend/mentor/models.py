@@ -29,13 +29,14 @@ class Mentor(models.Model):  # TODO: Rename Mentor to MentorProfile?
                                                             blank=True)  # 3 month / 4 month / No max duration
     is_accepting_mentorship_requests = models.BooleanField(default=True)
 
-    accepted_mentee_types = models.ManyToManyField('mentee.MenteeDesignation')
-    responsibilities = models.ManyToManyField('mentor.MentorResponsibility')
+    accepted_mentee_types = models.ManyToManyField('mentee.MenteeDesignation', blank=True)
+    responsibilities = models.ManyToManyField('mentor.MentorResponsibility', blank=True)
     other_responsibility = models.TextField(max_length=512, blank=True)
 
-    rating = models.DecimalField(max_digits=3, decimal_places=2, null=True,
+    rating = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True
                                  # validators=[validators.MinValueValidator(0.0), validators.MaxValueValidator(5.0)]
                                  )  # TODO Check if validators can be added here or only in DRF Serializers
+
     # TODO rating must keep track of who rated whom
 
     # TODO Add social_handles
@@ -49,6 +50,9 @@ class Mentor(models.Model):  # TODO: Rename Mentor to MentorProfile?
 class MentorResponsibility(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     description = models.TextField(max_length=256, blank=False)
+
+    class Meta:
+        verbose_name_plural = 'MentorResponsibilities'
 
     def __str__(self):
         return '{}(description={})'.format(self.__class__.__name__, self.description)
@@ -105,6 +109,9 @@ class MentorResearch(models.Model):
     start_date = models.DateField()
     end_date = models.DateField(null=True)  # null == True signifies ongoing
     details = models.TextField(max_length=512, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'MentorResearches'
 
     def __str__(self):
         return '{}(email={}, title={})'.format(self.__class__.__name__, self.mentor.user.email, self.title)

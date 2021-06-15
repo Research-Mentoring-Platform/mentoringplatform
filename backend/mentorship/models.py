@@ -80,6 +80,9 @@ class MeetingSummary(models.Model):
     next_meeting_date = models.DateTimeField(auto_now_add=False)
     next_meeting_agenda = models.TextField(max_length=512, blank=True)
 
+    class Meta:
+        verbose_name_plural = 'MeetingSummaries'
+
     def __str__(self):
         return "{}(mentor={}, mentee={})".format(self.__class__.__name__,
                                                  self.meeting.mentorship.mentor.user.email,

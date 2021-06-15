@@ -1,7 +1,8 @@
 import uuid
-from django.db import models
-from django.core.exceptions import ValidationError
+
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
+from django.core.exceptions import ValidationError
+from django.db import models
 
 from users.methods import generate_email_verification_token
 
@@ -40,11 +41,12 @@ class CustomUser(AbstractBaseUser):
     username = models.CharField(verbose_name='Username', unique=True, max_length=16, blank=False)
     first_name = models.CharField(verbose_name='First name', max_length=20, blank=False)
     last_name = models.CharField(verbose_name='Last name', max_length=20, blank=False)
-    date_of_birth = models.DateField(verbose_name='Date of birth')  # TODO [V] Max date (today-16), Min Date 1900
-
-    # To be set in back-end (not shown in registration form)
+    date_of_birth = models.DateField(verbose_name='Date of birth')
     is_mentor = models.BooleanField(verbose_name='Is mentor?', default=False, blank=True)
     is_mentee = models.BooleanField(verbose_name='Is mentee?', default=False, blank=True)
+
+    # To be set in back-end (not shown in registration form)
+    date_joined = models.DateTimeField(auto_now_add=True)
     is_admin = models.BooleanField(verbose_name='Is admin?', default=False)
     email_verified = models.BooleanField(verbose_name='Email verified?', default=False)
     email_verification_token = models.CharField(max_length=32, default=generate_email_verification_token)
