@@ -10,12 +10,17 @@
 		<label class="label">Designation</label>
 		<div class="control">
 			<div class="select is-fullwidth">
-				<select ref="selected_designation">
-					<option v-for="designation in fields.designation"
-							v-bind:key="designation.uid">
+				<select v-model="selected_uid.designation">
+					<option v-for="designation in field_options.designation"
+							v-bind:key="designation.uid"
+							v-bind:value="designation.uid">
 						{{ designation.label }}
 					</option>
 				</select>
+			</div>
+
+			<div class="content">
+				<FormErrors v-bind:errors="errors.designation" />
 			</div>
 		</div>
 	</div>
@@ -24,12 +29,17 @@
 		<label class="label">Department</label>
 		<div class="control">
 			<div class="select is-fullwidth">
-				<select ref="selected_department">
-					<option v-for="department in fields.department"
-							v-bind:key="department.uid">
+				<select v-model="selected_uid.department">
+					<option v-for="department in field_options.department"
+							v-bind:key="department.uid"
+							v-bind:value="department.uid">
 						{{ department.label }}
 					</option>
 				</select>
+			</div>
+
+			<div class="content">
+				<FormErrors v-bind:errors="errors.department" />
 			</div>
 		</div>
 	</div>
@@ -38,12 +48,17 @@
 		<label class="label">Discipline</label>
 		<div class="control">
 			<div class="select is-fullwidth">
-				<select ref="selected_discipline">
-					<option v-for="discipline in fields.discipline"
-							v-bind:key="discipline.uid">
+				<select v-model="selected_uid.discipline">
+					<option v-for="discipline in field_options.discipline"
+							v-bind:key="discipline.uid"
+							v-bind:value="discipline.uid">
 						{{ discipline.label }}
 					</option>
 				</select>
+			</div>
+
+			<div class="content">
+				<FormErrors v-bind:errors="errors.discipline" />
 			</div>
 		</div>
 	</div>
@@ -52,6 +67,10 @@
 		<label class="label">Specialization</label>
 		<div class="control">
 			<textarea v-model="specialization" class="textarea is-fullwidth"></textarea>
+		</div>
+
+		<div class="content">
+			<FormErrors v-bind:errors="errors.specialization" />
 		</div>
 	</div>
 
@@ -65,47 +84,76 @@
 
 
 <script>
-"use-strict";
-import axios from "../../api/my-axios";
+import axios from "@/api/my-axios";
+import FormErrors from "@/components/FormErrors";
 
 export default {
+	components: {
+		FormErrors
+	},
 	data() {
 		return {
-			fields: {
+			field_options: {
 				designation: [],
 				department: [],
 				discipline: []
 			},
+
+			selected_uid: {
+				designation: null,
+				department: null,
+				discipline: null,
+			},
 			specialization: "",
-			selected_designation: 0,
-			selected_department: 0,
-			selected_discipline: 0,
+
+			errors: {
+				designation: [],
+				department: [],
+				discipline: [],
+				specialization: [],
+			},
 		};
 	},
-	created() {
-		for (let key in this.fields) {
-			this.set_field_options(key, `/api/mentor/${key}`);
+	created()
+	{
+		// TODO Try to fetch all three field options in one-go
+		for (const key in this.field_options) {
+			this.get_field_options(key, `/api/mentee/${key}`);
 		}
+		this.get_currently_selected_options();
 	},
 	methods: {
-		set_field_options(key, url) {
-			axios.get(url, {
-				headers: { Authorization: `Bearer ${this.$store.state.access_token}` }
-			}).
-			then(response => {
-				this.fields[key] = response.data;
-			});
+		get_field_options(key, url)
+		{
+			axios
+				.get(url)
+				.then(response => { this.field_options[key] = response.data; });
 		},
-		save() {
+
+		get_currently_selected_options()
+		{
+			axios
+				.get(`/api/mentee/mentee/${this.$store.state.current_user.profile_uid}`)
+				.then(response => {
+					for (let field in this.field_options) {
+						this.selected_uid[field] = response.data[field];
+					}
+					this.specialization = response.data.specialization;
+				});
+		},
+
+		save()
+		{
 			const data = {
-				designation: this.fields.designation[this.$refs.selected_designation.options.selectedIndex].uid,
-				department: this.fields.department[this.$refs.selected_department.options.selectedIndex].uid,
-				discipline: this.fields.discipline[this.$refs.selected_discipline.options.selectedIndex].uid,
+				designation: this.selected_uid.designation,
+				department: this.selected_uid.department,
+				discipline: this.selected_uid.discipline,
 				specialization: this.specialization,
 			};
 
-			// axios.post(`/api/mentor/${key}`, data);
-			console.log(data);
+			axios
+				.patch(`/api/mentee/mentee/${this.$store.state.current_user.profile_uid}/`, data)
+				.catch(error => { this.errors = {...error.response.data}; });
 		}
 	}
 }

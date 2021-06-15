@@ -81,7 +81,8 @@
 							  	<i class="fas fa-lock"></i>
 							</span>
 						</div>
-						<p class="help is-danger" v-if="confirm_password.length > 0 && user.password !== confirm_password">
+						<p v-if="confirm_password.length > 0 && user.password !== confirm_password"
+						   class="help is-danger">
 							Passwords do not match!
 						</p>
 					</div>
@@ -89,11 +90,10 @@
 					<div class="pt-3 has-text-centered">
 						<strong>
 							By registering you agree to the
-							<a
-								v-on:click="show_tnc_dialog = !show_tnc_dialog"
-							    data-toggle="modal"
-							    data-target="#tnc-modal"
-								style="color: dodgerblue;">
+							<a v-on:click="show_tnc_modal = true"
+							   class="hyperlink"
+							   data-toggle="modal"
+							   data-target="#tnc-modal">
 								Terms & Conditions
 							</a>
 						</strong>
@@ -102,19 +102,19 @@
 					<br/>
 
 					<div class="control">
-						<button class="button is-fullwidth is-success" v-on:click="register">Register</button>
+						<button v-on:click="register" class="button is-fullwidth is-success">Register</button>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div id="tnc-modal" class="modal" v-bind:class="{ 'is-active': show_tnc_dialog }">
+	<div v-bind:class="{ 'is-active': show_tnc_modal }" id="tnc-modal" class="modal">
 		<div class="modal-background"></div>
 		<div class="modal-card">
 			<header class="modal-card-head">
 				<p class="modal-card-title">Terms & Conditions</p>
-				<button class="delete" aria-label="close" v-on:click="show_tnc_dialog = !show_tnc_dialog"></button>
+				<button class="delete" aria-label="close" v-on:click="show_tnc_modal = !show_tnc_modal"></button>
 			</header>
 			<section class="modal-card-body">
 				<div class="content">
@@ -138,7 +138,7 @@
 				</div>
 			</section>
 			<footer class="modal-card-foot">
-				<button v-on:click="show_tnc_dialog = !show_tnc_dialog" class="button">Cancel</button>
+				<button v-on:click="show_tnc_modal = false" class="button">Cancel</button>
 			</footer>
 		</div>
 	</div>
@@ -146,7 +146,7 @@
 
 
 <script>
-import axios from "../api/my-axios";
+import axios from "@/api/my-axios";
 
 export default {
 	props: {
@@ -157,7 +157,7 @@ export default {
 	},
 	data() {
 		return {
-			show_tnc_dialog: false,
+			show_tnc_modal: false,
 			user: {
 				first_name: "",
 				last_name: "",

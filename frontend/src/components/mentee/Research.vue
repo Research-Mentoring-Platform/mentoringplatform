@@ -14,33 +14,33 @@
 
 
 	<!-- RESEARCH RECORDS -->
-	<div v-for="(education, index) in researches" class="box pt-4 pb-3 px-4" style="overflow-wrap: anywhere;">
+	<div v-for="(research, index) in researches" class="box pt-4 pb-3 px-4" style="overflow-wrap: anywhere;">
 		<div class="columns is-variable is-1 mb-1">
 			<div class="column is-one-third">
 				<span style="height: 100%;" class="box level has-text-weight-bold pt-1 pb-2 px-2 has-background-light is-shadowless">
-					{{ education.title }}
+					{{ research.title }}
 				</span>
 			</div>
 			<div class="column has-text-left">
 				<span style="height: 100%;" class="box level pt-1 pb-2 px-2 has-background-light is-shadowless">
-					{{ education.organization }}
+					{{ research.organization }}
 				</span>
 			</div>
 		</div>
 
 		<div class="columns is-vcentered">
 			<div class="column has-text-left is-italic">
-				{{ education.start_date }} to
+				{{ research.start_date }} to
 
-				<span v-if="education.is_ongoing">Present</span>
-				<span v-else>{{ education.end_date  }}</span>
+				<span v-if="research.is_ongoing">Present</span>
+				<span v-else>{{ research.end_date  }}</span>
 			</div>
 
 			<div class="column has-text-right">
 				<button v-on:click="show_research_details(index)"
 						class="button px-4 py-0 mr-2 is-info"
 						data-toggle="modal"
-						data-target="#education-details-modal">
+						data-target="#research-details-modal">
 					<span class="icon">
 						<i class="fas fa-info"></i>
 					</span>
@@ -57,7 +57,7 @@
 
 
 	<!-- VIEW PARTICULAR RESEARCH DETAILS MODAL -->
-	<div v-bind:class="{ 'is-active': show_research_details_modal }" id="education-details-modal" class="modal is-rounded">
+	<div v-bind:class="{ 'is-active': show_research_details_modal }" id="research-details-modal" class="modal is-rounded">
 		<div class="modal-background"></div>
 		<div class="modal-card">
 			<header class="modal-card-head">
@@ -73,8 +73,8 @@
 
 
 	<!-- ADD/UPDATE RESEARCH MODAL -->
-	<div v-bind:class="{ 'is-active': show_research_modal }" id="education-modal" class="modal">
-		<div class="modal-background"></div>
+	<div v-bind:class="{ 'is-active': show_research_modal }" id="research-modal" class="modal">
+		<div class="modal-background" v-on:click="clear_and_close_research_modal"></div>
 		<div class="modal-card">
 			<header class="modal-card-head">
 				<p class="modal-card-title">Add Research</p>
@@ -147,11 +147,19 @@
 				</div>
 			</section>
 
-			<footer class="modal-card-foot" style="justify-content: flex-end">
-				<button v-if="research_edit_index >= 0" v-on:click="update_research" class="button is-success">Update</button>
-				<button v-else v-on:click="add_research" class="button is-success">Add</button>
+			<footer class="modal-card-foot">
+				<div class="columns is-mobile" style="width: 100%;">
+					<div class="column is-narrow has-text-left">
+						<button v-on:click="delete_research" class="button is-danger">Delete</button>
+					</div>
 
-				<button v-on:click="clear_and_close_research_modal" class="button">Cancel</button>
+					<div class="column has-text-right">
+						<button v-if="research_edit_index >= 0" v-on:click="update_research" class="button is-success">Update</button>
+						<button v-else v-on:click="add_research" class="button is-success">Add</button>
+
+						<button v-on:click="clear_and_close_research_modal" class="button">Cancel</button>
+					</div>
+				</div>
 			</footer>
 		</div>
 	</div>
@@ -179,50 +187,106 @@ export default {
 				is_ongoing: false,
 				details: null
 			},
-			researches: []
-		}
+
+			// TODO Sort by start-date
+			researches: [] // List of researches of this user
+		};
+	},
+	created()
+	{
+		this.get_researches();
 	},
 	methods: {
-		clear_research_modal() {
+		clear_research_modal()
+		{
 			this.modal.title = null;
 			this.modal.organization = null;
 			this.modal.start_date = null;
 			this.modal.end_date = null;
 			this.modal.is_ongoing = false;
 			this.modal.details = null;
+			this.research_edit_index = -1; // Important
 		},
-		clear_and_close_research_modal() {
+
+		clear_and_close_research_modal()
+		{
 			this.clear_research_modal();
 			this.show_research_modal = false;
 		},
-		show_research_details(index) {
+
+		show_research_details(index)
+		{
 			if (index >= this.researches.length) { return; }
 			this.research_details = this.researches[index].details;
 			this.show_research_details_modal = true;
 		},
-		add_research() {
-			// axios.post("/api/", data);
-			// TODO Append data to this.researches after verification from back-end
 
-			this.researches.push({...this.modal}); // Make sure to push a copy
-			this.clear_and_close_research_modal();
+		get_researches()
+		{
+			axios
+				.get("/api/mentorship/research/", {
+					uid: this.$store.state.current_user.uid
+				})
+				.then(response => {
+					this.researches.push(...response.data);
+				})
+				.catch(error => {
+					console.error(error);
+				});
 		},
-		edit_research(index) {
+
+		add_research()
+		{
+			axios
+				.post("/api/mentorship/research/", {
+					user: this.$store.state.current_user.uid,
+					...this.modal
+				})
+				.then(_ => {
+					this.researches.push({...this.modal}); // Make sure to push a copy
+					this.clear_and_close_research_modal();
+				})
+				.catch(error => {
+					console.error(error);
+				});
+		},
+
+		edit_research(index)
+		{
 			if (index >= this.researches.length) { return; }
 
 			this.research_edit_index = index;
 			this.modal = {...this.researches[this.research_edit_index]};
 			this.show_research_modal = true;
 		},
-		update_research() {
+
+		update_research()
+		{
 			if (this.research_edit_index < 0 || this.research_edit_index >= this.researches.length) { return; }
 
-			this.researches[this.research_edit_index] = {...this.modal};
-			this.research_edit_index = -1;
-			this.clear_and_close_research_modal();
+			axios
+				.put(`/api/mentorship/research/${this.researches[this.research_edit_index].uid}/`, {
+					user: this.$store.state.current_user.uid, // TODO Change to profile_uid after back-end is done
+					...this.modal
+				})
+				.then(_ => {
+					this.researches[this.research_edit_index] = {...this.modal};
+					this.clear_and_close_research_modal();
+				});
 		},
-		save() {
-			axios.post("/api/???", this.researches);
+
+		delete_research()
+		{
+			if (this.research_edit_index < 0 || this.research_edit_index >= this.researches.length) { return; }
+
+			axios
+				.delete(`/api/mentorship/research/${this.researches[this.research_edit_index].uid}`, {
+					user: this.$store.state.current_user.uid,
+				})
+				.then(_ => {
+					this.researches.splice(this.research_edit_index, 1);
+					this.clear_and_close_research_modal();
+				});
 		}
 	}
 }

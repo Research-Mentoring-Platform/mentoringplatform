@@ -1,7 +1,7 @@
 <template>
 <div class="columns is-centered">
 	<div class="column is-3 px-0">
-		<Experience></Experience>
+<!--		<Experience></Experience>-->
 	</div>
 
 	<!-- VERTICAL SEPARATOR -->
@@ -9,7 +9,7 @@
 	<div class="column is-narrow pr-5" style="border-left: darkgray dotted 1px;"></div>
 
 	<div class="column is-two-fifth px-0">
-		<Education></Education>
+<!--		<Education></Education>-->
 	</div>
 
 	<!-- VERTICAL SEPARATOR -->
@@ -17,25 +17,22 @@
 	<div class="column is-narrow pr-5" style="border-left: darkgray dotted 1px;"></div>
 
 	<div class="column is-two-fifth px-0">
-		<Research></Research>
+<!--		<Research></Research>-->
 	</div>
 </div>
 </template>
 
 
 <script>
-import Experience from "@/components/mentee/Experience";
-import Education from "@/components/mentee/Education";
-import Research from "@/components/mentee/Research.vue";
+// import Experience from "@/components/mentor/Experience";
+// import Education from "@/components/mentor/Education";
+// import Research from "@/components/mentor/Research.vue";
 
 export default {
 	components: {
-		"Experience": Experience,
-		"Education": Education,
-		"Research": Research,
+		// "Experience": Experience,
+		// "Education": Education,
+		// "Research": Research,
 	},
-	data() {
-		return {};
-	}
 }
 </script>

@@ -74,7 +74,7 @@
 
 	<!-- ADD/UPDATE EDUCATION MODAL -->
 	<div v-bind:class="{ 'is-active': show_education_modal }" id="education-modal" class="modal">
-		<div class="modal-background"></div>
+		<div class="modal-background" v-on:click="clear_and_close_education_modal"></div>
 		<div class="modal-card">
 			<header class="modal-card-head">
 				<p class="modal-card-title">Add Education</p>
@@ -147,11 +147,19 @@
 				</div>
 			</section>
 
-			<footer class="modal-card-foot" style="justify-content: flex-end">
-				<button v-if="education_edit_index >= 0" v-on:click="update_education" class="button is-success">Update</button>
-				<button v-else v-on:click="add_education" class="button is-success">Add</button>
+			<footer class="modal-card-foot">
+				<div class="columns is-mobile" style="width: 100%;">
+					<div class="column is-narrow has-text-left">
+						<button v-on:click="delete_education" class="button is-danger">Delete</button>
+					</div>
 
-				<button v-on:click="clear_and_close_education_modal" class="button">Cancel</button>
+					<div class="column has-text-right">
+						<button v-if="education_edit_index >= 0" v-on:click="update_education" class="button is-success">Update</button>
+						<button v-else v-on:click="add_education" class="button is-success">Add</button>
+
+						<button v-on:click="clear_and_close_education_modal" class="button">Cancel</button>
+					</div>
+				</div>
 			</footer>
 		</div>
 	</div>
@@ -179,50 +187,106 @@ export default {
 				is_ongoing: false,
 				details: null
 			},
-			educations: []
-		}
+
+			// TODO Sort by start-date
+			educations: [] // List of educations of this user
+		};
+	},
+	created()
+	{
+		this.get_educations();
 	},
 	methods: {
-		clear_education_modal() {
+		clear_education_modal()
+		{
 			this.modal.qualification = null;
 			this.modal.organization = null;
 			this.modal.start_date = null;
 			this.modal.end_date = null;
 			this.modal.is_ongoing = false;
 			this.modal.details = null;
+			this.education_edit_index = -1; // Important
 		},
-		clear_and_close_education_modal() {
+
+		clear_and_close_education_modal()
+		{
 			this.clear_education_modal();
 			this.show_education_modal = false;
 		},
-		show_education_details(index) {
+
+		show_education_details(index)
+		{
 			if (index >= this.educations.length) { return; }
 			this.education_details = this.educations[index].details;
 			this.show_education_details_modal = true;
 		},
-		add_education() {
-			// axios.post("/api/", data);
-			// TODO Append data to this.educations after verification from back-end
 
-			this.educations.push({...this.modal}); // Make sure to push a copy
-			this.clear_and_close_education_modal();
+		get_educations()
+		{
+			axios
+				.get("/api/mentorship/education/", {
+					uid: this.$store.state.current_user.uid
+				})
+				.then(response => {
+					this.educations.push(...response.data);
+				})
+				.catch(error => {
+					console.error(error);
+				});
 		},
-		edit_education(index) {
+
+		add_education()
+		{
+			axios
+				.post("/api/mentorship/education/", {
+					user: this.$store.state.current_user.uid,
+					...this.modal
+				})
+				.then(_ => {
+					this.educations.push({...this.modal}); // Make sure to push a copy
+					this.clear_and_close_education_modal();
+				})
+				.catch(error => {
+					console.error(error);
+				});
+		},
+
+		edit_education(index)
+		{
 			if (index >= this.educations.length) { return; }
 
 			this.education_edit_index = index;
 			this.modal = {...this.educations[this.education_edit_index]};
 			this.show_education_modal = true;
 		},
-		update_education() {
+
+		update_education()
+		{
 			if (this.education_edit_index < 0 || this.education_edit_index >= this.educations.length) { return; }
 
-			this.educations[this.education_edit_index] = {...this.modal};
-			this.education_edit_index = -1;
-			this.clear_and_close_education_modal();
+			axios
+				.put(`/api/mentorship/education/${this.educations[this.education_edit_index].uid}/`, {
+					user: this.$store.state.current_user.uid, // TODO Change to profile_uid after back-end is done
+					...this.modal
+				})
+				.then(_ => {
+					this.educations[this.education_edit_index] = {...this.modal};
+					this.clear_and_close_education_modal();
+				});
 		},
-		save() {
-			axios.post("/api/???", this.educations);
+
+		delete_education()
+		{
+			if (this.education_edit_index < 0 || this.education_edit_index >= this.educations.length) { return; }
+
+			axios
+				.delete(`/api/mentorship/education/${this.educations[this.education_edit_index]}`, {
+					user: this.$store.state.current_user.uid,
+				})
+				.then(_ => {
+					this.educations.splice(this.education_edit_index, 1);
+					this.clear_and_close_education_modal();
+				});
 		}
 	}
 }

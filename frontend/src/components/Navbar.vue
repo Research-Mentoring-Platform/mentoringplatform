@@ -4,14 +4,15 @@
 		<div class="container">
 			<div class="navbar-brand">
 				<router-link v-bind:to="{ name: 'Home' }" class="navbar-item">
-					<span class="is-size-3"><b>RMP</b></span>
+					<span class="is-size-3 has-text-weight-bold">
+						RMP
+					</span>
 				</router-link>
 
-				<span class="navbar-burger"
-					  data-target="navbarMenuHeroB"
-					  v-on:click="show_nav_bar_menu = !show_nav_bar_menu"
+				<span v-on:click="show_nav_bar_menu = !show_nav_bar_menu"
 					  v-bind:class="{ 'is-active': show_nav_bar_menu }"
-				>
+					  class="navbar-burger"
+					  data-target="navbarMenuHeroB">
 					<span></span>
 					<span></span>
 					<span></span>
@@ -20,17 +21,35 @@
 
 			<div id="navbarMenuHeroB" class="navbar-menu" v-bind:class="{ 'is-active': show_nav_bar_menu }">
 				<div class="navbar-end">
-
 					<div v-if="logged_in" class="navbar-item">
-						<a class="navbar-item" v-on:click="logout">
-							Logout
-						</a>
+						<div class="navbar-item has-dropdown is-hoverable">
+							<a class="navbar-link">
+								First Name
+							</a>
+
+							<div class="navbar-dropdown is-right">
+								<router-link v-bind:to="{ name: 'Profile' }" class="navbar-item">
+									Profile
+								</router-link>
+
+								<hr class="navbar-divider">
+
+								<a v-on:click="logout" class="navbar-item">
+									Logout
+								</a>
+							</div>
+						  </div>
 					</div>
 					<div v-else class="navbar-item">
+						<router-link v-bind:to="{ name: 'Login' }" class="navbar-item">
+							Login
+						</router-link>
+
 						<div class="navbar-item has-dropdown is-hoverable">
 							<a class="navbar-link">
 								Register
 							</a>
+
 							<div class="navbar-dropdown">
 								<router-link v-bind:to="{ name: 'RegisterMentor' }" class="navbar-item">
 									As Mentor
@@ -40,20 +59,7 @@
 								</router-link>
 							</div>
 						</div>
-
-						<router-link v-bind:to="{ name: 'Login' }" class="navbar-item">
-							Login
-						</router-link>
 					</div>
-
-					<span class="navbar-item">
-						<a class="button is-info is-inverted">
-							<span class="icon">
-								<i class="fab fa-github"></i>
-							</span>
-							<span>Download</span>
-						</a>
-					</span>
 				</div>
 			</div>
 		</div>
@@ -78,7 +84,7 @@ export default {
 	},
 	methods: {
 		logout() {
-			this.$store.commit("destroy_token");
+			this.$store.dispatch("logout");
 			this.$router.replace({ name: "Home" });
 		}
 	}
