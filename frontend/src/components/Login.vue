@@ -60,7 +60,7 @@
 
 
 <script>
-import axios from "../api/my-axios";
+import axios from "@/api/my-axios";
 
 export default {
 	data() {
@@ -69,18 +69,32 @@ export default {
 				email: "",
 				password: ""
 			}
-		}
+		};
 	},
 	methods: {
-		login() {
-			axios.post("/api/users/token/", this.user)
-			.then((response) => {
-				this.$store.commit("update_local_storage", response.data);
-				this.$router.replace({ name: "MenteeProfile" });
-			})
-			.catch((error) => {
-				console.error(error);
-			});
+		login()
+		{
+			// Get token
+			axios
+				.post("/api/users/token/", this.user)
+				.then(resp => {
+					this.$store.commit("set_token", resp.data.token);
+
+					// Get user details
+					axios
+						.get(`/api/users/user/${resp.data.uid}`) // TODO Get this changed to uid in backend
+						.then(user_data => {
+							user_data.data.profile_uid = resp.data.profile_uid;
+							this.$store.commit("set_current_user", user_data.data);
+							this.$router.replace({ name: "Profile" });
+						})
+						.catch(error => {
+							console.error(error);
+						});
+				})
+				.catch(error => {
+					console.error(error);
+				});
 		}
 	}
 }
