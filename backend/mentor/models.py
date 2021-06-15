@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.db.models import F
 
 
 class Mentor(models.Model):  # TODO: Rename Mentor to MentorProfile?
@@ -95,6 +96,9 @@ class MentorEducation(models.Model):
     end_date = models.DateField(null=True)  # null == True signifies ongoing
     details = models.TextField(max_length=512, blank=True)  # TODO Convert to RichTextField
 
+    class Meta:
+        ordering = [F('end_date').desc(nulls_last=False), '-start_date']
+
     def __str__(self):
         return '{}(email={}, qualification={})'.format(self.__class__.__name__, self.mentor.user.email,
                                                        self.qualification)
@@ -112,6 +116,7 @@ class MentorResearch(models.Model):
 
     class Meta:
         verbose_name_plural = 'MentorResearches'
+        ordering = [F('end_date').desc(nulls_last=False), '-start_date']
 
     def __str__(self):
         return '{}(email={}, title={})'.format(self.__class__.__name__, self.mentor.user.email, self.title)
