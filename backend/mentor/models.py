@@ -29,13 +29,14 @@ class Mentor(models.Model):  # TODO: Rename Mentor to MentorProfile?
                                                             blank=True)  # 3 month / 4 month / No max duration
     is_accepting_mentorship_requests = models.BooleanField(default=True)
 
-    accepted_mentee_types = models.ManyToManyField('mentee.MenteeDesignation')
-    responsibilities = models.ManyToManyField('mentor.MentorResponsibility')
+    accepted_mentee_types = models.ManyToManyField('mentee.MenteeDesignation', blank=True)
+    responsibilities = models.ManyToManyField('mentor.MentorResponsibility', blank=True)
     other_responsibility = models.TextField(max_length=512, blank=True)
 
-    rating = models.DecimalField(max_digits=3, decimal_places=2, null=True,
+    rating = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True
                                  # validators=[validators.MinValueValidator(0.0), validators.MaxValueValidator(5.0)]
                                  )  # TODO Check if validators can be added here or only in DRF Serializers
+
     # TODO rating must keep track of who rated whom
 
     # TODO Add social_handles

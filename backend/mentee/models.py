@@ -21,7 +21,7 @@ class Mentee(models.Model):
     specialization = models.TextField(max_length=256, blank=True)
     # Additional fields: Education, Research
 
-    rating = models.DecimalField(max_digits=3, decimal_places=2, null=True,
+    rating = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True
                                  # validators=[validators.MinValueValidator(0.0), validators.MaxValueValidator(5.0)]
                                  )  # TODO Check if validators can be added here or only in DRF Serializers
 

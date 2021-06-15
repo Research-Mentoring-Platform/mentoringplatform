@@ -25,7 +25,7 @@ class MenteeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Mentee
-        exclude = ('id',)
+        exclude = ('id',)  # TODO should we exclude user from mentee-object response?
         read_only_fields = ('uid', 'rating', 'profile_completed')
 
 

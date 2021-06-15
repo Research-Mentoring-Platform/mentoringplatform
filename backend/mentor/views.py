@@ -1,8 +1,11 @@
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 from rest_framework import permissions
 from rest_framework import viewsets
 
 import mentor.permissions as mentor_permissions
 from main.mixins import ViewSetPermissionByMethodMixin
+from mentor.filters import MentorFilter
 from mentor.models import Mentor, MentorResponsibility, MentorDepartment, MentorDesignation, MentorDiscipline, \
     MentorEducation, MentorResearch
 from mentor.serializers import MentorSerializer, MentorResponsibilitySerializer, MentorDepartmentSerializer, \
@@ -20,6 +23,9 @@ class MentorViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
     queryset = Mentor.objects.all()
     serializer_class = MentorSerializer
     lookup_field = 'uid'
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_class = MentorFilter
+    search_fields = ['^user__username', '^user_first_name', '^user_last_name']
 
 
 class MentorResponsibilityViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):

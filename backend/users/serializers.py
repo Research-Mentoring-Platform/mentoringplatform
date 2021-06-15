@@ -1,7 +1,6 @@
 import datetime
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
 from rest_framework import exceptions as rest_exceptions
@@ -29,9 +28,19 @@ class CustomUserSerializer(serializers.ModelSerializer):
         read_only_fields = ('uid',)
 
     def validate(self, attrs):
-        if attrs['is_mentor'] == attrs['is_mentee']:
-            raise serializers.ValidationError('You can be either mentor or mentee.')
-        return attrs
+        data = super().validate(attrs)
+        errors = dict()
+
+        if data['is_mentor'] == data['is_mentee']:
+            errors['non_field_errors'] = 'You can be either mentor or mentee.'
+
+        if (datetime.date.today() - data['date_of_birth']) <= datetime.timedelta(days=13 * 365):
+            errors['date_of_birth'] = 'You must be at least 13 years old to register on this platform.'
+
+        if len(errors) > 0:
+            raise rest_exceptions.ValidationError(errors)
+
+        return data
 
     #  https://stackoverflow.com/a/27586289/5394180
     def create(self, validated_data):
@@ -108,11 +117,6 @@ class CustomTokenObtainSlidingSerializer(TokenObtainSlidingSerializer):
 
         if not self.user.email_verified:
             raise rest_exceptions.ValidationError('Email not verified.')
-
-        if (datetime.date.today() - data['date_of_birth']) <= datetime.timedelta(days=13 * 365):
-            raise rest_exceptions.ValidationError('You must be at least 13 years old to register on this platform.')
-
-        User
 
         data['uid'] = self.user.uid
 
