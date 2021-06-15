@@ -83,5 +83,8 @@ class MenteeResearch(models.Model):
     end_date = models.DateField(null=True)  # null == True signifies ongoing
     details = models.TextField(max_length=512, blank=True)
 
+    class Meta:
+        verbose_name_plural = 'MenteeResearches'
+
     def __str__(self):
         return '{}(email={}, title={})'.format(self.__class__.__name__, self.mentee.user.email, self.title)

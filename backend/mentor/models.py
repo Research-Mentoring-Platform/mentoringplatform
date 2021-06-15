@@ -50,6 +50,9 @@ class MentorResponsibility(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     description = models.TextField(max_length=256, blank=False)
 
+    class Meta:
+        verbose_name_plural = 'MentorResponsibilities'
+
     def __str__(self):
         return '{}(description={})'.format(self.__class__.__name__, self.description)
 
@@ -105,6 +108,9 @@ class MentorResearch(models.Model):
     start_date = models.DateField()
     end_date = models.DateField(null=True)  # null == True signifies ongoing
     details = models.TextField(max_length=512, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'MentorResearches'
 
     def __str__(self):
         return '{}(email={}, title={})'.format(self.__class__.__name__, self.mentor.user.email, self.title)
