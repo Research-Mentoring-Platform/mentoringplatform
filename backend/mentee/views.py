@@ -2,10 +2,9 @@ from rest_framework import viewsets, permissions
 
 from main.mixins import ViewSetPermissionByMethodMixin
 from mentee import permissions as mentee_permissions
-from mentee.models import Mentee, MenteeDesignation, MenteeDepartment, MenteeDiscipline
+from mentee.models import Mentee, MenteeDesignation, MenteeDepartment, MenteeDiscipline, MenteeEducation, MenteeResearch
 from mentee.serializers import MenteeSerializer, MenteeDepartmentSerializer, MenteeDisciplineSerializer, \
-    MenteeDesignationSerializer
-
+    MenteeDesignationSerializer, MenteeEducationSerializer, MenteeResearchSerializer
 from users import permissions as user_permissions
 
 
@@ -52,4 +51,18 @@ class MenteeDisciplineViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelView
     )
     queryset = MenteeDiscipline.objects.all()
     serializer_class = MenteeDisciplineSerializer
+    lookup_field = 'uid'
+
+
+class MenteeEducationViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = MenteeEducationSerializer
+    queryset = MenteeEducation.objects.all()
+    lookup_field = 'uid'
+
+
+class MenteeResearchViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = MenteeResearchSerializer
+    queryset = MenteeResearch.objects.all()
     lookup_field = 'uid'

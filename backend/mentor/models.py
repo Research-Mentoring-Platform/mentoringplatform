@@ -76,3 +76,35 @@ class MentorDiscipline(models.Model):
 
     def __str__(self):
         return '{}(label={})'.format(self.__class__.__name__, self.label)
+
+
+class MentorEducation(models.Model):
+    uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+
+    # TODO convertable to GenericForeignKey to either of Mentee and Mentor models (
+    #  https://bhrigu.medium.com/django-how-to-add-foreignkey-to-multiple-models-394596f06e84)
+    mentor = models.ForeignKey('mentor.Mentor', on_delete=models.CASCADE, related_name='educations')
+
+    qualification = models.CharField(max_length=128, blank=False)
+    organization = models.CharField(max_length=128, blank=False)
+    start_date = models.DateField()
+    end_date = models.DateField(null=True)  # null == True signifies ongoing
+    details = models.TextField(max_length=512, blank=True)  # TODO Convert to RichTextField
+
+    def __str__(self):
+        return '{}(email={}, qualification={})'.format(self.__class__.__name__, self.mentor.user.email,
+                                                       self.qualification)
+
+
+class MentorResearch(models.Model):
+    uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    mentor = models.ForeignKey('mentor.Mentor', on_delete=models.CASCADE, related_name='researches')
+
+    title = models.CharField(max_length=128, blank=False)
+    organization = models.CharField(max_length=128, blank=False)
+    start_date = models.DateField()
+    end_date = models.DateField(null=True)  # null == True signifies ongoing
+    details = models.TextField(max_length=512, blank=True)
+
+    def __str__(self):
+        return '{}(email={}, title={})'.format(self.__class__.__name__, self.mentor.user.email, self.title)

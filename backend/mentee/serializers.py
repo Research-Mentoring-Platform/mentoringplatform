@@ -1,6 +1,7 @@
+from rest_framework import exceptions as rest_exceptions
 from rest_framework import serializers
 
-from mentee.models import Mentee, MenteeDesignation, MenteeDepartment, MenteeDiscipline
+from mentee.models import Mentee, MenteeDesignation, MenteeDepartment, MenteeDiscipline, MenteeEducation, MenteeResearch
 
 
 class MenteeSerializer(serializers.ModelSerializer):
@@ -47,3 +48,45 @@ class MenteeDisciplineSerializer(serializers.ModelSerializer):
         model = MenteeDiscipline
         exclude = ('id',)
         read_only_fields = ('uid', 'label',)
+
+
+class MenteeEducationSerializer(serializers.ModelSerializer):
+    start_date = serializers.DateField(input_formats=('%Y-%m',), format='%Y-%m')
+    end_date = serializers.DateField(input_formats=('%Y-%m',), format='%Y-%m', allow_null=True)
+    mentee = serializers.SlugRelatedField(slug_field='uid',
+                                          queryset=Mentee.objects.all(),
+                                          read_only=False,
+                                          required=True,
+                                          allow_null=False)
+
+    class Meta:
+        model = MenteeEducation
+        fields = '__all__'
+        read_only_fields = ('uid',)
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        if self.context['request'].user != attrs['mentee'].user:
+            raise rest_exceptions.PermissionDenied(dict(user='Incorrect User UID provided.'))
+        return data
+
+
+class MenteeResearchSerializer(serializers.ModelSerializer):
+    start_date = serializers.DateField(input_formats=('%Y-%m',), format='%Y-%m')
+    end_date = serializers.DateField(input_formats=('%Y-%m',), format='%Y-%m', allow_null=True)
+    mentee = serializers.SlugRelatedField(slug_field='uid',
+                                          queryset=Mentee.objects.all(),
+                                          read_only=False,
+                                          required=True,
+                                          allow_null=False)
+
+    class Meta:
+        model = MenteeResearch
+        fields = '__all__'
+        read_only_fields = ('uid',)
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        if self.context['request'].user != attrs['mentee'].user:
+            raise rest_exceptions.PermissionDenied(dict(user='Incorrect User UID provided.'))
+        return data
