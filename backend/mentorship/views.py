@@ -9,9 +9,11 @@ class EducationViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = EducationSerializer
     queryset = Education.objects.all()
+    lookup_field = 'uid'
 
 
 class ResearchViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ResearchSerializer
     queryset = Research.objects.all()
+    lookup_field = 'uid'

@@ -1,8 +1,8 @@
 <template>
-	<section class="hero is-light is-fullheight">
-		<Navbar/>
-		<router-view/>
-	</section>
+<section class="hero is-light is-fullheight">
+	<Navbar/>
+	<router-view/>
+</section>
 </template>
 
 
@@ -13,6 +13,3 @@ export default {
 	components: { Navbar }
 }
 </script>
-
-
-<style></style>

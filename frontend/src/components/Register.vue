@@ -1,7 +1,7 @@
 <template>
 	<div class="hero-body">
 		<div class="container">
-			<div class="columns is-centered p-5">
+			<div class="columns is-centered">
 				<div class="column is-one-third">
 
 					<div class="title is-1 has-text-centered">
@@ -16,7 +16,7 @@
 					<div class="field">
 <!--						<label class="label">First Name</label>-->
 						<div class="control has-icons-left">
-							<input v-model="user.first_name" class="input" type="text" placeholder="First name">
+							<input v-model="user.first_name" class="input" type="text" placeholder="First name" required>
 							<span class="icon is-small is-left">
 							  	<i class="fas fa-user-circle"></i>
 							</span>
@@ -117,23 +117,25 @@
 				<button class="delete" aria-label="close" v-on:click="show_tnc_dialog = !show_tnc_dialog"></button>
 			</header>
 			<section class="modal-card-body">
-				<ul>
-					<li>
-						While the mentee is looking for guidance from you, please treat the mentee with respect and follow the mentoring schedule you agree with the mentee.
-					</li>
-					<li>
-						Mentoring is exclusively to help the mentees in their research. Provide feedback on the mentee's work and ideas. Any ideas shared/discussed/given to the mentees, mentees have full right to use the idea as their own.
-					</li>
-					<li>
-						Ideas of mentees cannot be used or discussed with anyone else by the mentor. The mentor cannot work on research problems the mentee discusses with the mentor.
-					</li>
-					<li>
-						Mentee has the complete right to use or not use any suggestion/advice given.
-					</li>
-					<li>
-						Keep mentorship about research and related issues like career, and keep other issues (e.g. personal) outside the scope.
-					</li>
-				</ul>
+				<div class="content">
+					<ul>
+						<li>
+							While the mentee is looking for guidance from you, please treat the mentee with respect and follow the mentoring schedule you agree with the mentee.
+						</li>
+						<li>
+							Mentoring is exclusively to help the mentees in their research. Provide feedback on the mentee's work and ideas. Any ideas shared/discussed/given to the mentees, mentees have full right to use the idea as their own.
+						</li>
+						<li>
+							Ideas of mentees cannot be used or discussed with anyone else by the mentor. The mentor cannot work on research problems the mentee discusses with the mentor.
+						</li>
+						<li>
+							Mentee has the complete right to use or not use any suggestion/advice given.
+						</li>
+						<li>
+							Keep mentorship about research and related issues like career, and keep other issues (e.g. personal) outside the scope.
+						</li>
+					</ul>
+				</div>
 			</section>
 			<footer class="modal-card-foot">
 				<button v-on:click="show_tnc_dialog = !show_tnc_dialog" class="button">Cancel</button>
@@ -144,8 +146,7 @@
 
 
 <script>
-// import axios from 'axios';
-import axios from '../api/my-axios'
+import axios from "../api/my-axios";
 
 export default {
 	props: {
@@ -173,14 +174,14 @@ export default {
 	},
 	methods: {
 		register() {
+			if (this.user.password !== this.confirm_password) { return; }
+
 			this.user.is_mentor = this.register_as_mentor;
 			this.user.is_mentee = !this.register_as_mentor;
 
-			if (this.user.password !== this.confirm_password) { return; }
-
 			axios.post("/api/users/user/", this.user)
-			.then((response) => {
-				this.$router.replace({ name: 'Login' });
+			.then((_) => {
+				this.$router.replace({ name: "Login" });
 			})
 			.catch((error) => {
 				console.error(error);
