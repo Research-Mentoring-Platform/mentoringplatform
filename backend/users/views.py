@@ -56,7 +56,7 @@ class CustomUserViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
         user = ret.data.serializer.instance
         send_email_async(subject='Email verification token', body=user.email_verification_token,
                          recipient_list=[user.email, ])
-        return ret
+        return Response(status=status.HTTP_200_OK)
 
 
 class CustomTokenObtainSlidingView(TokenObtainSlidingView):
