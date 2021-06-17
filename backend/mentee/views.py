@@ -1,7 +1,9 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions
 
 from main.mixins import ViewSetPermissionByMethodMixin
 from mentee import permissions as mentee_permissions
+from mentee.filters import MenteeEducationFilter, MenteeResearchFilter
 from mentee.models import Mentee, MenteeDesignation, MenteeDepartment, MenteeDiscipline, MenteeEducation, MenteeResearch
 from mentee.serializers import MenteeSerializer, MenteeDepartmentSerializer, MenteeDisciplineSerializer, \
     MenteeDesignationSerializer, MenteeEducationSerializer, MenteeResearchSerializer
@@ -59,6 +61,8 @@ class MenteeEducationViewSet(viewsets.ModelViewSet):
     serializer_class = MenteeEducationSerializer
     queryset = MenteeEducation.objects.all()
     lookup_field = 'uid'
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = MenteeEducationFilter
 
 
 class MenteeResearchViewSet(viewsets.ModelViewSet):
@@ -66,3 +70,5 @@ class MenteeResearchViewSet(viewsets.ModelViewSet):
     serializer_class = MenteeResearchSerializer
     queryset = MenteeResearch.objects.all()
     lookup_field = 'uid'
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = MenteeResearchFilter

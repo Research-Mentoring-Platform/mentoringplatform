@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.db.models import F
 
 
 class Mentee(models.Model):
@@ -68,6 +69,9 @@ class MenteeEducation(models.Model):
     end_date = models.DateField(null=True)  # null == True signifies ongoing
     details = models.TextField(max_length=512, blank=True)  # TODO Convert to RichTextField
 
+    class Meta:
+        ordering = [F('end_date').desc(nulls_last=False), '-start_date']
+
     def __str__(self):
         return '{}(email={}, qualification={})'.format(self.__class__.__name__, self.mentee.user.email,
                                                        self.qualification)
@@ -85,6 +89,7 @@ class MenteeResearch(models.Model):
 
     class Meta:
         verbose_name_plural = 'MenteeResearches'
+        ordering = [F('end_date').desc(nulls_last=False), '-start_date']
 
     def __str__(self):
         return '{}(email={}, title={})'.format(self.__class__.__name__, self.mentee.user.email, self.title)

@@ -8,8 +8,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainSlidingSerializer
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 
-from mentee.models import Mentee
-from mentor.models import Mentor
+from users.methods import verify_login
 from users.models import CustomUser
 
 
@@ -112,25 +111,11 @@ class CustomTokenObtainSlidingSerializer(TokenObtainSlidingSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)  # this must be the first line (self.user initiates in super().validate())
 
-        if self.user.is_admin and (not self.user.is_mentor):
-            raise rest_exceptions.ValidationError('Non-mentor admins should use backend admin-login instead')
-
-        if not self.user.email_verified:
-            raise rest_exceptions.ValidationError('Email not verified.')
+        verify_login(self.user)
 
         data['uid'] = self.user.uid
-
-        if self.user.is_mentor:
-            if not hasattr(self.user, 'mentor'):
-                Mentor.objects.create(user=self.user)
-
-            data['profile_uid'] = self.user.mentor.uid
-
-        else:  # is mentee
-            if not hasattr(self.user, 'mentee'):
-                Mentee.objects.create(user=self.user)
-
-            data['profile_uid'] = self.user.mentee.uid
+        data['profile_uid'] = self.user.mentor.uid
+        data['profile_uid'] = self.user.mentee.uid
 
         return data
 

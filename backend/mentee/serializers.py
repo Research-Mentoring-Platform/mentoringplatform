@@ -61,7 +61,7 @@ class MenteeEducationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MenteeEducation
-        fields = '__all__'
+        exclude = ('id',)
         read_only_fields = ('uid',)
 
     def validate(self, attrs):
@@ -88,7 +88,7 @@ class MenteeResearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MenteeResearch
-        fields = '__all__'
+        exclude = ('id',)
         read_only_fields = ('uid',)
 
     def validate(self, attrs):
