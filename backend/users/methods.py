@@ -2,6 +2,10 @@ import threading
 
 from django.core.mail import EmailMessage
 from django.utils.crypto import get_random_string
+from rest_framework import exceptions as rest_exceptions
+
+from mentee.models import Mentee
+from mentor.models import Mentor
 
 
 def generate_email_verification_token():
@@ -24,3 +28,21 @@ class EmailThread(threading.Thread):
 
 def send_email_async(subject, body, recipient_list):
     EmailThread(subject, body, recipient_list).start()
+
+
+def verify_login(user):
+    """
+    This served to both DRF's token-auth and session-auth
+    """
+    if user.is_admin and (not user.is_mentor):
+        raise rest_exceptions.ValidationError('Non-mentor admins should use backend admin-login instead')
+
+    if not user.email_verified:
+        raise rest_exceptions.ValidationError('Email not verified.')
+
+    if user.is_mentor:
+        if not hasattr(user, 'mentor'):
+            Mentor.objects.create(user=user)
+    else:  # is mentee
+        if not hasattr(user, 'mentee'):
+            Mentee.objects.create(user=user)
