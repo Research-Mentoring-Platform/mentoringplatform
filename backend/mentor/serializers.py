@@ -86,7 +86,7 @@ class MentorEducationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MentorEducation
-        fields = '__all__'
+        exclude = ('id',)
         read_only_fields = ('uid',)
 
     def validate(self, attrs):
@@ -113,7 +113,7 @@ class MentorResearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MentorResearch
-        fields = '__all__'
+        exclude = ('id',)
         read_only_fields = ('uid',)
 
     def validate(self, attrs):

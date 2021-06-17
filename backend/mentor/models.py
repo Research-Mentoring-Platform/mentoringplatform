@@ -72,7 +72,7 @@ class MentorDesignation(models.Model):
     label = models.CharField(max_length=32, blank=False)
 
     def __str__(self):
-        return '{}(email={})'.format(self.__class__.__name__, self.label)
+        return '{}(label={})'.format(self.__class__.__name__, self.label)
 
 
 class MentorDiscipline(models.Model):
