@@ -10,6 +10,10 @@ class MentorSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(slug_field='uid',
                                         read_only=True)
 
+    first_name = serializers.SerializerMethodField(method_name='get_first_name', read_only=True)
+    last_name = serializers.SerializerMethodField(method_name='get_last_name', read_only=True)
+    username = serializers.SerializerMethodField(method_name='get_username', read_only=True)
+
     designation = serializers.SlugRelatedField(slug_field='uid',
                                                queryset=MentorDesignation.objects.all(),
                                                read_only=False,
@@ -41,9 +45,21 @@ class MentorSerializer(serializers.ModelSerializer):
                                                     required=False,
                                                     allow_null=True)
 
+    def get_first_name(self, instance):
+        return instance.user.first_name
+
+    def get_last_name(self, instance):
+        return instance.user.last_name
+
+    def get_username(self, instance):
+        return instance.user.username
+
     class Meta:
         model = Mentor
-        exclude = ('id',)
+        fields = ('uid', 'user', 'is_verified', 'profile_completed', 'about_self', 'designation', 'department',
+                  'discipline', 'specialization', 'expected_min_mentorship_duration',
+                  'expected_max_mentorship_duration', 'is_accepting_mentorship_requests', 'accepted_mentee_types',
+                  'responsibilities', 'other_responsibility', 'rating', 'first_name', 'last_name')
         read_only_fields = ('uid', 'rating', 'profile_completed', 'is_verified', 'user')
 
 
