@@ -1,5 +1,5 @@
 <template>
-<div class="hero-head">
+<div class="hero-head pb-2">
 	<nav class="navbar">
 		<div class="container">
 			<div class="navbar-brand">
@@ -33,7 +33,10 @@
 							</a>
 
 							<div class="navbar-dropdown is-boxed is-right">
-								<router-link v-bind:to="{ name: 'Profile' }" class="navbar-item">
+								<router-link v-if="current_user.is_mentor" v-bind:to="{ name: 'MentorProfile' }" class="navbar-item">
+									Profile
+								</router-link>
+								<router-link v-else-if="current_user.is_mentee" v-bind:to="{ name: 'MenteeProfile' }" class="navbar-item">
 									Profile
 								</router-link>
 

@@ -91,11 +91,18 @@ export default {
 
 					// Get user details
 					axios
-						.get(`/api/users/user/${resp.data.uid}`) // TODO Get this changed to uid in backend
+						.get(`/api/users/user/${resp.data.uid}`)
 						.then(user_data => {
 							user_data.data.profile_uid = resp.data.profile_uid;
 							this.$store.commit("set_current_user", user_data.data);
-							this.$router.replace({ name: "Profile" });
+
+							// TODO Also check if profile already completed. If so, redirect to Home instead
+							if (user_data.data.is_mentor) {
+								this.$router.replace({ name: "MentorProfile" });
+							}
+							else if (user_data.data.is_mentee) {
+								this.$router.replace({ name: "MenteeProfile" });
+							}
 						})
 						.catch(error => {
 							this.errors = error.response.data;

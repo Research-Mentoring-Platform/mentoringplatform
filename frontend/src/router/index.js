@@ -7,6 +7,8 @@ import Register from "@/components/Register.vue";
 import MenteeProfile from "@/components/mentee/MenteeProfile.vue";
 import MentorProfile from "@/components/mentor/MentorProfile.vue";
 import FindMentor from "../components/mentee/FindMentor";
+import MenteeBase from "../components/mentee/MenteeBase";
+import MentorBase from "../components/mentor/MentorBase";
 
 
 // TODO Look for lazy loading for routes
@@ -25,12 +27,6 @@ const routes = [
 		meta: { requires_auth: false }
 	},
 	{
-		path: "/login",
-		name: "Login",
-		component: Login,
-		meta: {	requires_visitor: true }
-	},
-	{
 		path: "/register-mentor",
 		name: "RegisterMentor",
 		component: Register,
@@ -45,19 +41,44 @@ const routes = [
 		meta: { requires_visitor: true }
 	},
 	{
-		path: "/profile",
-		name: "Profile",
-		component: (store.state.current_user.is_mentor) ? MentorProfile : MenteeProfile,
-		// The following statement gives a warning (Promise not returned)
-		// component: () => (store.state.is_mentor === true) ? MentorProfile : MenteeProfile,
-		meta: { requires_auth: true }
+		path: "/login",
+		name: "Login",
+		component: Login,
+		meta: {	requires_visitor: true }
 	},
 	{
-		path: "/find-mentor",
-		name: "FindMentor",
-		component: FindMentor,
-		meta: { requires_auth: true, requires_mentee: true }
-	}
+		path: "/mentor",
+		name: "Mentor",
+		component: MentorBase, // TODO change
+		meta: { requires_auth: true, requires_mentor: true },
+
+		children: [
+			{
+				path: "profile",
+				name: "MentorProfile",
+				component: MentorProfile
+			},
+		]
+	},
+	{
+		path: "/mentee",
+		name: "Mentee",
+		component: MenteeBase,
+		meta: { requires_auth: true, requires_mentee: true },
+
+		children: [
+			{
+				path: "profile",
+				name: "MenteeProfile",
+				component: MenteeProfile
+			},
+			{
+				path: "find-mentor",
+				name: "FindMentor",
+				component: FindMentor,
+			}
+		]
+	},
 ];
 
 const router = createRouter({
@@ -69,6 +90,14 @@ router.beforeEach((to, from, next) => {
 	if (to.matched.some(record => record.meta.requires_auth)) {
 		if (!store.getters.logged_in) {
 			next({ name: "Login" })
+		}
+		else if (to.matched.some(record => record.meta.requires_mentor)) {
+			if (!store.state.current_user.is_mentor) {
+				next({ name: "Home" })
+			}
+			else {
+				next()
+			}
 		}
 		else if (to.matched.some(record => record.meta.requires_mentee)) {
 			if (!store.state.current_user.is_mentee) {
