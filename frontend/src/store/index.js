@@ -1,6 +1,7 @@
 import { createStore } from "vuex";
 
 const store = createStore({
+	strict: true,
 	state: {
 		token: localStorage.getItem("rmp_token"),
 		current_user: JSON.parse(localStorage.getItem("rmp_current_user")) || {
@@ -13,7 +14,9 @@ const store = createStore({
 			date_of_birth: null,
 			is_mentor: false,
 			is_mentee: false,
-		}
+		},
+
+		show_loading: false,
 	},
 	getters: {
 		logged_in(state)
@@ -31,12 +34,10 @@ const store = createStore({
 		set_current_user(state, data)
 		{
 			localStorage.setItem("rmp_current_user", JSON.stringify(data)); // Stringify is needed
-			for (const key in state.current_user) {
-				state.current_user[key] = data[key];
-			}
+			state.current_user = {...data};
 
 			// TODO Logout and redirect to 'Home' if this is the case
-			// if (state.is_mentor === state.is_mentee) {  }
+			// if (state.is_mentor === state.is_mentee) {}
 		},
 
 		update_token(state, token)
@@ -52,12 +53,17 @@ const store = createStore({
 
 		destroy_current_user(state)
 		{
-			state.current_user = null;
+			state.current_user = {};
 			localStorage.removeItem("rmp_current_user");
+		},
+
+		set_show_loading(state, value)
+		{
+			state.show_loading = value;
 		}
 	},
 	actions: {
-		logout(context)
+		logout_user(context)
 		{
 			context.commit("destroy_token");
 			context.commit("destroy_current_user");
