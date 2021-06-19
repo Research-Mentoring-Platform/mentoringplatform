@@ -6,6 +6,7 @@ import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
 import MenteeProfile from "@/components/mentee/MenteeProfile.vue";
 import MentorProfile from "@/components/mentor/MentorProfile.vue";
+import FindMentor from "../components/mentee/FindMentor";
 
 
 // TODO Look for lazy loading for routes
@@ -45,11 +46,17 @@ const routes = [
 	},
 	{
 		path: "/profile",
-		name: 'Profile',
-		component: (store.state.is_mentor === true) ? MentorProfile : MenteeProfile,
+		name: "Profile",
+		component: (store.state.current_user.is_mentor) ? MentorProfile : MenteeProfile,
 		// The following statement gives a warning (Promise not returned)
 		// component: () => (store.state.is_mentor === true) ? MentorProfile : MenteeProfile,
 		meta: { requires_auth: true }
+	},
+	{
+		path: "/find-mentor",
+		name: "FindMentor",
+		component: FindMentor,
+		meta: { requires_auth: true, requires_mentee: true }
 	}
 ];
 
@@ -62,6 +69,14 @@ router.beforeEach((to, from, next) => {
 	if (to.matched.some(record => record.meta.requires_auth)) {
 		if (!store.getters.logged_in) {
 			next({ name: "Login" })
+		}
+		else if (to.matched.some(record => record.meta.requires_mentee)) {
+			if (!store.state.current_user.is_mentee) {
+				next({ name: "Home" })
+			}
+			else {
+				next()
+			}
 		}
 		else {
 			next()
