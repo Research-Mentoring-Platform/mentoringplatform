@@ -26,7 +26,7 @@
 <script>
 // import Experience from "@/components/mentor/Experience";
 // import Education from "@/components/mentor/Education";
-// import Research from "@/components/mentor/Research.vue";
+// import Research from "@/components/mentor/Research";
 
 export default {
 	components: {
