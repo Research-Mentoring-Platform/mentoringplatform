@@ -1,9 +1,11 @@
 <template>
-<ul class="list help is-danger">
-	<li v-for="error in error_list">
-		{{ error }}
-	</li>
-</ul>
+<div class="content">
+	<ul class="list help is-danger">
+		<li v-for="error in error_list">
+			{{ error }}
+		</li>
+	</ul>
+</div>
 </template>
 
 
@@ -11,8 +13,7 @@
 export default {
 	props: {
 		errors: {
-			type: Array,
-			required: true,
+			type: [Array, String]
 		}
 	},
 	data() {
@@ -21,8 +22,11 @@ export default {
 		};
 	},
 	watch: {
-		errors: function(new_value, _) {
-			this.error_list = new_value;
+		errors: function(new_value, _ /* old_value */) { // Cannot use () => {} as 'this' is required
+			this.error_list = []; // Important, else the errors persist
+			if (new_value) {
+				this.error_list = Array.isArray(new_value) ? new_value : [new_value];
+			}
 		},
 	}
 }
