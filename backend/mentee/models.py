@@ -34,7 +34,7 @@ class Mentee(models.Model):
 
 class MenteeDesignation(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    label = models.CharField(max_length=32, blank=False)
+    label = models.CharField(max_length=32, blank=False, unique=True)
 
     def __str__(self):
         return '{}(label={})'.format(self.__class__.__name__, self.label)
@@ -42,7 +42,7 @@ class MenteeDesignation(models.Model):
 
 class MenteeDepartment(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    label = models.CharField(max_length=32, blank=False)
+    label = models.CharField(max_length=32, blank=False, unique=True)
 
     def __str__(self):
         return '{}(label={})'.format(self.__class__.__name__, self.label)
@@ -50,7 +50,7 @@ class MenteeDepartment(models.Model):
 
 class MenteeDiscipline(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    label = models.CharField(max_length=32, blank=False)
+    label = models.CharField(max_length=32, blank=False, unique=True)
 
     def __str__(self):
         return '{}(label={})'.format(self.__class__.__name__, self.label)

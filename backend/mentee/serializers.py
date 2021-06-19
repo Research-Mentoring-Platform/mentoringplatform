@@ -5,6 +5,8 @@ from mentee.models import Mentee, MenteeDesignation, MenteeDepartment, MenteeDis
 
 
 class MenteeSerializer(serializers.ModelSerializer):
+    # TODO add derived serializer for view-only access
+
     user = serializers.SlugRelatedField(slug_field='uid',
                                         read_only=True)
     designation = serializers.SlugRelatedField(slug_field='uid',
