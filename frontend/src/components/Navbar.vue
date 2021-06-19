@@ -4,13 +4,13 @@
 		<div class="container">
 			<div class="navbar-brand">
 				<router-link v-bind:to="{ name: 'Home' }" class="navbar-item">
-					<span class="is-size-3 has-text-weight-bold">
+					<span class="is-size-4 has-text-weight-bold">
 						RMP
 					</span>
 				</router-link>
 
-				<span v-on:click="show_nav_bar_menu = !show_nav_bar_menu"
-					  v-bind:class="{ 'is-active': show_nav_bar_menu }"
+				<span v-on:click="show_navbar_burger_menu = !show_navbar_burger_menu"
+					  v-bind:class="{ 'is-active': show_navbar_burger_menu }"
 					  class="navbar-burger"
 					  data-target="navbarMenuHeroB">
 					<span></span>
@@ -19,17 +19,26 @@
 				</span>
 			</div>
 
-			<div id="navbarMenuHeroB" class="navbar-menu" v-bind:class="{ 'is-active': show_nav_bar_menu }">
+			<div id="navbarMenuHeroB" class="navbar-menu" v-bind:class="{ 'is-active': show_navbar_burger_menu }">
 				<div class="navbar-end">
 					<div v-if="logged_in" class="navbar-item">
 						<div class="navbar-item has-dropdown is-hoverable">
 							<a class="navbar-link">
-								First Name
+								<span class="icon">
+									<i class="fas fa-user"></i>
+								</span>
+								<span class="has-text-weight-bold">
+									{{ current_user.first_name }}
+								</span>
 							</a>
 
-							<div class="navbar-dropdown is-right">
+							<div class="navbar-dropdown is-boxed is-right">
 								<router-link v-bind:to="{ name: 'Profile' }" class="navbar-item">
 									Profile
+								</router-link>
+
+								<router-link v-if="current_user.is_mentee" v-bind:to="{ name: 'FindMentor' }" class="navbar-item">
+									Find Mentor
 								</router-link>
 
 								<hr class="navbar-divider">
@@ -69,22 +78,25 @@
 
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 
 export default {
 	data() {
 		return {
-			show_nav_bar_menu: false
+			show_navbar_burger_menu: false
 		};
 	},
 	computed: {
 		...mapGetters({
 			logged_in: "logged_in"
+		}),
+		...mapState({
+			current_user: "current_user"
 		})
 	},
 	methods: {
 		logout() {
-			this.$store.dispatch("logout");
+			this.$store.dispatch("logout_user");
 			this.$router.replace({ name: "Home" });
 		}
 	}
