@@ -1,109 +1,108 @@
 <template>
-	<div class="hero-body">
-		<div class="container">
-			<div class="columns is-centered">
-				<div class="column is-one-third">
+<div style="width: 100%">
+	<div class="container">
+		<div class="columns is-centered">
+			<div class="column is-one-third">
 
-					<div class="title is-1 has-text-centered">
-						<span v-if="register_as_mentor === true">
-							Be a Mentor
-						</span>
-						<span v-else>
-							Be a Mentee
-						</span>
-					</div>
+				<div class="title is-1 has-text-centered">
+					<span v-if="register_as_mentor === true">
+						Be a Mentor
+					</span>
+					<span v-else>
+						Be a Mentee
+					</span>
+				</div>
 
-					<div class="field">
+				<div class="field">
 <!--						<label class="label">First Name</label>-->
-						<div class="control has-icons-left">
-							<input v-model="user.first_name" class="input" type="text" placeholder="First name" required>
-							<span class="icon is-small is-left">
-							  	<i class="fas fa-user-circle"></i>
-							</span>
-						</div>
+					<div class="control has-icons-left">
+						<input v-model="user.first_name" class="input" type="text" placeholder="First name" required>
+						<span class="icon is-small is-left">
+							<i class="fas fa-user-circle"></i>
+						</span>
 					</div>
+				</div>
 
-					<div class="field">
+				<div class="field">
 <!--						<label class="label">Last Name</label>-->
-						<div class="control has-icons-left">
-							<input v-model="user.last_name" class="input" type="text" placeholder="Last name">
-							<span class="icon is-small is-left">
-							  	<i class="fas fa-user-circle"></i>
-							</span>
-						</div>
+					<div class="control has-icons-left">
+						<input v-model="user.last_name" class="input" type="text" placeholder="Last name">
+						<span class="icon is-small is-left">
+							<i class="fas fa-user-circle"></i>
+						</span>
 					</div>
+				</div>
 
-					<div class="field">
+				<div class="field">
 <!--						<label class="label">Username</label>-->
-						<div class="control has-icons-left">
-							<input v-model="user.username" class="input" type="text" placeholder="Username">
-							<span class="icon is-small is-left">
-								<i class="fas fa-user"></i>
-							</span>
-						</div>
+					<div class="control has-icons-left">
+						<input v-model="user.username" class="input" type="text" placeholder="Username">
+						<span class="icon is-small is-left">
+							<i class="fas fa-user"></i>
+						</span>
 					</div>
+				</div>
 
-					<div class="field">
+				<div class="field">
 <!--						<label class="label">Email</label>-->
-						<div class="control has-icons-left">
-							<input v-model="user.email" class="input" type="email" placeholder="Email">
-							<span class="icon is-small is-left">
-							  	<i class="fas fa-envelope"></i>
-							</span>
-						</div>
+					<div class="control has-icons-left">
+						<input v-model="user.email" class="input" type="email" placeholder="Email">
+						<span class="icon is-small is-left">
+							<i class="fas fa-envelope"></i>
+						</span>
 					</div>
+				</div>
 
-					<div class="field">
+				<div class="field">
 <!--						<label class="label">Date of Birth</label>-->
-						<div class="control has-icons-left">
-							<input v-model="user.date_of_birth" class="input" type="date" v-bind:max="max_dob">
-							<span class="icon is-small is-left">
-							  	<i class="fas fa-calendar"></i>
-							</span>
-						</div>
+					<div class="control has-icons-left">
+						<input v-model="user.date_of_birth" class="input" type="date" v-bind:max="max_dob">
+						<span class="icon is-small is-left">
+							<i class="fas fa-calendar"></i>
+						</span>
 					</div>
+				</div>
 
-					<div class="field">
+				<div class="field">
 <!--						<label class="label">Password</label>-->
-						<div class="control has-icons-left">
-							<input v-model="user.password" class="input" type="password" placeholder="Password">
-							<span class="icon is-small is-left">
-							  	<i class="fas fa-lock"></i>
-							</span>
-						</div>
+					<div class="control has-icons-left">
+						<input v-model="user.password" class="input" type="password" placeholder="Password">
+						<span class="icon is-small is-left">
+							<i class="fas fa-lock"></i>
+						</span>
 					</div>
+				</div>
 
-					<div class="field">
+				<div class="field">
 <!--						<label class="label">Confirm Password</label>-->
-						<div class="control has-icons-left">
-							<input v-model="confirm_password" class="input" type="password" placeholder="Confirm password">
-							<span class="icon is-small is-left">
-							  	<i class="fas fa-lock"></i>
-							</span>
-						</div>
-						<p v-if="confirm_password.length > 0 && user.password !== confirm_password"
-						   class="help is-danger">
-							Passwords do not match!
-						</p>
+					<div class="control has-icons-left">
+						<input v-model="confirm_password" class="input" type="password" placeholder="Confirm password">
+						<span class="icon is-small is-left">
+							<i class="fas fa-lock"></i>
+						</span>
 					</div>
+					<p v-if="confirm_password.length > 0 && user.password !== confirm_password"
+					   class="help is-danger">
+						Passwords do not match!
+					</p>
+				</div>
 
-					<div class="pt-3 has-text-centered">
-						<strong>
-							By registering you agree to the
-							<a v-on:click="show_tnc_modal = true"
-							   class="hyperlink"
-							   data-toggle="modal"
-							   data-target="#tnc-modal">
-								Terms & Conditions
-							</a>
-						</strong>
-					</div>
+				<div class="pt-3 has-text-centered">
+					<strong>
+						By registering you agree to the
+						<a v-on:click="show_tnc_modal = true"
+						   class="hyperlink"
+						   data-toggle="modal"
+						   data-target="#tnc-modal">
+							Terms & Conditions
+						</a>
+					</strong>
+				</div>
 
-					<br/>
+				<br/>
 
-					<div class="control">
-						<button v-on:click="register" class="button is-fullwidth is-success">Register</button>
-					</div>
+				<div class="control">
+					<button v-on:click="register" class="button is-fullwidth is-success">Register</button>
 				</div>
 			</div>
 		</div>
@@ -142,6 +141,7 @@
 			</footer>
 		</div>
 	</div>
+</div>
 </template>
 
 

@@ -1,57 +1,60 @@
 <template>
-<div class="hero-body">
-	<div class="container">
-		<div class="columns is-centered">
-			<div class="column is-one-third">
-				<div class="title is-1 has-text-centered">
-					Login
-				</div>
+<div class="container">
+	<div class="columns is-centered">
+		<div class="column is-one-third">
+			<div class="title is-1 has-text-centered">
+				Login
+			</div>
 
-				<div class="field">
+			<div class="field">
 <!--						<label class="label">Email</label>-->
-					<p class="control has-icons-left">
-						<input v-model="user.email" class="input" type="email" placeholder="Email">
-						<span class="icon is-small is-left">
-							<i class="fas fa-envelope"></i>
-						</span>
-					</p>
-				</div>
+				<p class="control has-icons-left">
+					<input v-model="user.email" class="input" type="email" placeholder="Email">
+					<span class="icon is-small is-left">
+						<i class="fas fa-envelope"></i>
+					</span>
+				</p>
+				<FormErrors v-bind:errors="errors.email" />
+			</div>
 
-				<div class="field">
+			<div class="field">
 <!--						<label class="label">Password</label>-->
-					<p class="control has-icons-left">
-						<input v-model="user.password" v-on:keyup.enter="login" class="input" type="password" placeholder="Password">
-						<span class="icon is-small is-left">
-							<i class="fas fa-lock"></i>
-						</span>
-					</p>
-				</div>
+				<p class="control has-icons-left">
+					<input v-model="user.password" v-on:keyup.enter="login" class="input" type="password" placeholder="Password">
+					<span class="icon is-small is-left">
+						<i class="fas fa-lock"></i>
+					</span>
+				</p>
+				<FormErrors v-bind:errors="errors.password" />
+			</div>
 
-				<br/>
+			<FormErrors v-bind:errors="errors.detail" />
+			<FormErrors v-bind:errors="errors.non_field_errors" />
 
-				<div class="control">
-					<button v-on:click="login" class="button is-success is-fullwidth">
-						Login
-					</button>
-				</div>
+			<br/>
 
-				<div class="pt-3 has-text-centered">
-					<a class="has-text-centered" style="color:dodgerblue;">
-						Forgot password?
-					</a>
-				</div>
+			<div class="control">
+				<button v-on:click="login" class="button is-success is-fullwidth">
+					Login
+				</button>
+			</div>
 
-				<div class="pt-3 has-text-centered">
-					Don't have an account? Register as a
-					<router-link v-bind:to="{ name: 'RegisterMentor' }" class="hyperlink">
-						mentor
-					</router-link>
-					or
-					<router-link v-bind:to="{ name: 'RegisterMentee' }" class="hyperlink">
-						mentee
-					</router-link>
-					.
-				</div>
+			<div class="pt-3 has-text-centered">
+				<a class="has-text-centered" style="color:dodgerblue;">
+					Forgot password?
+				</a>
+			</div>
+
+			<div class="pt-3 has-text-centered">
+				Don't have an account? Register as a
+				<router-link v-bind:to="{ name: 'RegisterMentor' }" class="hyperlink">
+					mentor
+				</router-link>
+				or
+				<router-link v-bind:to="{ name: 'RegisterMentee' }" class="hyperlink">
+					mentee
+				</router-link>
+				.
 			</div>
 		</div>
 	</div>
@@ -61,14 +64,20 @@
 
 <script>
 import axios from "@/api/my-axios";
+import FormErrors from "@/components/FormErrors";
 
 export default {
+	components: {
+		FormErrors
+	},
 	data() {
 		return {
 			user: {
 				email: "",
 				password: ""
-			}
+			},
+
+			errors: {}
 		};
 	},
 	methods: {
@@ -89,11 +98,11 @@ export default {
 							this.$router.replace({ name: "Profile" });
 						})
 						.catch(error => {
-							console.error(error);
+							this.errors = error.response.data;
 						});
 				})
 				.catch(error => {
-					console.error(error);
+					this.errors = error.response.data;
 				});
 		}
 	}
