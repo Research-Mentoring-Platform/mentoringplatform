@@ -59,7 +59,7 @@ class MentorSerializer(serializers.ModelSerializer):
         fields = ('uid', 'user', 'is_verified', 'profile_completed', 'about_self', 'designation', 'department',
                   'discipline', 'specialization', 'expected_min_mentorship_duration',
                   'expected_max_mentorship_duration', 'is_accepting_mentorship_requests', 'accepted_mentee_types',
-                  'responsibilities', 'other_responsibility', 'rating', 'first_name', 'last_name')
+                  'responsibilities', 'other_responsibility', 'rating', 'first_name', 'last_name', 'username')
         read_only_fields = ('uid', 'rating', 'profile_completed', 'is_verified', 'user')
 
 
