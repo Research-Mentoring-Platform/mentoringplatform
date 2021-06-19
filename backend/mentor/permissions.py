@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
 
-class CanAccessMentor(permissions.BasePermission):
+class CanAccessMentor(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, obj):
-        return request.user.is_authenticated and (request.user.is_admin or request.user == obj.user)
+        return super().has_permission(request, view) and (request.user == obj.user)

@@ -51,7 +51,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
-        raise NotImplementedError('Do not allow updates.')  # TODO is raising this a good idea? (500 server error)
+        raise rest_exceptions.PermissionDenied('Invalid request.')
 
 
 # https://stackoverflow.com/a/22133032/5394180
@@ -62,7 +62,7 @@ class CustomUserUpdateSerializer(serializers.ModelSerializer):
         read_only_fields = ('uid',)
 
     def create(self, validated_data):
-        raise NotImplementedError('Do not allow creation.')  # TODO is raising this a good idea? (500 server error)
+        raise rest_exceptions.PermissionDenied('Invalid request.')
 
 
 class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):

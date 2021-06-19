@@ -50,7 +50,7 @@ class Mentor(models.Model):  # TODO: Rename Mentor to MentorProfile?
 
 class MentorResponsibility(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    description = models.TextField(max_length=256, blank=False)
+    description = models.TextField(max_length=256, blank=False, unique=True)
 
     class Meta:
         verbose_name_plural = 'MentorResponsibilities'
@@ -61,7 +61,7 @@ class MentorResponsibility(models.Model):
 
 class MentorDepartment(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    label = models.CharField(max_length=32, blank=False)
+    label = models.CharField(max_length=32, blank=False, unique=True)
 
     def __str__(self):
         return '{}(label={})'.format(self.__class__.__name__, self.label)
@@ -69,7 +69,7 @@ class MentorDepartment(models.Model):
 
 class MentorDesignation(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    label = models.CharField(max_length=32, blank=False)
+    label = models.CharField(max_length=32, blank=False, unique=True)
 
     def __str__(self):
         return '{}(label={})'.format(self.__class__.__name__, self.label)
@@ -77,7 +77,7 @@ class MentorDesignation(models.Model):
 
 class MentorDiscipline(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    label = models.CharField(max_length=32, blank=False)
+    label = models.CharField(max_length=32, blank=False, unique=True)
 
     def __str__(self):
         return '{}(label={})'.format(self.__class__.__name__, self.label)
