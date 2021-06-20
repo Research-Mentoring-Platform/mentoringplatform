@@ -20,6 +20,7 @@ class Mentorship(models.Model):
     mentor = models.ForeignKey('mentor.Mentor', on_delete=models.CASCADE,
                                related_name='mentor_mentorships')  # TODO Give better and smaller related_name
     mentee = models.ForeignKey('mentee.Mentee', on_delete=models.CASCADE, related_name='mentee_mentorships')
+    status = models.IntegerField(choices=MentorshipStatus.choices, default=MentorshipStatus.choices[0][0])
     start_date = models.DateField(verbose_name='Start date')  # TODO [V] Max value = today
     end_date = models.DateField(verbose_name='End date')  # When the mentor-mentee relationship actually ended
     expected_end_date = models.DateField(verbose_name='Expected end date', null=True,
@@ -41,7 +42,7 @@ class MentorshipRequest(models.Model):  # TODO Change fields, give better names,
     statement_of_purpose = models.TextField(max_length=512, blank=True)
     expectations = models.TextField(max_length=256, blank=True)
     commitment = models.TextField(max_length=256, blank=True)
-    status = models.IntegerField(choices=MentorshipStatus.choices, default=MentorshipStatus.choices[0])
+    status = models.IntegerField(choices=MentorshipRequestStatus.choices, default=MentorshipRequestStatus.choices[0][0])
     reject_reason = models.TextField(max_length=256, blank=True)  # Only if status is request_rejected
 
     date = models.DateField(auto_now_add=True, editable=False)
