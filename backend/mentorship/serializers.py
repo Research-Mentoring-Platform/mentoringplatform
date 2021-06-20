@@ -8,11 +8,9 @@ from mentorship.models import MentorshipRequest, MentorshipRequestStatus, Mentor
 
 class MentorshipSerializer(serializers.ModelSerializer):
     mentor = serializers.SlugRelatedField(slug_field='uid',
-                                          queryset=Mentor.objects.all(),
                                           read_only=True)
 
     mentee = serializers.SlugRelatedField(slug_field='uid',
-                                          queryset=Mentee.objects.all(),
                                           read_only=True)
 
 
