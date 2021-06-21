@@ -1,9 +1,11 @@
+from datetime import datetime
+
 from rest_framework import exceptions as rest_exceptions
 from rest_framework import serializers
 
 from mentee.models import Mentee
 from mentor.models import Mentor
-from mentorship.models import MentorshipRequest, MentorshipRequestStatus, Mentorship
+from mentorship.models import MentorshipRequest, MentorshipRequestStatus, Mentorship, MentorshipStatus
 
 
 class MentorshipSerializer(serializers.ModelSerializer):
@@ -12,6 +14,33 @@ class MentorshipSerializer(serializers.ModelSerializer):
 
     mentee = serializers.SlugRelatedField(slug_field='uid',
                                           read_only=True)
+
+    class Meta:
+        model = Mentorship
+        exclude = ('id',)
+        read_only_fields = ('uid', 'start_date', 'end_date')  # Mentor and Mentee are already set to read_only
+
+    def create(self, validated_data):
+        # TODO will this ever be called?
+        pass
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        if 'status' in data:  # status is an optional field to update
+            if data['status'] == MentorshipStatus.ONGOING:
+                raise rest_exceptions.ValidationError('Mentorship status cannot be updated to ongoing')
+        return data
+
+    def update(self, instance, validated_data):
+        # Change end_date if status is updated
+        if 'status' in validated_data:  # status is an optional field
+            instance.end_date = datetime.now()  # Mentorship ended, update end time
+
+        for field in validated_data:
+            setattr(instance, field, validated_data[field])
+
+        instance.save()
+        return instance
 
 
 class MentorshipRequestSerializer(serializers.ModelSerializer):

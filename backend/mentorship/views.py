@@ -3,8 +3,19 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from mentorship.models import MentorshipRequest
-from mentorship.serializers import MentorshipRequestSerializer, MentorshipRequestAcceptanceSerializer
+from mentorship.models import MentorshipRequest, Mentorship
+from mentorship.serializers import MentorshipRequestSerializer, MentorshipRequestAcceptanceSerializer, \
+    MentorshipSerializer
+
+
+class MentorshipViewSet(viewsets.ModelViewSet):
+    queryset = Mentorship.objects.all()
+    serializer_class = MentorshipSerializer
+    lookup_field = 'uid'
+
+    def create(self, request, *args, **kwargs):
+        # Mentorship is created by accepting a mentorship request
+        raise rest_exceptions.PermissionDenied('Mentorship cannot be created')
 
 
 class MentorshipRequestViewSet(viewsets.ModelViewSet):
