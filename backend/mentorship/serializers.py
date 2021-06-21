@@ -5,7 +5,8 @@ from rest_framework import serializers
 
 from mentee.models import Mentee
 from mentor.models import Mentor
-from mentorship.models import MentorshipRequest, MentorshipRequestStatus, Mentorship, MentorshipStatus
+from mentorship.models import MentorshipRequest, MentorshipRequestStatus, Mentorship, MentorshipStatus, Meeting
+from users.models import CustomUser
 
 
 class MentorshipSerializer(serializers.ModelSerializer):
@@ -89,3 +90,21 @@ class MentorshipRequestAcceptanceSerializer(serializers.ModelSerializer):
             instance.reject_reason = validated_data['reject_reason']
         instance.save()
         return instance
+
+
+class MeetingSerializer(serializers.ModelSerializer):
+    mentorship = serializers.SlugRelatedField(slug_field='uid',
+                                              queryset=Mentorship.objects.all(),
+                                              read_only=False,
+                                              required=True,
+                                              allow_null=False)
+
+    creator = serializers.SlugRelatedField(slug_field='uid',
+                                           queryset=CustomUser.objects.all(),
+                                           read_only=False,
+                                           required=True,
+                                           allow_null=False)
+
+    class Meta:
+        model = Meeting
+        exclude = ('id',)
