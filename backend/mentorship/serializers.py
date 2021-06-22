@@ -6,7 +6,7 @@ from rest_framework import serializers
 from mentee.models import Mentee
 from mentor.models import Mentor
 from mentorship.models import MentorshipRequest, MentorshipRequestStatus, Mentorship, MentorshipStatus, Meeting, \
-    MeetingSummary
+    MeetingSummary, Milestone
 from users.models import CustomUser
 
 
@@ -113,10 +113,23 @@ class MeetingSerializer(serializers.ModelSerializer):
 
 class MeetingSummarySerializer(serializers.ModelSerializer):
     meeting = serializers.SlugRelatedField(slug_field='uid',
-                                           read_only=True,
+                                           queryset=MeetingSummary.objects.all(),
+                                           read_only=False,
                                            required=True,
                                            allow_null=False)
 
     class Meta:
         model = MeetingSummary
         exclude = ('uid',)
+
+
+class MilestoneSerializer(serializers.ModelSerializer):
+    mentorship = serializers.SlugRelatedField(slug_field='uid',
+                                              queryset=Milestone.objects.all(),
+                                              read_only=False,
+                                              required=True,
+                                              allow_null=False)
+
+    class Meta:
+        model = Milestone
+        exclude = ('id',)
