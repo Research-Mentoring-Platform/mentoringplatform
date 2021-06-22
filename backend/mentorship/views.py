@@ -3,9 +3,9 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from mentorship.models import MentorshipRequest, Mentorship, Meeting
+from mentorship.models import MentorshipRequest, Mentorship, Meeting, MeetingSummary
 from mentorship.serializers import MentorshipRequestSerializer, MentorshipRequestAcceptanceSerializer, \
-    MentorshipSerializer, MeetingSerializer
+    MentorshipSerializer, MeetingSerializer, MeetingSummarySerializer
 
 
 class MentorshipViewSet(viewsets.ModelViewSet):
@@ -40,4 +40,10 @@ class MentorshipRequestViewSet(viewsets.ModelViewSet):
 class MeetingViewSet(viewsets.ModelViewSet):
     queryset = Meeting.objects.all()
     serializer_class = MeetingSerializer
+    lookup_field = 'uid'
+
+
+class MeetingSummaryViewSet(viewsets.ModelViewSet):
+    queryset = MeetingSummary.objects.all()
+    serializer_class = MeetingSummarySerializer
     lookup_field = 'uid'

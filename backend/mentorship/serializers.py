@@ -5,7 +5,8 @@ from rest_framework import serializers
 
 from mentee.models import Mentee
 from mentor.models import Mentor
-from mentorship.models import MentorshipRequest, MentorshipRequestStatus, Mentorship, MentorshipStatus, Meeting
+from mentorship.models import MentorshipRequest, MentorshipRequestStatus, Mentorship, MentorshipStatus, Meeting, \
+    MeetingSummary
 from users.models import CustomUser
 
 
@@ -108,3 +109,14 @@ class MeetingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meeting
         exclude = ('id',)
+
+
+class MeetingSummarySerializer(serializers.ModelSerializer):
+    meeting = serializers.SlugRelatedField(slug_field='uid',
+                                           read_only=True,
+                                           required=True,
+                                           allow_null=False)
+
+    class Meta:
+        model = MeetingSummary
+        exclude = ('uid',)
