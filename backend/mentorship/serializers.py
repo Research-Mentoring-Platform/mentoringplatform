@@ -125,7 +125,7 @@ class MeetingSummarySerializer(serializers.ModelSerializer):
 
 class MilestoneSerializer(serializers.ModelSerializer):
     mentorship = serializers.SlugRelatedField(slug_field='uid',
-                                              queryset=Milestone.objects.all(),
+                                              queryset=Mentorship.objects.all(),
                                               read_only=False,
                                               required=True,
                                               allow_null=False)
