@@ -113,7 +113,7 @@ class MeetingSerializer(serializers.ModelSerializer):
 
 class MeetingSummarySerializer(serializers.ModelSerializer):
     meeting = serializers.SlugRelatedField(slug_field='uid',
-                                           queryset=MeetingSummary.objects.all(),
+                                           queryset=Meeting.objects.all(),
                                            read_only=False,
                                            required=True,
                                            allow_null=False)
