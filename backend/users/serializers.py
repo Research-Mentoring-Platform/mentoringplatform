@@ -51,7 +51,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
-        raise rest_exceptions.PermissionDenied('Invalid request.')
+        raise rest_exceptions.PermissionDenied('Updation not allowed.')
 
 
 # https://stackoverflow.com/a/22133032/5394180
@@ -62,7 +62,7 @@ class CustomUserUpdateSerializer(serializers.ModelSerializer):
         read_only_fields = ('uid',)
 
     def create(self, validated_data):
-        raise rest_exceptions.PermissionDenied('Invalid request.')
+        raise rest_exceptions.PermissionDenied('Creation not allowed.')
 
 
 class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
@@ -75,30 +75,28 @@ class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         user = self.context['request'].user
-        if user.check_password(attrs['current_password']):
-            if user.check_password(attrs['new_password']):
-                raise rest_exceptions.ValidationError(dict(new_password='New password cannot be the same as the '
-                                                                        'previous password.'))
-            try:
-                validate_password(attrs['new_password'])
-                return attrs
-            except django_exceptions.ValidationError as e:
-                raise rest_exceptions.ValidationError(dict(new_password='\n'.join(e.messages)))
+        if not user.check_password(attrs['current_password']):
+            raise rest_exceptions.ValidationError(dict(current_password='Invalid current password'))
 
-        raise rest_exceptions.ValidationError(dict(current_password='Invalid current password'))
+        if attrs['current_password'] == attrs['new_password']:
+            raise rest_exceptions.ValidationError(dict(new_password='New password cannot be the same as the '
+                                                                    'previous password.'))
+        try:
+            validate_password(attrs['new_password'])
+            return attrs
+        except django_exceptions.ValidationError as e:
+            raise rest_exceptions.ValidationError(dict(new_password='\n'.join(e.messages)))
 
     def create(self, validated_data):
-        raise NotImplementedError('Do not allow creation.')  # TODO is raising this a good idea? (500 server error)
+        raise rest_exceptions.PermissionDenied('Creation not allowed.')
 
     def update(self, instance, validated_data):
-        instance.set_password(
-            validated_data['new_password'])  # TODO how to invalidate the existing tokens before expiry?
+        instance.set_password(validated_data['new_password'])
         instance.save()
 
         outstanding_tokens = OutstandingToken.objects.filter(user__pk=instance.pk)
         for out_token in outstanding_tokens:
-            if hasattr(out_token, 'blacklistedtoken'):
-                # Token already blacklisted. Skip
+            if hasattr(out_token, 'blacklistedtoken'):  # Token already blacklisted. Skip
                 continue
 
             BlacklistedToken.objects.create(token=out_token)
