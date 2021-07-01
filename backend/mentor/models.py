@@ -95,6 +95,7 @@ class MentorEducation(models.Model):
     start_date = models.DateField()
     end_date = models.DateField(null=True)  # null == True signifies ongoing
     details = models.TextField(max_length=512, blank=True)  # TODO Convert to RichTextField
+    link = models.URLField(blank=True)
 
     class Meta:
         ordering = [F('end_date').desc(nulls_last=False), '-start_date']

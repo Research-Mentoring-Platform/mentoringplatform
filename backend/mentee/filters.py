@@ -4,7 +4,7 @@ from mentee.models import MenteeEducation, MenteeResearch
 
 
 class MenteeEducationFilter(django_filters.FilterSet):
-    mentee = django_filters.UUIDFilter(field_name='mentee__uid', lookup_expr='exact')
+    mentee = django_filters.UUIDFilter(field_name='mentee__uid', lookup_expr='exact', required=True)
 
     class Meta:
         model = MenteeEducation

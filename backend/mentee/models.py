@@ -7,7 +7,7 @@ from django.db.models import F
 class Mentee(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     user = models.OneToOneField('users.CustomUser', on_delete=models.CASCADE)
-    about_self = models.TextField(max_length=512, blank=True)
+    about_self = models.TextField(max_length=512, blank=True)  # TODO add field for CV/resume
     profile_completed = models.BooleanField(default=False)
 
     designation = models.ForeignKey('mentee.MenteeDesignation', on_delete=models.RESTRICT,
@@ -68,6 +68,7 @@ class MenteeEducation(models.Model):
     start_date = models.DateField()
     end_date = models.DateField(null=True)  # null == True signifies ongoing
     details = models.TextField(max_length=512, blank=True)  # TODO Convert to RichTextField
+    link = models.URLField(blank=True)
 
     class Meta:
         ordering = [F('end_date').desc(nulls_last=False), '-start_date']

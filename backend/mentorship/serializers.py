@@ -20,17 +20,23 @@ class MentorshipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mentorship
         exclude = ('id',)
-        read_only_fields = ('uid', 'start_date', 'end_date')  # Mentor and Mentee are already set to read_only
+        read_only_fields = ('uid', 'start_date', 'end_date', 'status')  # Mentor and Mentee are already set to read_only
 
     def create(self, validated_data):
-        # TODO will this ever be called?
-        pass
+        raise rest_exceptions.PermissionDenied('Direct creation not allowed.')
 
     def validate(self, attrs):
         data = super().validate(attrs)
+
         if 'status' in data:  # status is an optional field to update
             if data['status'] == MentorshipStatus.ONGOING:
-                raise rest_exceptions.ValidationError('Mentorship status cannot be updated to ongoing')
+                raise rest_exceptions.ValidationError(dict(status='Mentorship status cannot be updated to ongoing'))
+
+        if 'expected_end_date' in data:
+            if data['expected_end_data'] < self.instance.start_date:
+                raise rest_exceptions.ValidationError(dict(expected_end_date='Expected end date cannot be earlier '
+                                                                             'than the start date'))
+
         return data
 
     def update(self, instance, validated_data):
@@ -63,6 +69,20 @@ class MentorshipRequestSerializer(serializers.ModelSerializer):
         exclude = ('id',)
         read_only_fields = ('uid', 'status', 'reject_reason', 'date')
 
+    def validate(self, attrs):  # only for creation
+        data = super().validate(attrs)
+        if Mentorship.objects.filter(mentor=attrs['mentor'], mentee=attrs['mentee'],
+                                     status=MentorshipStatus.ONGOING).exists():
+            raise rest_exceptions.ValidationError('There is an ongoing mentorship between the specified mentor and '
+                                                  'mentee.')
+
+        if MentorshipRequest.objects.filter(mentor=attrs['mentor'], mentee=attrs['mentee'],
+                                            status=MentorshipRequestStatus.REQUEST_PENDING).exists():
+            raise rest_exceptions.ValidationError('A mentorship request between the specified mentor and mentee is '
+                                                  'pending.')
+
+        return data
+
 
 class MentorshipRequestAcceptanceSerializer(serializers.ModelSerializer):
     accepted = serializers.BooleanField(required=True)
@@ -75,12 +95,14 @@ class MentorshipRequestAcceptanceSerializer(serializers.ModelSerializer):
         data = super().validate(attrs)
         if not data['accepted'] and attrs['reject_reason'] == '':
             raise rest_exceptions.ValidationError('Provide a reject_reason for rejection.')
+
         if data['accepted'] and attrs['reject_reason'] != '':
             raise rest_exceptions.ValidationError('Reject reason not needed for acceptance.')
+
         return data
 
     def create(self, validated_data):
-        pass
+        raise rest_exceptions.PermissionDenied('Direct creation not allowed.')
 
     def update(self, instance, validated_data):
         if validated_data['accepted']:
