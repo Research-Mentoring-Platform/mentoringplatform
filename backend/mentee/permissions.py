@@ -38,7 +38,7 @@ class CanRetrieveMentee(permissions.IsAuthenticated):
             allow1 = Mentorship.objects.filter(mentor=request.user.mentor, mentee=obj,
                                                status=MentorshipStatus.ONGOING).exists()
             allow2 = MentorshipRequest.objects.filter(mentor=request.user.mentor, mentee=obj,
-                                                      status=MentorshipRequestStatus.REQUEST_PENDING)
+                                                      status=MentorshipRequestStatus.REQUEST_PENDING).exists()
             return base_condition and (allow1 or allow2)
 
         elif request.user.is_mentee:
