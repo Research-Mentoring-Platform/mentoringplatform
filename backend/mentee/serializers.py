@@ -73,8 +73,8 @@ class MenteeEducationSerializer(serializers.ModelSerializer):
 
         if data['end_date'] is not None:
             if data['start_date'] > data['end_date']:
-                raise rest_exceptions.ValidationError(dict(start_date='It must not be later than the end date.',
-                                                           end_date='It must not be earlier than the start date.', ))
+                raise rest_exceptions.ValidationError(dict(start_date='Start date must not be later than the end date.',
+                                                           end_date='End date must not be earlier than the start date.', ))
 
         return data
 
