@@ -71,7 +71,7 @@ class MenteeEducation(models.Model):
     link = models.URLField(blank=True)
 
     class Meta:
-        ordering = [F('end_date').desc(nulls_last=False), '-start_date']
+        ordering = [F('end_date').desc(nulls_last=True), '-start_date']
 
     def __str__(self):
         return '{}(email={}, qualification={})'.format(self.__class__.__name__, self.mentee.user.email,
@@ -90,7 +90,7 @@ class MenteeResearch(models.Model):
 
     class Meta:
         verbose_name_plural = 'MenteeResearches'
-        ordering = [F('end_date').desc(nulls_last=False), '-start_date']
+        ordering = [F('end_date').desc(nulls_last=True), '-start_date']
 
     def __str__(self):
         return '{}(email={}, title={})'.format(self.__class__.__name__, self.mentee.user.email, self.title)

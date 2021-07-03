@@ -68,8 +68,9 @@ class MenteeEducationSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         data = super().validate(attrs)
-        if self.context['request'].user != attrs['mentee'].user:
-            raise rest_exceptions.PermissionDenied(dict(user='Incorrect User UID provided.'))
+        if 'mentee' in data:
+            if self.context['request'].user != data['mentee'].user:
+                raise rest_exceptions.PermissionDenied(dict(user='Incorrect User UID provided.'))
 
         if data['end_date'] is not None:
             if data['start_date'] > data['end_date']:
@@ -95,8 +96,9 @@ class MenteeResearchSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         data = super().validate(attrs)
-        if self.context['request'].user != attrs['mentee'].user:
-            raise rest_exceptions.PermissionDenied(dict(user='Incorrect User UID provided.'))
+        if 'mentee' in data:
+            if self.context['request'].user != data['mentee'].user:
+                raise rest_exceptions.PermissionDenied(dict(user='Incorrect User UID provided.'))
 
         if data['end_date'] is not None:
             if data['start_date'] > data['end_date']:
