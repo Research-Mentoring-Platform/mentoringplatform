@@ -71,6 +71,10 @@ class MentorshipRequestSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):  # only for creation
         data = super().validate(attrs)
+
+        if not attrs['mentor'].is_verified:
+            raise rest_exceptions.ValidationError('The specified mentor is unverified by the admins.')
+
         if Mentorship.objects.filter(mentor=attrs['mentor'], mentee=attrs['mentee'],
                                      status=MentorshipStatus.ONGOING).exists():
             raise rest_exceptions.ValidationError('There is an ongoing mentorship between the specified mentor and '

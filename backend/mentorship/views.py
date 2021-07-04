@@ -3,9 +3,12 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from main.mixins import ViewSetPermissionByMethodMixin
+from mentee import permissions as mentee_permissions
 from mentorship.models import MentorshipRequest, Mentorship, Meeting, MeetingSummary, Milestone
 from mentorship.serializers import MentorshipRequestSerializer, MentorshipRequestAcceptanceSerializer, \
     MentorshipSerializer, MeetingSerializer, MeetingSummarySerializer, MilestoneSerializer
+from . import permissions as mentorship_permissions
 
 
 class MentorshipViewSet(viewsets.ModelViewSet):
@@ -18,7 +21,11 @@ class MentorshipViewSet(viewsets.ModelViewSet):
         raise rest_exceptions.PermissionDenied('Mentorship cannot be created')
 
 
-class MentorshipRequestViewSet(viewsets.ModelViewSet):
+class MentorshipRequestViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
+    permission_action_classes = dict(
+        create=(mentorship_permissions.CanAccessMentorshipApp & mentee_permissions.IsMentee,),
+        # TODO continue from here
+    )
     queryset = MentorshipRequest.objects.all()
     serializer_class = MentorshipRequestSerializer
     lookup_field = 'uid'
