@@ -17,7 +17,7 @@ class CustomUserViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
     permission_classes = (user_permissions.CanAccessCustomUser,)
     permission_action_classes = dict(
         create=[permissions.AllowAny],
-        list=[permissions.IsAuthenticated & user_permissions.IsAdmin],  # bitwise AND is intentional
+        list=[~permissions.AllowAny],
     )
     queryset = get_user_model().objects.all()
     lookup_field = 'uid'
@@ -27,8 +27,7 @@ class CustomUserViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
             return CustomUserUpdateSerializer
         return CustomUserSerializer
 
-    @action(methods=['post'], detail=False, url_path='update-password', url_name='update-password',
-            permission_classes=[user_permissions.CanChangeCustomUserPassword])
+    @action(methods=['post'], detail=False, url_path='update-password', url_name='update-password')
     def update_password(self, request):
         serializer = CustomUserPasswordUpdateSerializer(data=request.data, context=dict(request=request),
                                                         instance=request.user)

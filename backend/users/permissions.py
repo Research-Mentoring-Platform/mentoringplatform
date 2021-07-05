@@ -1,18 +1,11 @@
-# TODO re-write permissions considering Admins cannot login
-
 from rest_framework import permissions
 
 
-class CanAccessCustomUser(permissions.BasePermission):
-    def has_object_permission(self, request, view, user_object):
-        return request.user.is_authenticated and (request.user.is_admin or request.user == user_object)
-
-
-class CanChangeCustomUserPassword(permissions.BasePermission):
-    def has_object_permission(self, request, view, user_object):
-        return request.user.is_authenticated and request.user == user_object
-
-
-class IsAdmin(permissions.BasePermission):
+class IsAdmin(permissions.IsAuthenticated):
     def has_permission(self, request, view):
-        return request.user.is_admin
+        return super().has_permission(request, view) and request.user.is_admin
+
+
+class CanAccessCustomUser(permissions.IsAuthenticated):
+    def has_object_permission(self, request, view, user_object):
+        return super().has_permission(request, view) and (request.user == user_object)

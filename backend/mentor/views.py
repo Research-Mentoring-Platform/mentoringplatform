@@ -9,23 +9,29 @@ from mentor.filters import MentorFilter, MentorEducationFilter, MentorResearchFi
 from mentor.models import Mentor, MentorResponsibility, MentorDepartment, MentorDesignation, MentorDiscipline, \
     MentorEducation, MentorResearch
 from mentor.serializers import MentorSerializer, MentorResponsibilitySerializer, MentorDepartmentSerializer, \
-    MentorDesignationSerializer, MentorDisciplineSerializer, MentorEducationSerializer, MentorResearchSerializer
+    MentorDesignationSerializer, MentorDisciplineSerializer, MentorEducationSerializer, MentorResearchSerializer, \
+    MentorViewSerializer
 
 
 class MentorViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
     permission_classes = (mentor_permissions.CanAccessMentor,)
     permission_action_classes = dict(
-        list=(permissions.IsAuthenticated,),
+        create=(~permissions.AllowAny,),
         retrieve=(permissions.IsAuthenticated,),
         destroy=(~permissions.AllowAny,),
-        create=(~permissions.AllowAny,)
+        list=(permissions.IsAuthenticated,),
     )
-    queryset = Mentor.objects.all()
-    serializer_class = MentorSerializer
+    # queryset = Mentor.objects.filter(is_verified=True, user__email_verified=True, profile_completed=True)
+    queryset = Mentor.objects.filter()
     lookup_field = 'uid'
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_class = MentorFilter
-    search_fields = ['^user__username', '^user_first_name', '^user_last_name']
+    search_fields = ['^user__username', '^user__first_name', '^user__last_name']
+
+    def get_serializer_class(self):
+        if self.request.method.lower() == 'get':
+            return MentorViewSerializer
+        return MentorSerializer
 
 
 class MentorResponsibilityViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):

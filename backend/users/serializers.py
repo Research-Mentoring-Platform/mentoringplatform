@@ -51,7 +51,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return instance
 
     def update(self, instance, validated_data):
-        raise NotImplementedError('Do not allow updates.')  # TODO is raising this a good idea? (500 server error)
+        raise rest_exceptions.PermissionDenied('Invalid request.')
 
 
 # https://stackoverflow.com/a/22133032/5394180
@@ -62,7 +62,7 @@ class CustomUserUpdateSerializer(serializers.ModelSerializer):
         read_only_fields = ('uid',)
 
     def create(self, validated_data):
-        raise NotImplementedError('Do not allow creation.')  # TODO is raising this a good idea? (500 server error)
+        raise rest_exceptions.PermissionDenied('Invalid request.')
 
 
 class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
@@ -83,7 +83,7 @@ class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
                 validate_password(attrs['new_password'])
                 return attrs
             except django_exceptions.ValidationError as e:
-                raise rest_exceptions.ValidationError(dict(new_password=' '.join(e.messages)))
+                raise rest_exceptions.ValidationError(dict(new_password='\n'.join(e.messages)))
 
         raise rest_exceptions.ValidationError(dict(current_password='Invalid current password'))
 
@@ -110,13 +110,9 @@ class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
 class CustomTokenObtainSlidingSerializer(TokenObtainSlidingSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)  # this must be the first line (self.user initiates in super().validate())
-
         verify_login(self.user)
-
         data['uid'] = self.user.uid
-        data['profile_uid'] = self.user.mentor.uid
-        data['profile_uid'] = self.user.mentee.uid
-
+        data['profile_uid'] = self.user.mentor.uid if self.user.is_mentor else self.user.mentee.uid
         return data
 
 
