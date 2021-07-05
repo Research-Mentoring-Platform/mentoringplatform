@@ -2,7 +2,7 @@
 <div class="container has-text-centered">
 	<div v-if="logged_in">
 		<p class="title">
-			Hi {{ current_user.first_name }} !
+			Hi {{ user.first_name }} !
 		</p>
 		<p class="subtitle"></p>
 	</div>
@@ -25,7 +25,7 @@ export default {
 			logged_in: "logged_in"
 		}),
 		...mapState({
-			current_user: "current_user"
+			user: "user"
 		})
 	}
 }

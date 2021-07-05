@@ -13,7 +13,7 @@ const axios = my_axios.create({
 // For setting Authorization request headers automatically
 axios.interceptors.request.use((config) => {
 	store.commit("set_show_loading", true);
-	const bearer_token = localStorage.getItem("rmp_token");
+	const bearer_token = store.state.token;
 	if (bearer_token) { config.headers.Authorization = `Bearer ${bearer_token}`; }
 	return config;
 }, (error) => {

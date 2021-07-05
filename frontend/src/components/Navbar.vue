@@ -19,7 +19,7 @@
 				</span>
 			</div>
 
-			<div id="navbarMenuHeroB" class="navbar-menu" v-bind:class="{ 'is-active': show_navbar_burger_menu }">
+			<div v-bind:class="{ 'is-active': show_navbar_burger_menu }" id="navbarMenuHeroB" class="navbar-menu">
 				<div class="navbar-end">
 					<div v-if="logged_in" class="navbar-item">
 						<div class="navbar-item has-dropdown is-hoverable">
@@ -28,38 +28,79 @@
 									<i class="fas fa-user"></i>
 								</span>
 								<span class="has-text-weight-bold">
-									{{ current_user.first_name }}
+									{{ user.first_name }}
 								</span>
 							</a>
 
 							<div class="navbar-dropdown is-boxed is-right">
-								<router-link v-if="current_user.is_mentor" v-bind:to="{ name: 'MentorProfile' }" class="navbar-item">
-									Profile
-								</router-link>
-								<router-link v-else-if="current_user.is_mentee" v-bind:to="{ name: 'MenteeProfile' }" class="navbar-item">
-									Profile
-								</router-link>
+								<div v-if="user.is_mentor">
+									<router-link v-bind:to="{ name: 'MentorProfile', params: { profile_uid: user.profile_uid } }" class="navbar-item">
+										My Profile
+									</router-link>
 
-								<router-link v-if="current_user.is_mentee" v-bind:to="{ name: 'FindMentor' }" class="navbar-item">
-									Find Mentor
-								</router-link>
+									<router-link v-bind:to="{ name: 'MyMentees' }" class="navbar-item">
+										My Mentees
+									</router-link>
+
+									<router-link v-bind:to="{ name: 'MentorPendingRequests' }" class="navbar-item">
+										Pending Requests
+									</router-link>
+
+									<router-link v-bind:to="{ name: 'MentorProfileSettings' }" class="navbar-item">
+										Profile Settings
+									</router-link>
+
+									<router-link v-bind:to="{ name: 'MentorSettings' }" class="navbar-item">
+										Mentor Settings
+									</router-link>
+								</div>
+								<div v-else-if="user.is_mentee">
+									<router-link v-bind:to="{ name: 'MenteeProfile' }" class="navbar-item">
+										My Profile
+									</router-link>
+
+									<router-link v-bind:to="{ name: 'MyMentors' }" class="navbar-item">
+										My Mentors
+									</router-link>
+
+									<router-link v-bind:to="{ name: 'FindMentor' }" class="navbar-item">
+										Find Mentor
+									</router-link>
+
+									<router-link v-bind:to="{ name: 'MenteePendingRequests' }" class="navbar-item">
+										Pending Requests
+									</router-link>
+
+									<router-link v-bind:to="{ name: 'MenteeProfileSettings' }" class="navbar-item">
+										Profile Settings
+									</router-link>
+								</div>
 
 								<hr class="navbar-divider">
 
 								<a v-on:click="logout" class="navbar-item">
-									Logout
+									<span class="icon">
+										<i class="fas fa-sign-out-alt"></i>
+									</span>
+									<span>Logout</span>
 								</a>
 							</div>
 						  </div>
 					</div>
 					<div v-else class="navbar-item">
 						<router-link v-bind:to="{ name: 'Login' }" class="navbar-item">
-							Login
+							<span class="icon">
+								<i class="fas fa-sign-in-alt"></i>
+							</span>
+							<span>Login</span>
 						</router-link>
 
-						<div class="navbar-item has-dropdown is-hoverable">
+						<div class="navbar-item has-dropdown is-hoverable pl-2">
 							<a class="navbar-link">
-								Register
+								<span class="icon pr-1">
+									<i class="fas fa-user-plus"></i>
+								</span>
+								<span>Register</span>
 							</a>
 
 							<div class="navbar-dropdown">
@@ -94,7 +135,7 @@ export default {
 			logged_in: "logged_in"
 		}),
 		...mapState({
-			current_user: "current_user"
+			user: "user"
 		})
 	},
 	methods: {

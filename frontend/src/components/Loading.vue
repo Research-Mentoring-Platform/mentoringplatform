@@ -1,8 +1,9 @@
 <template>
-<div v-if="show_loading === true" class="loading-overlay">
+<div v-if="show_loading" class="loading-overlay">
 	<div class="loader"></div>
 </div>
 </template>
+
 
 <script>
 import { mapState } from "vuex";
@@ -16,6 +17,7 @@ export default {
 	}
 };
 </script>
+
 
 <style scoped>
 .loading-overlay {
