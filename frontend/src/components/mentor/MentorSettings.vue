@@ -268,5 +268,3 @@ export default {
 	}
 }
 </script>
-
-<style src="vue-multiselect/dist/vue-multiselect.css"></style>
