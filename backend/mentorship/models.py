@@ -3,6 +3,7 @@ import uuid
 from django.db import models
 
 
+# TODO can be completely removed. Only kept for record-keeping.
 class MentorshipRequestStatus(models.IntegerChoices):
     REQUEST_PENDING = (1, 'Request pending')
     REQUEST_ACCEPTED = (2, 'Request accepted')
@@ -21,7 +22,9 @@ class Mentorship(models.Model):
                                related_name='mentor_mentorships')  # TODO Give better and smaller related_name
     mentee = models.ForeignKey('mentee.Mentee', on_delete=models.CASCADE, related_name='mentee_mentorships')
     status = models.IntegerField(choices=MentorshipStatus.choices, default=MentorshipStatus.ONGOING)
-    start_date = models.DateField(verbose_name='Start date', auto_now_add=True)  # TODO [V] Max value = today
+    start_date = models.DateField(verbose_name='Start date', auto_now_add=True)
+
+    # TODO update this when terminating/finishing the mentorship
     end_date = models.DateField(verbose_name='End date',
                                 null=True)  # When the mentor-mentee relationship actually ended
     expected_end_date = models.DateField(verbose_name='Expected end date', null=True,

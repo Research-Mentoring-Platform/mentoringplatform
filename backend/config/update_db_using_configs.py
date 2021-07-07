@@ -1,8 +1,7 @@
 import json
+import random
 
 from django.contrib.auth.hashers import make_password
-
-from users.models import CustomUserManager
 
 PATH_CONFIG_DESIGNATION = 'config/designation.json'
 PATH_CONFIG_DEPARTMENT = 'config/department.json'
@@ -20,11 +19,44 @@ def add_test_user(apps, schema_editor):
         config = json.load(f)
 
     model = apps.get_model('users', 'CustomUser')
+
+    mentor_model = apps.get_model('mentor', 'Mentor')
+    mentor_responsibility = apps.get_model('mentor', 'MentorResponsibility')
+    mentor_designation = apps.get_model('mentor', 'MentorDesignation')
+    mentor_department = apps.get_model('mentor', 'MentorDepartment')
+    mentor_discipline = apps.get_model('mentor', 'MentorDiscipline')
+
+    mentee_model = apps.get_model('mentee', 'Mentee')
+    mentee_designation = apps.get_model('mentee', 'MenteeDesignation')
+    mentee_department = apps.get_model('mentee', 'MenteeDepartment')
+    mentee_discipline = apps.get_model('mentee', 'MenteeDiscipline')
+
     for user_dict in config['users']:
         user = model.objects.create(**user_dict)
         user.password = make_password(user_dict['password'])
         user.email_verified = True
         user.save()
+        if user.is_mentor:
+            mentor = mentor_model.objects.create(user=user)
+            mentor.profile_completed = True
+            mentor.is_verified = True
+            mentor.designation = random.choice(list(mentor_designation.objects.all()))
+            mentor.department = random.choice(list(mentor_department.objects.all()))
+            mentor.discipline = random.choice(list(mentor_discipline.objects.all()))
+            mentor.specialization = 'Random specialization...'
+            mentor.responsibilities.set(random.sample(list(mentor_responsibility.objects.all()),
+                                                      random.randint(1, mentor_responsibility.objects.all().count())))
+            mentor.save()
+
+
+        elif user.is_mentee:  # no profile for superuser
+            mentee = mentee_model.objects.create(user=user)
+            mentee.profile_completed = True
+            mentee.designation = random.choice(list(mentee_designation.objects.all()))
+            mentee.department = random.choice(list(mentee_department.objects.all()))
+            mentee.discipline = random.choice(list(mentee_discipline.objects.all()))
+            mentee.specialization = 'Random specialization...'
+            mentee.save()
 
 
 # TODO Add validation for the rows loaded using the config files

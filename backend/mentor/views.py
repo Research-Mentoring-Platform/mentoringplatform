@@ -14,19 +14,25 @@ from mentor.serializers import MentorSerializer, MentorResponsibilitySerializer,
 
 
 class MentorViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
-    permission_classes = (mentor_permissions.CanAccessMentor,)
     permission_action_classes = dict(
-        create=(~permissions.AllowAny,),
-        retrieve=(permissions.IsAuthenticated,),
-        destroy=(~permissions.AllowAny,),
+        create=(~permissions.AllowAny,),  # Mentor profile creation is automated on first-login
+        retrieve=(mentor_permissions.CanRetrieveMentor,),
         list=(permissions.IsAuthenticated,),
+        update=(mentor_permissions.CanAccessMentor,),
+        partial_update=(mentor_permissions.CanAccessMentor,),
+        destroy=(~permissions.AllowAny,),  # Automatically destroyed when deleting the user-account
     )
-    # queryset = Mentor.objects.filter(is_verified=True, user__email_verified=True, profile_completed=True)
-    queryset = Mentor.objects.filter()
+
+    queryset = Mentor.objects.all()  # Mentor object is created on first successful login only
     lookup_field = 'uid'
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_class = MentorFilter
     search_fields = ['^user__username', '^user__first_name', '^user__last_name']
+
+    def get_queryset(self):
+        if self.action == 'list':
+            return Mentor.objects.filter(is_verified=True)  # Only return list of admin-verified mentors
+        return super().get_queryset()
 
     def get_serializer_class(self):
         if self.request.method.lower() == 'get':
@@ -78,8 +84,17 @@ class MentorDisciplineViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelView
     lookup_field = 'uid'
 
 
-class MentorEducationViewSet(viewsets.ModelViewSet):
+class MentorEducationViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
+    permission_action_classes = dict(
+        # The serializer's overridden validate ensures that the mentor themselves are modifying/creating their
+        # education only
+        create=(mentor_permissions.IsMentor,),
+        update=(mentor_permissions.CanAccessMentorEducation,),
+        partial_update=(mentor_permissions.CanAccessMentorEducation,),
+        destroy=(mentor_permissions.CanAccessMentorEducation,)
+    )
+
     serializer_class = MentorEducationSerializer
     queryset = MentorEducation.objects.all()
     lookup_field = 'uid'
@@ -87,8 +102,17 @@ class MentorEducationViewSet(viewsets.ModelViewSet):
     filterset_class = MentorEducationFilter
 
 
-class MentorResearchViewSet(viewsets.ModelViewSet):
+class MentorResearchViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
+    permission_action_classes = dict(
+        # The serializer's overridden validate ensures that the mentor themselves are modifying/creating their
+        # education only
+        create=(mentor_permissions.IsMentor,),
+        update=(mentor_permissions.CanAccessMentorResearch,),
+        partial_update=(mentor_permissions.CanAccessMentorResearch,),
+        destroy=(mentor_permissions.CanAccessMentorResearch,)
+    )
+
     serializer_class = MentorResearchSerializer
     queryset = MentorResearch.objects.all()
     lookup_field = 'uid'

@@ -27,8 +27,8 @@ class CustomUserViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
             return CustomUserUpdateSerializer
         return CustomUserSerializer
 
-    @action(methods=['post'], detail=False, url_path='update-password', url_name='update-password')
-    def update_password(self, request):
+    @action(methods=['post'], detail=False, url_path='change-password', url_name='change-password')
+    def change_password(self, request):
         serializer = CustomUserPasswordUpdateSerializer(data=request.data, context=dict(request=request),
                                                         instance=request.user)
         serializer.is_valid(raise_exception=True)
@@ -43,18 +43,18 @@ class CustomUserViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
         try:
             user = get_user_model().objects.get(email_verification_token=email_verification_token)
             if user.email_verified:
-                raise rest_exceptions.ValidationError('User is already verified.')
+                return Response(status=status.HTTP_200_OK)
             user.email_verified = True
             user.save()
             return Response(status=status.HTTP_200_OK)
-        except get_user_model().DoesNotExist:
+        except get_user_model().DoesNotExist as e:
             raise rest_exceptions.ValidationError('Invalid email verification token.')
 
     def create(self, request, *args, **kwargs):
         ret = super().create(request, *args, **kwargs)
         user = ret.data.serializer.instance
         send_email_async(subject='Email verification token', body=user.email_verification_token,
-                         recipient_list=[user.email, ])
+                         recipient_list=[user.email])
         return Response(status=status.HTTP_200_OK)
 
 

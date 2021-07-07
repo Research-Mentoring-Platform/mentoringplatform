@@ -8,6 +8,8 @@ from config.update_db_using_configs import add_test_user
 class Migration(migrations.Migration):
     dependencies = [
         ('users', '0001_initial'),
+        ('mentee', '0002_config_mentee'),
+        ('mentor', '0002_config_mentor'),
     ]
 
     operations = [
