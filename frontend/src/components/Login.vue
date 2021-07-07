@@ -1,57 +1,42 @@
 <template>
-<div class="hero-body">
-	<div class="container">
-		<div class="columns is-centered">
-			<div class="column is-one-third">
-				<div class="title is-1 has-text-centered">
+<div class="container">
+	<div class="columns is-centered">
+		<div class="column is-one-third">
+			<div class="title is-1 has-text-centered">
+				Login
+			</div>
+
+			<FormErrors v-bind:errors="errors.detail" />
+			<FormErrors v-bind:errors="errors.non_field_errors" />
+
+			<div>
+				<InputBox input_type="email" v-model="user.email" v-bind:errors="errors.email" v-on:keyup.enter="login"
+						  placeholder="Email" icon="fas fa-envelope" />
+
+				<InputBox input_type="password" v-model="user.password" v-bind:errors="errors.password" v-on:keyup.enter="login"
+						  placeholder="Password" icon="fas fa-lock" />
+
+				<button v-on:click="login" class="button is-success is-fullwidth">
 					Login
-				</div>
+				</button>
+			</div>
 
-				<div class="field">
-<!--						<label class="label">Email</label>-->
-					<p class="control has-icons-left">
-						<input v-model="user.email" class="input" type="email" placeholder="Email">
-						<span class="icon is-small is-left">
-							<i class="fas fa-envelope"></i>
-						</span>
-					</p>
-				</div>
+			<div class="pt-3 has-text-centered">
+				<a class="has-text-centered hyperlink">
+					Forgot password?
+				</a>
+			</div>
 
-				<div class="field">
-<!--						<label class="label">Password</label>-->
-					<p class="control has-icons-left">
-						<input v-model="user.password" v-on:keyup.enter="login" class="input" type="password" placeholder="Password">
-						<span class="icon is-small is-left">
-							<i class="fas fa-lock"></i>
-						</span>
-					</p>
-				</div>
-
-				<br/>
-
-				<div class="control">
-					<button v-on:click="login" class="button is-success is-fullwidth">
-						Login
-					</button>
-				</div>
-
-				<div class="pt-3 has-text-centered">
-					<a class="has-text-centered" style="color:dodgerblue;">
-						Forgot password?
-					</a>
-				</div>
-
-				<div class="pt-3 has-text-centered">
-					Don't have an account? Register as a
-					<router-link v-bind:to="{ name: 'RegisterMentor' }" class="hyperlink">
-						mentor
-					</router-link>
-					or
-					<router-link v-bind:to="{ name: 'RegisterMentee' }" class="hyperlink">
-						mentee
-					</router-link>
-					.
-				</div>
+			<div class="pt-3 has-text-centered">
+				Don't have an account? Register as a
+				<router-link v-bind:to="{ name: 'RegisterMentor' }" class="hyperlink">
+					mentor
+				</router-link>
+				or
+				<router-link v-bind:to="{ name: 'RegisterMentee' }" class="hyperlink">
+					mentee
+				</router-link>
+				.
 			</div>
 		</div>
 	</div>
@@ -60,15 +45,23 @@
 
 
 <script>
-import axios from "@/api/my-axios";
+import axios from "../api/my-axios";
+import InputBox from "./FormHelpers/InputBox";
+import FormErrors from "../components/FormHelpers/FormErrors";
 
 export default {
+	components: {
+		InputBox,
+		FormErrors
+	},
 	data() {
 		return {
 			user: {
 				email: "",
 				password: ""
-			}
+			},
+
+			errors: {}
 		};
 	},
 	methods: {
@@ -77,23 +70,30 @@ export default {
 			// Get token
 			axios
 				.post("/api/users/token/", this.user)
-				.then(resp => {
-					this.$store.commit("set_token", resp.data.token);
+				.then(response => {
+					this.$store.commit("set_token", response.data.token);
 
 					// Get user details
 					axios
-						.get(`/api/users/user/${resp.data.uid}`) // TODO Get this changed to uid in backend
+						.get(`/api/users/user/${response.data.uid}/`)
 						.then(user_data => {
-							user_data.data.profile_uid = resp.data.profile_uid;
-							this.$store.commit("set_current_user", user_data.data);
-							this.$router.replace({ name: "Profile" });
+							user_data.data.profile_uid = response.data.profile_uid;
+							this.$store.commit("set_user", user_data.data);
+
+							// TODO Also check if profile already completed. If so, redirect to Home instead
+							if (user_data.data.is_mentor) {
+								this.$router.replace({ name: "MentorProfileSettings" });
+							}
+							else if (user_data.data.is_mentee) {
+								this.$router.replace({ name: "MenteeProfileSettings" });
+							}
 						})
 						.catch(error => {
-							console.error(error);
+							this.errors = error.response ? error.response.data : {"detail": error.message};
 						});
 				})
 				.catch(error => {
-					console.error(error);
+					this.errors = error.response ? error.response.data : {"detail": error.message};
 				});
 		}
 	}
