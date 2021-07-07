@@ -21,16 +21,15 @@ class Mentorship(models.Model):
     mentor = models.ForeignKey('mentor.Mentor', on_delete=models.CASCADE,
                                related_name='mentor_mentorships')  # TODO Give better and smaller related_name
     mentee = models.ForeignKey('mentee.Mentee', on_delete=models.CASCADE, related_name='mentee_mentorships')
+
     status = models.IntegerField(choices=MentorshipStatus.choices, default=MentorshipStatus.ONGOING)
     start_date = models.DateField(verbose_name='Start date', auto_now_add=True)
-
-    # TODO update this when terminating/finishing the mentorship
-    end_date = models.DateField(verbose_name='End date',
+    end_date = models.DateField(verbose_name='End date', blank=True,
                                 null=True)  # When the mentor-mentee relationship actually ended
-    expected_end_date = models.DateField(verbose_name='Expected end date', null=True,
-                                         blank=True)  # TODO [V] Min value > start_date, default value should be as per the mentor's preference
+    expected_end_date = models.DateField(verbose_name='Expected end date', null=True)
 
-    # TODO Save MentorshipRequest upon acceptance?
+    class Meta:
+        ordering = ['-start_date']
 
     def __str__(self):
         return '{}(mentor={}, mentee={})'.format(self.__class__.__name__,
@@ -52,6 +51,9 @@ class MentorshipRequest(models.Model):  # TODO Change fields, give better names,
 
     date = models.DateField(auto_now_add=True, editable=False)
 
+    class Meta:
+        ordering = ['-date']
+
     def __str__(self):
         return '{}(mentor={}, mentee={})'.format(self.__class__.__name__,
                                                  self.mentor.user.email,
@@ -68,6 +70,9 @@ class Meeting(models.Model):
     date_time = models.DateTimeField(auto_now_add=False)
     url = models.URLField(blank=True)
 
+    class Meta:
+        ordering = ['date_time']
+
     def __str__(self):
         return '{}(mentor={}, mentee={})'.format(self.__class__.__name__,
                                                  self.mentorship.mentor.user.email,
@@ -83,10 +88,11 @@ class MeetingSummary(models.Model):
     description = models.TextField(max_length=512, blank=True)
     todos = models.TextField(max_length=512, blank=True)
 
-    next_meeting_date = models.DateTimeField(auto_now_add=False)
+    next_meeting_date_time = models.DateTimeField(auto_now_add=False)
     next_meeting_agenda = models.TextField(max_length=512, blank=True)
 
     class Meta:
+        # ordering = ['date_time']
         verbose_name_plural = 'MeetingSummaries'
 
     def __str__(self):
@@ -97,10 +103,13 @@ class MeetingSummary(models.Model):
 
 class Milestone(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-
     mentorship = models.ForeignKey('mentorship.Mentorship', on_delete=models.CASCADE, related_name='milestones')
+
     date = models.DateField(auto_now_add=True)
     description = models.TextField(max_length=256)
+
+    class Meta:
+        ordering = ['date']
 
     def __str__(self):
         return "{}(mentor={}, mentee={}, date={})".format(self.__class__.__name__,
