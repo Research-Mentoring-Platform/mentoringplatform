@@ -14,7 +14,7 @@ class MentorFilter(django_filters.FilterSet):
 
 
 class MentorEducationFilter(django_filters.FilterSet):
-    mentor = django_filters.UUIDFilter(field_name='mentor__uid', lookup_expr='exact')
+    mentor = django_filters.UUIDFilter(field_name='mentor__uid', lookup_expr='exact', required=True)
 
     class Meta:
         model = MentorEducation

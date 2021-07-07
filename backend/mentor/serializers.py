@@ -44,10 +44,13 @@ class MentorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Mentor
-        fields = ('uid', 'user', 'is_verified', 'profile_completed', 'about_self', 'designation', 'department',
-                  'discipline', 'specialization', 'expected_min_mentorship_duration',
-                  'expected_max_mentorship_duration', 'is_accepting_mentorship_requests', 'accepted_mentee_types',
-                  'responsibilities', 'other_responsibility', 'rating')
+        fields = ('uid', 'user', 'is_verified',
+                  'profile_completed', 'about_self', 'designation',
+                  'department', 'discipline', 'specialization',
+                  'expected_min_mentorship_duration', 'expected_max_mentorship_duration',
+                  'is_accepting_mentorship_requests',
+                  'accepted_mentee_types', 'responsibilities', 'other_responsibility',
+                  'rating')  # TODO make it compact if possible
         read_only_fields = ('uid', 'rating', 'profile_completed', 'is_verified', 'user')
 
 
@@ -68,7 +71,6 @@ class MentorViewSerializer(MentorSerializer):
                                                  'discipline_label')
 
     def get_first_name(self, instance):
-        print(MentorViewSerializer.Meta.fields)
         return instance.user.first_name
 
     def get_last_name(self, instance):
@@ -137,13 +139,14 @@ class MentorEducationSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         data = super().validate(attrs)
-        if self.context['request'].user != attrs['mentor'].user:
-            raise rest_exceptions.PermissionDenied(dict(user='Incorrect User UID provided.'))
+        if 'mentor' in data:
+            if self.context['request'].user != data['mentor'].user:
+                raise rest_exceptions.PermissionDenied(dict(user='Incorrect User UID provided.'))
 
         if data['end_date'] is not None:
             if data['start_date'] > data['end_date']:
-                raise rest_exceptions.ValidationError(dict(start_date='It must not be later than the end date.',
-                                                           end_date='It must not be earlier than the start date.', ))
+                raise rest_exceptions.ValidationError(dict(start_date='Start date must not be later than the end date.',
+                                                           end_date='End date not be earlier than the start date.', ))
 
         return data
 
@@ -164,12 +167,13 @@ class MentorResearchSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         data = super().validate(attrs)
-        if self.context['request'].user != attrs['mentor'].user:
-            raise rest_exceptions.PermissionDenied(dict(user='Incorrect User UID provided.'))
+        if 'mentor' in data:
+            if self.context['request'].user != data['mentor'].user:
+                raise rest_exceptions.PermissionDenied(dict(user='Incorrect User UID provided.'))
 
         if data['end_date'] is not None:
             if data['start_date'] > data['end_date']:
-                raise rest_exceptions.ValidationError(dict(start_date='It must not be later than the end date.',
-                                                           end_date='It must not be earlier than the start date.', ))
+                raise rest_exceptions.ValidationError(dict(start_date='Start date must not be later than the end date.',
+                                                           end_date='End date not be earlier than the start date.', ))
 
         return data
