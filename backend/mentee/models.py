@@ -7,9 +7,9 @@ from django.db.models import F
 class Mentee(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     user = models.OneToOneField('users.CustomUser', on_delete=models.CASCADE)
+
     about_self = models.TextField(max_length=512, blank=True)  # TODO add field for CV/resume
     profile_completed = models.BooleanField(default=False)
-
     designation = models.ForeignKey('mentee.MenteeDesignation', on_delete=models.RESTRICT,
                                     related_name='mentees_with_designation',
                                     null=True)
@@ -34,6 +34,7 @@ class Mentee(models.Model):
 
 class MenteeDesignation(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+
     label = models.CharField(max_length=32, blank=False, unique=True)
 
     def __str__(self):
@@ -42,6 +43,7 @@ class MenteeDesignation(models.Model):
 
 class MenteeDepartment(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+
     label = models.CharField(max_length=32, blank=False, unique=True)
 
     def __str__(self):
@@ -50,6 +52,7 @@ class MenteeDepartment(models.Model):
 
 class MenteeDiscipline(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+
     label = models.CharField(max_length=32, blank=False, unique=True)
 
     def __str__(self):
@@ -57,10 +60,9 @@ class MenteeDiscipline(models.Model):
 
 
 class MenteeEducation(models.Model):
-    uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-
     # TODO convertable to GenericForeignKey to either of Mentee and Mentee models (
     #  https://bhrigu.medium.com/django-how-to-add-foreignkey-to-multiple-models-394596f06e84)
+    uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     mentee = models.ForeignKey('mentee.Mentee', on_delete=models.CASCADE, related_name='educations')
 
     qualification = models.CharField(max_length=128, blank=False)
