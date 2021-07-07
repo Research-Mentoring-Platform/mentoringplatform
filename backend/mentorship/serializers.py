@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from rest_framework import exceptions as rest_exceptions
 from rest_framework import serializers
 
@@ -20,7 +18,8 @@ class MentorshipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mentorship
         exclude = ('id',)
-        read_only_fields = ('uid', 'start_date', 'end_date', 'status')  # Mentor and Mentee are already set to read_only
+        read_only_fields = (
+        'uid', 'mentor', 'mentee', 'start_date', 'end_date', 'status')  # Mentor and Mentee are already set to read_only
 
     def create(self, validated_data):
         raise rest_exceptions.PermissionDenied('Direct creation not allowed.')
@@ -28,27 +27,12 @@ class MentorshipSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
 
-        if 'status' in data:  # status is an optional field to update
-            if data['status'] == MentorshipStatus.ONGOING:
-                raise rest_exceptions.ValidationError(dict(status='Mentorship status cannot be updated to ongoing'))
-
-        if 'expected_end_date' in data:
-            if data['expected_end_data'] < self.instance.start_date:
-                raise rest_exceptions.ValidationError(dict(expected_end_date='Expected end date cannot be earlier '
-                                                                             'than the start date'))
+        # TODO Check if expected_end_date is always in request
+        if data['expected_end_date'] < self.instance.start_date:
+            raise rest_exceptions.ValidationError(dict(expected_end_date='Expected end date cannot be earlier '
+                                                                         'than the start date'))
 
         return data
-
-    def update(self, instance, validated_data):
-        # Change end_date if status is updated
-        if 'status' in validated_data:  # status is an optional field
-            instance.end_date = datetime.now()  # Mentorship ended, update end time
-
-        for field in validated_data:
-            setattr(instance, field, validated_data[field])
-
-        instance.save()
-        return instance
 
 
 class MentorshipRequestSerializer(serializers.ModelSerializer):
@@ -136,6 +120,25 @@ class MeetingSerializer(serializers.ModelSerializer):
         model = Meeting
         exclude = ('id',)
 
+    def update(self, instance, validated_data):
+        validated_data.pop('creator')  # Make sure creator is not changed after creation
+        validated_data.pop('mentorship')  # Cannot reassign meeting to another mentorship
+        return super().update(instance, validated_data)
+
+    def validate_creator(self, value):
+        if self.context['request'].user == value:  # Creator is part of the mentorship is checked in validate_mentorship
+            return value
+
+        # TODO Change import statement from rest_exceptions to serializers
+        raise rest_exceptions.PermissionDenied('You can only create your own meetings')
+
+    def validate_mentorship(self, value):
+        if (self.context['request'].user == value.mentorship.mentor.user) or \
+                (self.context['request'].user == value.mentorship.mentee.user):
+            return value
+
+        raise rest_exceptions.PermissionDenied('You are not a part of this mentorship\'s meetings.')
+
 
 class MeetingSummarySerializer(serializers.ModelSerializer):
     meeting = serializers.SlugRelatedField(slug_field='uid',
@@ -148,6 +151,17 @@ class MeetingSummarySerializer(serializers.ModelSerializer):
         model = MeetingSummary
         exclude = ('uid',)
 
+    def update(self, instance, validated_data):
+        validated_data.pop('meeting')  # Cannot reassign summary to another meeting
+        return super().update(instance, validated_data)
+
+    def validate_meeting(self, value):
+        if (self.context['request'].user == value.meeting.mentorship.mentor.user) or \
+                (self.context['request'].user == value.meeting.mentorship.mentee.user):
+            return value
+
+        return rest_exceptions.PermissionDenied('You are not a part of this mentorship\'s meeting summaries.')
+
 
 class MilestoneSerializer(serializers.ModelSerializer):
     mentorship = serializers.SlugRelatedField(slug_field='uid',
@@ -159,3 +173,14 @@ class MilestoneSerializer(serializers.ModelSerializer):
     class Meta:
         model = Milestone
         exclude = ('id',)
+
+    def update(self, instance, validated_data):
+        validated_data.pop('mentorship')  # Cannot reassign milestone to another mentorship
+        return super().update(instance, validated_data)
+
+    def validate_mentorship(self, value):
+        if (self.context['request'].user == value.mentorship.mentor.user) or \
+                (self.context['request'].user == value.mentorship.mentee.user):
+            return value
+
+        return rest_exceptions.PermissionDenied('You are not a part of this mentorship\'s milestones.')
