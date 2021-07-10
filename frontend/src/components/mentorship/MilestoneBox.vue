@@ -3,7 +3,7 @@
 	<div class="columns is-vcentered mb-1">
 		<div class="column">
 			<div class="box has-background-light is-size-5 is-shadowless p-2">
-				[[ milestone.title ]]
+				{{ milestone.title }}
 			</div>
 		</div>
 	</div>

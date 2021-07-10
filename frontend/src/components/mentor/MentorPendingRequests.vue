@@ -10,11 +10,19 @@
 	<!-- PENDING REQUESTS -->
 	<div class="columns is-centered">
 		<div class="column is-5" style="max-height: min(600px, 60vh); overflow-y: auto;">
-			<ul>
+			<ul v-if="pending_requests.data.length === 0">
+				<li class="box has-text-centered is-centered has-text-weight-bold has-background-white">
+					No pending requests
+				</li>
+			</ul>
+			<ul v-else>
 				<li v-for="(pending_request, index) in pending_requests.data" class="box is-rounded mb-4">
 					<div class="columns is-vcentered">
 						<div class="column">
-							{{ pending_request.mentee }}
+							<router-link v-bind:to="{ name: 'MenteeProfile', params: { profile_uid: pending_request.mentee } }"
+										 class="hyperlink">
+								{{ pending_request.mentee_name }}
+							</router-link>
 						</div>
 
 						<div class="column is-narrow">
@@ -116,7 +124,8 @@ export default {
 		return {
 			pending_requests: {
 				request_token: {
-
+					// accepted: true,
+					// [reject_reason]: "" (mandatory if accepted is false)
 				},
 
 				errors: {},
@@ -159,7 +168,6 @@ export default {
 		// })
 	},
 	created() {
-		this.pending_requests.request_token.mentor = this.user.profile_uid;
 		this.get_pending_mentorship_requests();
 	},
 	methods: {
@@ -199,9 +207,9 @@ export default {
 		get_pending_mentorship_requests()
 		{
 			axios
-				.get("/api/mentorship/request/", {
+				.get("/api/mentorship/request/pending/", {
 					params: {
-						...this.pending_requests.request_token
+						mentor: this.user.profile_uid
 					}
 				})
 				.then(response => {
@@ -218,11 +226,8 @@ export default {
 
 			// TODO Set the URL
 			axios
-				.delete(`/api/mentorship/request/respond/${this.pending_requests.data[index].uid}/`, {
-					data: {
-						mentee: this.pending_requests.data[index].mentee,
-						...this.pending_requests.request_token,
-					}
+				.post(`/api/mentorship/request/${this.pending_requests.data[index].uid}/respond/`, {
+					accepted: true,
 				})
 				.then(_ => {
 					this.pending_requests.data.splice(index, 1);
@@ -237,14 +242,13 @@ export default {
 
 			// TODO Set the URL
 			axios
-				.delete(`/api/mentorship/request/respond/${this.pending_requests.data[this.pending_requests.delete_index].uid}/`, {
-					data: {
-						mentee: this.pending_requests.data[this.pending_requests.delete_index].mentee,
-						...this.pending_requests.request_token,
-					}
+				.post(`/api/mentorship/request/${this.pending_requests.data[this.pending_requests.delete_index].uid}/respond/`, {
+					accepted: false,
+					...this.pending_requests.modals.reject_reason.content
 				})
 				.then(_ => {
 					this.pending_requests.data.splice(this.pending_requests.delete_index, 1);
+					this.clear_and_close_reject_reason_modal();
 				})
 				.catch(error => {
 					this.pending_requests.errors = error.response.data;

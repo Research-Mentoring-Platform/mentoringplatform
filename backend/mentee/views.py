@@ -6,7 +6,7 @@ from main.mixins import ViewSetPermissionByMethodMixin
 from mentee import permissions as mentee_permissions
 from mentee.models import Mentee, MenteeDesignation, MenteeDepartment, MenteeDiscipline, MenteeEducation, MenteeResearch
 from mentee.serializers import MenteeSerializer, MenteeDepartmentSerializer, MenteeDisciplineSerializer, \
-    MenteeDesignationSerializer, MenteeEducationSerializer, MenteeResearchSerializer
+    MenteeDesignationSerializer, MenteeEducationSerializer, MenteeResearchSerializer, MenteeViewSerializer
 
 
 class MenteeViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
@@ -20,6 +20,17 @@ class MenteeViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
     lookup_field = 'uid'
     queryset = Mentee.objects.all()
     serializer_class = MenteeSerializer
+
+    def update(self, request, *args, **kwargs):
+        ret = super().update(request, *args, **kwargs)
+        request.user.mentee.profile_completed = True
+        request.user.mentee.save()
+        return ret
+
+    def get_serializer_class(self):
+        if self.request.method.lower() == 'get':
+            return MenteeViewSerializer
+        return MenteeSerializer
 
 
 class MenteeDepartmentViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):

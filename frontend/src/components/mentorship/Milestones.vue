@@ -56,9 +56,13 @@
 			</header>
 
 			<section class="modal-card-body has-text-left">
-				<InputBox input_type="datetime-local" v-model="milestones.modals.milestone.content.date"
+				<InputBox input_type="text" v-model="milestones.modals.milestone.content.title"
+						  v-bind:errors="milestones.modals.milestone.errors.title"
+						  label="Title" icon="fas fa-heading" />
+
+				<InputBox input_type="date" v-model="milestones.modals.milestone.content.date"
 						  v-bind:errors="milestones.modals.milestone.errors.date"
-						  label="Date & Time" icon="fas fa-calendar" />
+						  label="Date" icon="fas fa-calendar" />
 
 				<InputBox input_type="textarea" v-model="milestones.modals.milestone.content.description"
 						  v-bind:errors="milestones.modals.milestone.errors.description"
@@ -195,6 +199,7 @@ export default {
 
 		add_milestone()
 		{
+			console.log(this.milestones.modals.milestone.content);
 			axios
 				.post("/api/mentorship/milestone/", {
 					...this.milestones.modals.milestone.content,
@@ -223,6 +228,7 @@ export default {
 
 		update_milestone()
 		{
+			console.log(this.milestones.modals.milestone.content);
 			if (this.milestones.edit_index < 0 || this.milestones.edit_index >= this.milestones.data.length) { return; }
 
 			axios

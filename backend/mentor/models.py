@@ -22,10 +22,10 @@ class Mentor(models.Model):
                                    null=True)
     specialization = models.TextField(max_length=256, blank=True)
     # Additional fields: Education, Research
-    expected_min_mentorship_duration = models.DurationField(null=True,
-                                                            blank=True)  # 1 month / 2 month / No min duration
-    expected_max_mentorship_duration = models.DurationField(null=True,
-                                                            blank=True)  # 3 month / 4 month / No max duration
+    expected_min_mentorship_duration = models.PositiveSmallIntegerField(null=True,
+                                                                        blank=True)  # 1 month / 2 month / No min duration
+    expected_max_mentorship_duration = models.PositiveSmallIntegerField(null=True,
+                                                                        blank=True)  # 3 month / 4 month / No max duration
     is_accepting_mentorship_requests = models.BooleanField(default=True)
     accepted_mentee_types = models.ManyToManyField('mentee.MenteeDesignation', blank=True)
     responsibilities = models.ManyToManyField('mentor.MentorResponsibility', blank=True)

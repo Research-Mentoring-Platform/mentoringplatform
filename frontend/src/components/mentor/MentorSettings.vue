@@ -10,13 +10,14 @@
 			<div class="control">
 				<div v-if="allow_editing" class="select is-fullwidth">
 					<select v-model="settings.selected.expected_min_mentorship_duration">
+						<option v-bind:value="null" selected="selected">No minimum duration</option>
 						<option v-for="min_duration in 18" v-bind:value="min_duration">
 							{{ min_duration }} months
 						</option>
 					</select>
 				</div>
 				<div v-else class="box is-rounded p-3">
-					{{ settings.selected.expected_min_mentorship_duration }}
+					{{ settings.selected.expected_min_mentorship_duration || "No minimum duration" }}
 				</div>
 
 				<FormErrors v-bind:errors="settings.errors.expected_min_mentorship_duration" />
@@ -28,14 +29,14 @@
 			<div class="control">
 				<div v-if="allow_editing" class="select is-fullwidth">
 					<select v-model="settings.selected.expected_max_mentorship_duration">
-						<option value="" selected="selected">No maximum duration</option>
+						<option v-bind:value="null" selected="selected">No maximum duration</option>
 						<option v-for="max_duration in 18" v-bind:value="max_duration">
 							{{ max_duration }} months
 						</option>
 					</select>
 				</div>
 				<div v-else class="box is-rounded p-3">
-					{{ settings.selected.expected_max_mentorship_duration }}
+					{{ settings.selected.expected_max_mentorship_duration || "No maximum duration" }}
 				</div>
 
 				<FormErrors v-bind:errors="settings.errors.expected_max_mentorship_duration" />
@@ -82,14 +83,14 @@
 						</li>
 					</ul>
 				</div>
-				<div v-else>
-					<ul v-if="settings.selected.accepted_mentee_types.length === 0">
+				<div v-else class="content">
+					<ul v-if="settings.selected.accepted_mentee_types.length === 0" style="list-style: none;">
 						<li class="has-text-centered has-text-weight-bold p-3">
 							No accepted mentee types
 						</li>
 					</ul>
-					<ul v-else style="display: list-item; list-style-type: disc">
-						<li v-for="mentee_type in settings.selected.accepted_mentee_types">
+					<ul v-else>
+						<li v-for="mentee_type in settings.selected.accepted_mentee_type_labels" class="pb-2">
 							{{ mentee_type }}
 						</li>
 					</ul>
@@ -111,14 +112,14 @@
 						</li>
 					</ul>
 				</div>
-				<div v-else>
+				<div v-else class="content">
 					<ul v-if="settings.selected.responsibilities.length === 0">
 						<li class="box has-text-centered has-text-weight-bold p-3">
 							No responsibilities
 						</li>
 					</ul>
-					<ul v-else style="display: list-item; list-style-type: disc">
-						<li v-for="responsibility in settings.selected.responsibilities">
+					<ul v-else>
+						<li v-for="responsibility in settings.selected.responsibility_descriptions" class="pb-2">
 							{{ responsibility }}
 						</li>
 					</ul>
@@ -132,7 +133,7 @@
 				<div v-if="allow_editing">
 					<textarea class="textarea" v-model="settings.selected.other_responsibility"></textarea>
 				</div>
-				<div v-else class="box p-2">
+				<div v-else class="box p-3">
 					{{ settings.selected.other_responsibility }}
 				</div>
 			</div>
@@ -197,7 +198,9 @@ export default {
 					expected_max_mentorship_duration: "",
 					is_accepting_mentorship_requests: true,
 					accepted_mentee_types: [], // UIDs of the mentee types
+					accepted_mentee_type_labels: [], // Labels of the mentee types
 					responsibilities: [], // UIDs of the responsibilities
+					responsibility_descriptions: [], // Labels of the responsibilities
 					other_responsibility: "",
 				}
 			}
@@ -224,6 +227,7 @@ export default {
 			axios
 				.get("/api/mentor/responsibility/")
 				.then(response => {
+					console.log(response.data);
 					this.settings.options.responsibilities = response.data;
 				})
 				.catch(error => {
@@ -234,11 +238,7 @@ export default {
 		get_currently_selected_options()
 		{
 			axios
-				.get(`/api/mentor/mentor/${this.to_show_profile_uid}`, {
-					// params: {
-					// 	mentor:
-					// }
-				})
+				.get(`/api/mentor/mentor/${this.to_show_profile_uid}/`)
 				.then(response => {
 					console.log(response.data);
 					for (const field in this.settings.selected) {
@@ -255,7 +255,13 @@ export default {
 		{
 			if (!this.allow_editing) { return; }
 
-			console.log(this.settings.selected);
+			if (!this.settings.selected.expected_min_mentorship_duration) {
+				this.settings.selected.expected_min_mentorship_duration = null;
+			}
+
+			if (!this.settings.selected.expected_max_mentorship_duration) {
+				this.settings.selected.expected_max_mentorship_duration = null;
+			}
 
 			axios
 				.patch(`/api/mentor/mentor/${this.user.profile_uid}/`, {

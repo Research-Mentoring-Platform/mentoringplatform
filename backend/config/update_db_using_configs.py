@@ -43,11 +43,10 @@ def add_test_user(apps, schema_editor):
             mentor.designation = random.choice(list(mentor_designation.objects.all()))
             mentor.department = random.choice(list(mentor_department.objects.all()))
             mentor.discipline = random.choice(list(mentor_discipline.objects.all()))
-            mentor.specialization = 'Random specialization...'
+            mentor.specialization = 'Mentor {} {} specialization...'.format(user.first_name, user.last_name)
             mentor.responsibilities.set(random.sample(list(mentor_responsibility.objects.all()),
                                                       random.randint(1, mentor_responsibility.objects.all().count())))
             mentor.save()
-
 
         elif user.is_mentee:  # no profile for superuser
             mentee = mentee_model.objects.create(user=user)
@@ -55,7 +54,7 @@ def add_test_user(apps, schema_editor):
             mentee.designation = random.choice(list(mentee_designation.objects.all()))
             mentee.department = random.choice(list(mentee_department.objects.all()))
             mentee.discipline = random.choice(list(mentee_discipline.objects.all()))
-            mentee.specialization = 'Random specialization...'
+            mentee.specialization = 'Mentee {} {} specialization...'.format(user.first_name, user.last_name)
             mentee.save()
 
 

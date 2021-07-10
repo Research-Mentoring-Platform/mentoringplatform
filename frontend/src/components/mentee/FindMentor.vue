@@ -156,12 +156,18 @@
 import axios from "../../api/my-axios";
 import InputBox from "../FormHelpers/InputBox";
 import FormErrors from "../FormHelpers/FormErrors";
+import {mapState} from "vuex";
 
 export default {
 	name: "FindMentor",
 	components: {
 		FormErrors,
 		InputBox
+	},
+	computed: {
+		...mapState({
+			user: "user"
+		})
 	},
 	data() {
 		return {
@@ -213,23 +219,6 @@ export default {
 			this.show_send_request_modal = false;
 		},
 
-		send_mentorship_request()
-		{
-			axios
-				.post("/api/mentorship/request/", {
-					mentee: this.$store.state.user.profile_uid,
-					mentor: this.search_results[this.selected_mentor_index].uid, // Here, uid -> profile_uid, user -> user uid
-					...this.modal
-				})
-				.then(_ => {
-					this.search_results.splice(this.selected_mentor_index, 1);
-					this.clear_and_close_send_request_modal();
-				})
-				.catch(error => {
-					this.modal_errors = error.response.data;
-				});
-		},
-
 		get_field_options() {
 			for (const field in this.field_options) {
 				axios
@@ -245,7 +234,7 @@ export default {
 
 		find_mentors() {
 			axios
-				.get("/api/mentor/mentor/", {
+				.get("/api/mentor/mentor/find_for_mentorship/", {
 					params: {
 						search: this.search_text,
 						designation: this.selected_uid.designation,
@@ -257,9 +246,27 @@ export default {
 					this.search_results = response.data;
 				})
 				.catch(error => {
+					console.error(error);
 					this.errors = error.response ? error.response.data : {"detail": [error.message]};
 				});
-		}
+		},
+
+		send_mentorship_request()
+		{
+			axios
+				.post("/api/mentorship/request/", {
+					mentee: this.user.profile_uid,
+					mentor: this.search_results[this.selected_mentor_index].uid, // Here, uid -> profile_uid, user -> user uid
+					...this.modal
+				})
+				.then(_ => {
+					this.search_results.splice(this.selected_mentor_index, 1);
+					this.clear_and_close_send_request_modal();
+				})
+				.catch(error => {
+					this.modal_errors = error.response.data;
+				});
+		},
 	}
 }
 </script>
