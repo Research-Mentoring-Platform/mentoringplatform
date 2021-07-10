@@ -140,7 +140,7 @@ export default {
 			axios
 				.post("/api/users/user/", this.user)
 				.then(_ => {
-					this.$router.replace({ name: "Login" });
+					this.$router.replace({ name: "VerifyToken" });
 				})
 				.catch(error => {
 					this.errors = error.response.data;

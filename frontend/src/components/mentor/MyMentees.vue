@@ -1,18 +1,26 @@
 <template>
 <div class="container">
 	<div class="title has-text-centered">
-		My Mentors
+		My Mentees
 	</div>
 
 	<FormErrors v-bind:errors="mentorships.errors.detail" />
 
 	<div class="columns is-centered">
 		<div class="column is-5" style="max-height: min(600px, 60vh); overflow-y: auto;">
-			<ul>
+			<ul v-if="mentorships.data.length === 0">
+				<li class="box has-text-centered is-centered has-text-weight-bold has-background-white">
+					No mentees
+				</li>
+			</ul>
+			<ul v-else>
 				<li v-for="mentorship in mentorships.data" class="box is-rounded mb-4">
 					<div class="columns is-vcentered">
 						<div class="column">
-							{{ mentorship.mentor }}
+							<router-link v-bind:to="{ name: 'MenteeProfile', params: { profile_uid: mentorship.mentee } }"
+										 class="hyperlink">
+							{{ mentorship.mentee_name }}
+							</router-link>
 						</div>
 
 						<div class="column is-narrow">
@@ -77,7 +85,6 @@ export default {
 					}
 				})
 				.then(response => {
-					console.log(response.data);
 					this.mentorships.data = response.data;
 				})
 				.catch(error => {

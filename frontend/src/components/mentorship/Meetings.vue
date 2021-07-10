@@ -16,7 +16,7 @@
 
 	<!-- MEETING RECORDS -->
 	<ul v-if="meetings.data.length === 0">
-		<li class="box is-centered has-text-weight-bold has-background-white">
+		<li class="box has-text-centered is-centered has-text-weight-bold has-background-white">
 			No data
 		</li>
 	</ul>
@@ -61,6 +61,7 @@
 						  v-bind:errors="meetings.modals.meeting.errors.title"
 						  label="Title" />
 
+				<!-- TODO Modal not able to read date_time -->
 				<InputBox input_type="datetime-local" v-model="meetings.modals.meeting.content.date_time"
 						  v-bind:errors="meetings.modals.meeting.errors.date_time"
 						  label="Date & Time" icon="fas fa-calendar" />
@@ -125,8 +126,8 @@
 						  v-bind:errors="meeting_summaries.modals.summary.errors.todos"
 						  label="Todos" icon="fas fa-calendar" />
 
-				<InputBox input_type="datetime-local" v-model="meeting_summaries.modals.summary.content.next_meeting_date"
-						  v-bind:errors="meeting_summaries.modals.summary.errors.next_meeting_date"
+				<InputBox input_type="datetime-local" v-model="meeting_summaries.modals.summary.content.next_meeting_date_time"
+						  v-bind:errors="meeting_summaries.modals.summary.errors.next_meeting_date_time"
 						  label="Next Meeting Date & Time" icon="fas fa-info-circle"/>
 
 				<InputBox input_type="textarea" v-model="meeting_summaries.modals.summary.content.next_meeting_agenda"
@@ -247,7 +248,7 @@ export default {
 							duration: "",
 							description: "",
 							todos: "",
-							next_meeting_date: "", // TODO Rename to next_meeting_date_time
+							next_meeting_date_time: "",
 							next_meeting_agenda: ""
 						},
 						errors: {}
@@ -260,7 +261,7 @@ export default {
 						duration: "",
 						description: "",
 						todos: "",
-						next_meeting_date: "",
+						next_meeting_date_time: "",
 						next_meeting_agenda: ""
 					}
 				],
@@ -357,7 +358,7 @@ export default {
 			for (const key in this.meetings.modals.meeting.content) {
 				this.meetings.modals.meeting.content[key] = this.meetings.data[this.meetings.edit_index][key];
 			}
-
+			console.log(this.meetings.modals.meeting.content);
 			this.meetings.modals.meeting.show = true;
 		},
 

@@ -8,11 +8,19 @@
 
 	<div class="columns is-centered">
 		<div class="column is-5" style="max-height: min(600px, 60vh); overflow-y: auto;">
-			<ul>
+			<ul v-if="mentorships.data.length === 0">
+				<li class="box has-text-centered is-centered has-text-weight-bold has-background-white">
+					No mentors
+				</li>
+			</ul>
+			<ul v-else>
 				<li v-for="mentorship in mentorships.data" class="box is-rounded mb-4">
 					<div class="columns is-vcentered">
 						<div class="column">
-							{{ mentorship.mentor }}
+							<router-link v-bind:to="{ name: 'MentorProfile', params: { profile_uid: mentorship.mentor } }"
+										 class="hyperlink">
+								{{ mentorship.mentor_name }}
+							</router-link>
 						</div>
 
 						<div class="column is-narrow">
@@ -76,7 +84,6 @@ export default {
 					}
 				})
 				.then(response => {
-					console.log(response.data);
 					this.mentorships.data = response.data;
 				})
 				.catch(error => {

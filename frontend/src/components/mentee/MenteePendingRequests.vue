@@ -8,11 +8,19 @@
 
 	<div class="columns is-centered">
 		<div class="column is-5" style="max-height: min(600px, 60vh); overflow-y: auto;">
-			<ul>
+			<ul v-if="pending_requests.data.length === 0">
+				<li class="box has-text-centered is-centered has-text-weight-bold has-background-white">
+					No pending requests
+				</li>
+			</ul>
+			<ul v-else>
 				<li v-for="(pending_request, index) in pending_requests.data" class="box is-rounded mb-4">
 					<div class="columns is-vcentered">
 						<div class="column">
-							{{ pending_request.mentor }}
+							<router-link v-bind:to="{ name: 'MentorProfile', params: { profile_uid: pending_request.mentor } }"
+										 class="hyperlink">
+								{{ pending_request.mentor_name }}
+							 </router-link>
 						</div>
 
 						<div class="column is-narrow">
@@ -37,10 +45,6 @@ export default {
 	data() {
 		return {
 			pending_requests: {
-				request_token: {
-
-				},
-
 				errors: {},
 
 				data: [
@@ -55,21 +59,17 @@ export default {
 		...mapState({
 			user: "user"
 		}),
-		// ...mapGetters({
-		// 	role: "role"
-		// })
 	},
 	created() {
-		this.pending_requests.request_token.mentee = this.user.profile_uid;
 		this.get_pending_mentorship_requests();
 	},
 	methods: {
 		get_pending_mentorship_requests()
 		{
 			axios
-				.get("/api/mentorship/request/", {
+				.get("/api/mentorship/request/pending/", {
 					params: {
-						...this.pending_requests.request_token
+						mentee: this.user.profile_uid
 					}
 				})
 				.then(response => {
@@ -86,10 +86,6 @@ export default {
 
 			axios
 				.delete(`/api/mentorship/request/${this.pending_requests.data[index].uid}/`, {
-					data: {
-						mentor: this.pending_requests[index].mentor,
-						...this.pending_requests.request_token,
-					}
 				})
 				.then(_ => {
 					this.pending_requests.data.splice(index, 1);

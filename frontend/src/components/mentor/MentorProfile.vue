@@ -1,9 +1,9 @@
 <template>
 <div class="container">
-	<div class="columns is-vcentered">
+	<div v-if="!is_loading" class="columns is-vcentered">
 		<div class="column is-offset-1 is-3">
 			<div class="title has-text-centered">
-				Mentor Profile
+				{{ mentor.first_name }} {{ mentor.last_name }}'s Profile
 			</div>
 
 			<button v-on:click="to_show='Experience'" class="button is-primary is-fullwidth mb-3">
@@ -38,6 +38,8 @@ import Experience from "../common/Experience";
 import Education from "../common/Education";
 import Research from "../common/Research";
 import MentorSettings from "./MentorSettings";
+import {mapState} from "vuex";
+import axios from "../../api/my-axios";
 
 export default {
 	name: "MentorProfile",
@@ -47,10 +49,41 @@ export default {
 		Research,
 		MentorSettings
 	},
+	computed: {
+		...mapState({
+			user: "user"
+		})
+	},
 	data() {
 		return {
+			mentee: {},
+			is_loading: true,
 			to_show: "Experience",
 		};
+	},
+	created()
+	{
+		if (this.user.is_mentor) {
+			this.mentor = this.user;
+			this.is_loading = false;
+		}
+		else { // Mentor is accessing
+			this.get_mentor_details();
+		}
+	},
+	methods: {
+		get_mentor_details()
+		{
+			axios
+				.get(`/api/mentor/mentor/${this.$route.params.profile_uid}/`)
+				.then(response => {
+					this.mentor = response.data;
+					this.is_loading = false; // Important
+				})
+				.catch(error => {
+					console.error(error);
+				});
+		}
 	}
 }
 </script>

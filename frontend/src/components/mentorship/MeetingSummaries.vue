@@ -223,6 +223,7 @@ export default {
 
 		add_meeting_summary()
 		{
+			console.log(this.meeting_summaries.modals.summary);
 			axios
 				.post("/api/mentorship/meeting-summary/", {
 					...this.meeting_summaries.modals.summary.content,

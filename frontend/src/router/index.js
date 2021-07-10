@@ -26,6 +26,7 @@ import FindMentor from "../components/mentee/FindMentor";
 import Milestones from "../components/mentorship/Milestones";
 import Mentorship from "../components/mentorship/Mentorship";
 import MentorSettings from "../components/mentor/MentorSettings";
+import VerifyToken from "../views/VerifyToken";
 
 
 // TODO Look for lazy loading for routes
@@ -40,6 +41,12 @@ const routes = [
 		path: "/about",
 		name: "About",
 		component: About
+	},
+	{
+		path: "/verify-token",
+		name: "VerifyToken",
+		component: VerifyToken,
+		meta: { requires_visitor: true }
 	},
 	{
 		path: "/register-mentor",
@@ -60,12 +67,6 @@ const routes = [
 		name: "Login",
 		component: Login,
 		meta: {	requires_visitor: true }
-	},
-	{
-		path: "/test",
-		name: "Test",
-		component: MentorSettings,
-		meta: { requires_auth: true }
 	},
 	{
 		path: "/mentor",
@@ -111,33 +112,38 @@ const routes = [
 		path: "/mentee",
 		name: "Mentee",
 		component: MenteeBase,
-		meta: { requires_auth: true, requires_mentee: true },
+		meta: { requires_auth: true },
 
 		children: [
 			{
-				path: "profile",
+				path: "profile/:profile_uid?",
 				name: "MenteeProfile",
-				component: MenteeProfile
+				component: MenteeProfile,
+				// meta: { requires_mentee: true }
 			},
 			{
 				path: "profile-settings",
 				name: "MenteeProfileSettings",
-				component: MenteeProfileSettings
+				component: MenteeProfileSettings,
+				meta: { requires_mentee: true }
 			},
 			{
 				path: "pending-requests",
 				name: "MenteePendingRequests",
-				component: MenteePendingRequests
+				component: MenteePendingRequests,
+				meta: { requires_mentee: true }
 			},
 			{
 				path: "my-mentors",
 				name: "MyMentors",
-				component: MyMentors
+				component: MyMentors,
+				meta: { requires_mentee: true }
 			},
 			{
 				path: "find-mentor",
 				name: "FindMentor",
 				component: FindMentor,
+				meta: { requires_mentee: true }
 			},
 		]
 	},
