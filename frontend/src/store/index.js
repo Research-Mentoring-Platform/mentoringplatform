@@ -25,7 +25,14 @@ const store = createStore({
 
 		role(state)
 		{
-			return state.user.is_mentor ? "mentor" : "mentee";
+			if (state.user.is_mentor) {
+				return "mentor";
+			}
+			else if (state.user.is_mentee) {
+				return "mentee";
+			}
+
+			return null;
 		}
 	},
 	mutations: {

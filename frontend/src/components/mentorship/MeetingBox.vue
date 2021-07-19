@@ -47,7 +47,6 @@
 
 <script>
 export default {
-	name: "MeetingBox",
 	props: {
 		meeting: {
 			type: Object

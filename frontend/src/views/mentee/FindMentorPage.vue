@@ -98,7 +98,7 @@
 					<li v-for="(mentor, index) in search_results" class="box py-4 my-3">
 						<div class="columns is-mobile is-vcentered">
 							<div class="column">
-								<router-link v-bind:to="{ name: 'MentorProfile', params: { profile_uid: mentor.uid } }" class="hyperlink">
+								<router-link v-bind:to="{ name: 'MentorProfilePage', params: { profile_uid: mentor.uid } }" class="hyperlink">
 									{{ mentor.first_name }} {{ mentor.last_name }}
 								</router-link>
 
@@ -154,12 +154,11 @@
 
 <script>
 import axios from "../../api/my-axios";
-import InputBox from "../FormHelpers/InputBox";
-import FormErrors from "../FormHelpers/FormErrors";
+import InputBox from "../../components/FormHelpers/InputBox";
+import FormErrors from "../../components/FormHelpers/FormErrors";
 import {mapState} from "vuex";
 
 export default {
-	name: "FindMentor",
 	components: {
 		FormErrors,
 		InputBox

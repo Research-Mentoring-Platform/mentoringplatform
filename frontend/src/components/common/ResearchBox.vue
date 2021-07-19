@@ -41,7 +41,6 @@
 
 <script>
 export default {
-	name: "ResearchBox",
 	props: {
 		is_editable: {
 			type: Boolean,

@@ -40,7 +40,6 @@ import Education from "../common/Education";
 import Research from "../common/Research";
 
 export default {
-	name: "MenteeProfileAlternate",
 	components: {
 		Experience,
 		Education,

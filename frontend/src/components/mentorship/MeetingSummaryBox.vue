@@ -39,7 +39,6 @@
 
 <script>
 export default {
-	name: "MeetingSummaryBox",
 	props: {
 		meeting_summary: {
 			type: Object

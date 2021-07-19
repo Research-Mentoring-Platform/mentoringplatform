@@ -41,7 +41,6 @@
 
 <script>
 export default {
-	name: "EducationBox",
 	props: {
 		is_editable: {
 			type: Boolean,

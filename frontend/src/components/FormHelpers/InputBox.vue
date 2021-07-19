@@ -37,7 +37,6 @@
 import FormErrors from "./FormErrors";
 
 export default {
-	name: "InputBox",
 	components: {
 		FormErrors
 	},

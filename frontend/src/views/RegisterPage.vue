@@ -82,11 +82,10 @@
 
 <script>
 import axios from "../api/my-axios";
-import InputBox from "./FormHelpers/InputBox";
-import FormErrors from "./FormHelpers/FormErrors";
+import InputBox from "../components/FormHelpers/InputBox";
+import FormErrors from "../components/FormHelpers/FormErrors";
 
 export default {
-	name: "Register",
 	components: {
 		InputBox,
 		FormErrors
@@ -140,7 +139,7 @@ export default {
 			axios
 				.post("/api/users/user/", this.user)
 				.then(_ => {
-					this.$router.replace({ name: "VerifyToken" });
+					this.$router.replace({ name: "VerifyTokenPage" });
 				})
 				.catch(error => {
 					this.errors = error.response.data;

@@ -166,7 +166,6 @@ import InputBox from "../FormHelpers/InputBox";
 import FormErrors from "../FormHelpers/FormErrors";
 
 export default {
-	name: "Meetings",
 	components: {
 		MeetingBox,
 		InputBox,
@@ -283,7 +282,7 @@ export default {
 			this.meeting_summaries.request_token.mentor = this.user.profile_uid;
 			this.meeting_summaries.request_token.mentee = this.profile_uid;
 		}
-		else {
+		else if (this.user.is_mentee) {
 			this.meeting_summaries.request_token.mentor = this.profile_uid;
 			this.meeting_summaries.request_token.mentee = this.user.profile_uid;
 		}

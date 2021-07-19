@@ -22,18 +22,18 @@
 			</div>
 
 			<div class="pt-3 has-text-centered">
-				<a class="has-text-centered hyperlink">
+				<router-link v-bind:to="{ name: 'ForgotPasswordPage' }" class="has-text-centered hyperlink">
 					Forgot password?
-				</a>
+				</router-link>
 			</div>
 
 			<div class="pt-3 has-text-centered">
 				Don't have an account? Register as a
-				<router-link v-bind:to="{ name: 'RegisterMentor' }" class="hyperlink">
+				<router-link v-bind:to="{ name: 'RegisterMentorPage' }" class="hyperlink">
 					mentor
 				</router-link>
 				or
-				<router-link v-bind:to="{ name: 'RegisterMentee' }" class="hyperlink">
+				<router-link v-bind:to="{ name: 'RegisterMenteePage' }" class="hyperlink">
 					mentee
 				</router-link>
 				.
@@ -46,7 +46,7 @@
 
 <script>
 import axios from "../api/my-axios";
-import InputBox from "./FormHelpers/InputBox";
+import InputBox from "../components/FormHelpers/InputBox";
 import FormErrors from "../components/FormHelpers/FormErrors";
 
 export default {
@@ -82,10 +82,10 @@ export default {
 
 							// TODO Also check if profile already completed. If so, redirect to Home instead
 							if (user_data.data.is_mentor) {
-								this.$router.replace({ name: "MentorProfileSettings" });
+								this.$router.replace({ name: "MentorProfileSettingsPage" });
 							}
 							else if (user_data.data.is_mentee) {
-								this.$router.replace({ name: "MenteeProfileSettings" });
+								this.$router.replace({ name: "MenteeProfileSettingsPage" });
 							}
 						})
 						.catch(error => {
