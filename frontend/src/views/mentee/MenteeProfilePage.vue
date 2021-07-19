@@ -30,14 +30,13 @@
 
 
 <script>
-import Experience from "../common/Experience";
-import Education from "../common/Education";
-import Research from "../common/Research";
+import Experience from "../../components/common/Experience";
+import Education from "../../components/common/Education";
+import Research from "../../components/common/Research";
 import axios from "../../api/my-axios";
 import {mapState} from "vuex";
 
 export default {
-	name: "MenteeProfile",
 	components: {
 		Experience,
 		Education,

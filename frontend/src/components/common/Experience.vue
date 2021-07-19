@@ -86,7 +86,6 @@ import FormErrors from "../FormHelpers/FormErrors";
 import InputBox from "../FormHelpers/InputBox";
 
 export default {
-	name: "Experience",
 	components: {
 		InputBox,
 		FormErrors

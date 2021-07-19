@@ -35,7 +35,6 @@
 
 <script>
 export default {
-	name: "MilestoneBox",
 	props: {
 		milestone: {
 			type: Object

@@ -17,7 +17,7 @@
 				<li v-for="(pending_request, index) in pending_requests.data" class="box is-rounded mb-4">
 					<div class="columns is-vcentered">
 						<div class="column">
-							<router-link v-bind:to="{ name: 'MentorProfile', params: { profile_uid: pending_request.mentor } }"
+							<router-link v-bind:to="{ name: 'MentorProfilePage', params: { profile_uid: pending_request.mentor } }"
 										 class="hyperlink">
 								{{ pending_request.mentor_name }}
 							 </router-link>
@@ -37,11 +37,17 @@
 <script>
 import { mapGetters, mapState } from "vuex";
 import axios from "../../api/my-axios";
-import FormErrors from "../FormHelpers/FormErrors";
+import FormErrors from "../../components/FormHelpers/FormErrors";
 
 export default {
-	name: "MenteePendingRequests",
-	components: {FormErrors},
+	components: {
+		FormErrors
+	},
+	computed: {
+		...mapState({
+			user: "user"
+		}),
+	},
 	data() {
 		return {
 			pending_requests: {
@@ -54,11 +60,6 @@ export default {
 				],
 			}
 		};
-	},
-	computed: {
-		...mapState({
-			user: "user"
-		}),
 	},
 	created() {
 		this.get_pending_mentorship_requests();

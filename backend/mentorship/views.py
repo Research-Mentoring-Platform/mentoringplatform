@@ -1,5 +1,4 @@
-from datetime import datetime
-
+from django.utils import timezone
 from rest_framework import exceptions as rest_exceptions
 from rest_framework import permissions as rest_permissions
 from rest_framework import viewsets, status
@@ -50,7 +49,7 @@ class MentorshipViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
         obj = self.get_object()
         if obj.status == MentorshipStatus.ONGOING:
             obj.status = MentorshipStatus.FINISHED
-            obj.end_date = datetime.now()
+            obj.end_date = timezone.now()
             obj.save()
             return Response(status=status.HTTP_200_OK)
 
@@ -61,7 +60,7 @@ class MentorshipViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
         obj = self.get_object()
         if obj.status == MentorshipStatus.ONGOING:
             obj.status = MentorshipStatus.TERMINATED
-            obj.end_date = datetime.now()
+            obj.end_date = timezone.now()
             obj.save()
             return Response(status=status.HTTP_200_OK)
 
@@ -155,7 +154,7 @@ class MeetingViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
-        if obj.date_time < datetime.now():
+        if obj.date_time < timezone.now():
             raise rest_exceptions.PermissionDenied('Cannot delete a past meeting.')
 
         return super().destroy(request, *args, **kwargs)

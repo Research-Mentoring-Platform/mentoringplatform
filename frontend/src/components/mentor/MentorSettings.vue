@@ -153,7 +153,6 @@ import axios from "../../api/my-axios";
 import FormErrors from "../FormHelpers/FormErrors";
 
 export default {
-	name: "MentorSettings",
 	components: {
 		FormErrors,
 	},

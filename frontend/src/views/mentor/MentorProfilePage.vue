@@ -34,15 +34,14 @@
 
 
 <script>
-import Experience from "../common/Experience";
-import Education from "../common/Education";
-import Research from "../common/Research";
-import MentorSettings from "./MentorSettings";
-import {mapState} from "vuex";
+import { mapState } from "vuex";
 import axios from "../../api/my-axios";
+import Experience from "../../components/common/Experience";
+import Education from "../../components/common/Education";
+import Research from "../../components/common/Research";
+import MentorSettings from "../../components/mentor/MentorSettings";
 
 export default {
-	name: "MentorProfile",
 	components: {
 		Experience,
 		Education,
@@ -67,7 +66,7 @@ export default {
 			this.mentor = this.user;
 			this.is_loading = false;
 		}
-		else { // Mentor is accessing
+		else { // Mentee is accessing
 			this.get_mentor_details();
 		}
 	},

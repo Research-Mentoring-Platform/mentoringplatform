@@ -4,8 +4,8 @@ import router from "./router";
 import store from "./store";
 
 // Importing the stylesheets
-import "./assets/bulma.min.css";
-import "./assets/global.css";
+import "./assets/styles/bulma.min.css";
+import "./assets/styles/common.css";
 
 const app = createApp(App);
 app.use(store);

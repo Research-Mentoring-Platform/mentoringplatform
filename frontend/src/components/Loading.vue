@@ -9,7 +9,6 @@
 import { mapState } from "vuex";
 
 export default {
-	name: "Loading",
 	computed: {
 		...mapState({
 			show_loading: "show_loading"

@@ -18,14 +18,13 @@
 
 
 <script>
-import Meetings from "./Meetings";
-import MeetingSummaries from "./MeetingSummaries";
-import Milestones from "./Milestones";
+import Meetings from "../../components/mentorship/Meetings";
+import MeetingSummaries from "../../components/mentorship/MeetingSummaries";
+import Milestones from "../../components/mentorship/Milestones";
 import {mapGetters, mapState} from "vuex";
 import axios from "../../api/my-axios";
 
 export default {
-	name: "Mentorship",
 	components: {
 		Meetings,
 		MeetingSummaries,
@@ -53,20 +52,20 @@ export default {
 			})
 			.then(response => {
 				if (!response.data) {
-					this.$router.replace({ name: "Home" });
+					this.$router.replace({ name: "HomePage" });
 				}
 
 				// TODO Is the following check needed?
 				// const mentorship = response.data[0];
 				// if (mentorship[this.role] !== this.user.profile_uid) {
-				// 	this.$router.replace({ name: "Home" });
+				// 	this.$router.replace({ name: "HomePage" });
 				// }
 
 				this.is_loading = false; // Important
 			})
 			.catch(error => {
 				console.error(error);
-				this.$router.replace({ name: "Home" });
+				this.$router.replace({ name: "HomePage" });
 			});
 	}
 }

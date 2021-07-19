@@ -6,10 +6,9 @@ from django.core import exceptions as django_exceptions
 from rest_framework import exceptions as rest_exceptions
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainSlidingSerializer
-from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 
-from users.methods import verify_login
-from users.models import CustomUser
+from users.methods import verify_login, invalidate_old_authentication_token
+from users.models import CustomUser, ForgotPasswordToken
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -74,16 +73,18 @@ class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
         fields = ('current_password', 'new_password',)
 
     def validate(self, attrs):
+        data = super().validate(attrs)
         user = self.context['request'].user
-        if not user.check_password(attrs['current_password']):
+        if not user.check_password(data['current_password']):
             raise rest_exceptions.ValidationError(dict(current_password='Invalid current password'))
 
-        if attrs['current_password'] == attrs['new_password']:
+        if data['current_password'] == data['new_password']:
             raise rest_exceptions.ValidationError(dict(new_password='New password cannot be the same as the '
                                                                     'previous password.'))
+
         try:
-            validate_password(attrs['new_password'])
-            return attrs
+            validate_password(data['new_password'])
+            return data
         except django_exceptions.ValidationError as e:
             raise rest_exceptions.ValidationError(dict(new_password='\n'.join(e.messages)))
 
@@ -93,14 +94,7 @@ class CustomUserPasswordUpdateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.set_password(validated_data['new_password'])
         instance.save()
-
-        outstanding_tokens = OutstandingToken.objects.filter(user__pk=instance.pk)
-        for out_token in outstanding_tokens:
-            if hasattr(out_token, 'blacklistedtoken'):  # Token already blacklisted. Skip
-                continue
-
-            BlacklistedToken.objects.create(token=out_token)
-
+        invalidate_old_authentication_token(instance)
         return instance
 
 
@@ -114,10 +108,40 @@ class CustomTokenObtainSlidingSerializer(TokenObtainSlidingSerializer):
         return data
 
 
-class CustomUserEmailVerificationSerializer(serializers.Serializer):
-    email_verification_token = serializers.CharField()
+class CustomUserForgotPasswordSerializer(serializers.Serializer):
+    token = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    class Meta:
+        model = get_user_model()
+        fields = ('token', 'new_password',)
 
     def validate(self, attrs):
         data = super().validate(attrs)
-        email_verification_token = data['email_verification_token']
-        user = CustomUser.objects.get(email_verification_token=email_verification_token)
+        token = ForgotPasswordToken.objects.filter(token=data['token'])
+        if not token.exists():
+            raise rest_exceptions.ValidationError(dict(token='Invalid token'))
+
+        token = token.first()
+        if token.is_expired:
+            raise rest_exceptions.ValidationError(dict(token='Token expired. Generate a new one.'))
+
+        if token.user.check_password(data['new_password']):
+            raise rest_exceptions.ValidationError(dict(new_password='New password cannot be the same as the '
+                                                                    'previous password.'))
+
+        try:
+            validate_password(data['new_password'])
+            return data
+        except django_exceptions.ValidationError as e:
+            raise rest_exceptions.ValidationError(dict(new_password='\n'.join(e.messages)))
+
+
+class CustomUserForgotPasswordTokenSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        if not CustomUser.objects.filter(email=value).exists():
+            raise rest_exceptions.ValidationError(dict(email='No user with given email exists.'))
+
+        return value

@@ -99,7 +99,6 @@ import InputBox from "../FormHelpers/InputBox";
 import FormErrors from "../FormHelpers/FormErrors";
 
 export default {
-	name: "Milestones",
 	components: {
 		MilestoneBox,
 		InputBox,

@@ -26,16 +26,16 @@
 
 
 <script>
-import Experience from "../common/Experience";
-import Education from "../common/Education";
-import Research from "../common/Research";
+import Experience from "../../components/common/Experience";
+import Education from "../../components/common/Education";
+import Research from "../../components/common/Research";
 
 export default {
 	components: {
 		Experience,
 		Education,
 		Research
-	}
+	},
 }
 </script>
 

@@ -1,5 +1,4 @@
-from datetime import datetime
-
+from django.utils import timezone
 from rest_framework import exceptions as rest_exceptions
 from rest_framework import serializers
 
@@ -187,7 +186,7 @@ class MeetingSummarySerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         data = super().validate(attrs)
-        if data['meeting'].date_time > datetime.now():  # If summary is being written for a future meeting
+        if data['meeting'].date_time > timezone.now():  # If summary is being written for a future meeting
             raise rest_exceptions.ValidationError('Cannot write summary before the meeting.')
 
         if 'next_meeting_date_time' in data:
