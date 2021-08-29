@@ -1,12 +1,16 @@
 import { createRouter, createWebHistory } from "vue-router";
 import store from "../store";
 
-// Basic
+// Basic (Visitor)
 import HomePage from "../views/HomePage";
 import AboutPage from "../views/AboutPage";
 import LoginPage from "../views/LoginPage";
 import RegisterPage from "../views/RegisterPage";
 import VerifyTokenPage from "../views/VerifyTokenPage";
+import ForgotPasswordPage from "../views/ForgotPasswordPage";
+
+// Common
+import ChangePasswordPage from "../views/common/ChangePasswordPage";
 
 // Mentor
 import MentorBasePage from "../views/mentor/MentorBasePage";
@@ -26,8 +30,6 @@ import FindMentorPage from "../views/mentee/FindMentorPage";
 
 // Mentorship
 import MentorshipPage from "../views/mentorship/MentorshipPage";
-import ChangePasswordPage from "../views/common/ChangePasswordPage";
-import ForgotPasswordPage from "../views/ForgotPasswordPage";
 
 
 // TODO Look for lazy loading for routes

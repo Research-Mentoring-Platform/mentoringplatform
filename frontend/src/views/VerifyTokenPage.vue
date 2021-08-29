@@ -37,7 +37,7 @@ export default {
 	methods: {
 		verify_token() {
 			axios
-				.get(`/api/users/user/verify-email/${this.token}`)
+				.get(`/api/users/user/verify-email/${this.token}/`)
 				.then(response => {
 					this.$router.replace({ name: "LoginPage" });
 				})
@@ -48,7 +48,3 @@ export default {
 	}
 }
 </script>
-
-<style scoped>
-
-</style>
