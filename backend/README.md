@@ -1,3 +1,22 @@
+- [Backend setup](#backend-setup)
+  * [Installation](#installation)
+    + [Environment Variables](#environment-variables)
+    + [Installing dependencies](#installing-dependencies)
+    + [Setting up database](#setting-up-database)
+    + [Running the server](#running-the-server)
+  * [Environment variables](#environment-variables)
+    + [Django](#django)
+      - [Development](#development)
+      - [Production](#production)
+    + [Database](#database)
+      - [Development](#development-1)
+      - [Production](#production-1)
+    + [Email backend](#email-backend)
+      - [Development and Production](#development-and-production)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with
+markdown-toc</a></i></small>
+
 # Backend setup
 
 ## Installation
