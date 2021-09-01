@@ -21,7 +21,7 @@ markdown-toc</a></i></small>
 
 ## Installation
 
-### Environment Variables
+### Adding environment variables
 
 Refer [this section](#environment-variables) of the README to add all the environment variables.
 
