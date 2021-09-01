@@ -1,6 +1,6 @@
 - [Backend setup](#backend-setup)
   * [Installation](#installation)
-    + [Environment Variables](#environment-variables)
+    + [Adding environment variables](#adding-environment-variables)
     + [Installing dependencies](#installing-dependencies)
     + [Setting up database](#setting-up-database)
     + [Running the server](#running-the-server)
