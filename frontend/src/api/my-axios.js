@@ -1,7 +1,7 @@
 import { default as my_axios } from "axios";
 import store from "../store";
 
-const API_URL = "http://localhost:8000/";
+const API_URL = "http://localhost:8000/"; // URL for the backend API server
 
 const axios = my_axios.create({
 	baseURL: API_URL,
