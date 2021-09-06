@@ -1,14 +1,24 @@
-import os
 from datetime import timedelta
 from pathlib import Path
+import environ
 
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
+environ.Env.read_env()
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('RMP_SECRET_KEY')
+SECRET_KEY = env('RMP_SECRET_KEY')
+DB_URL = env('RMP_DB_URL')
+EMAIL_HOST = env('RMP_EMAIL_HOST')
+EMAIL_HOST_USER = env('RMP_EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('RMP_EMAIL_HOST_PASSWORD')
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -101,7 +111,6 @@ WSGI_APPLICATION = 'main.wsgi.application'
 #     }
 # }
 
-DB_URL = os.environ.get('RMP_DB_URL')
 DATABASES = {'default': dj_database_url.parse(DB_URL, conn_max_age=600)}
 
 # Password validation
@@ -203,10 +212,3 @@ LOGGING = {
         }
     },
 }
-
-EMAIL_HOST = os.environ.get('RMP_EMAIL_HOST')
-EMAIL_HOST_USER = os.environ.get('RMP_EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('RMP_EMAIL_HOST_PASSWORD')
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
