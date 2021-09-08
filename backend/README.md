@@ -44,7 +44,12 @@ python manage.py migrate
 
 ## Environment variables
 
-Create a .env file inside backend/main with the following environment variables:
+Create a `.env` file inside `backend` folder with the following environment variables:
+
+```
+# set this to True only in development, DON'T include in production
+DEBUG=True
+```
 
 ### Django
 

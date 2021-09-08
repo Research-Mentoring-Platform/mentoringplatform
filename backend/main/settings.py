@@ -1,14 +1,22 @@
 from datetime import timedelta
-from pathlib import Path
 import environ
+import os
 
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-env = environ.Env()
-environ.Env.read_env()
+env = environ.Env(
+    # set casting, default value
+    DEBUG = (bool, False)
+)
+
+print('base dir:', BASE_DIR)
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG=env('DEBUG')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('RMP_SECRET_KEY')
@@ -19,9 +27,6 @@ EMAIL_HOST_PASSWORD = env('RMP_EMAIL_HOST_PASSWORD')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = []
 
