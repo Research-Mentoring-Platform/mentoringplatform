@@ -11,8 +11,6 @@ env = environ.Env(
     # set casting, default value
     DEBUG = (bool, False)
 )
-
-print('base dir:', BASE_DIR)
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
