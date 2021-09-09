@@ -1,17 +1,17 @@
 - [Backend setup](#backend-setup)
-  * [Installation](#installation)
-    + [Adding environment variables](#adding-environment-variables)
-    + [Installing dependencies](#installing-dependencies)
-    + [Setting up database](#setting-up-database)
-    + [Running the server](#running-the-server)
-  * [Environment variables](#environment-variables)
-    + [Django](#django)
+  - [Installation](#installation)
+    - [Adding environment variables](#adding-environment-variables)
+    - [Installing dependencies](#installing-dependencies)
+    - [Setting up database](#setting-up-database)
+    - [Running the server](#running-the-server)
+  - [Environment variables](#environment-variables)
+    - [Django](#django)
       - [Development](#development)
       - [Production](#production)
-    + [Database](#database)
+    - [Database](#database)
       - [Development](#development-1)
       - [Production](#production-1)
-    + [Email backend](#email-backend)
+    - [Email backend](#email-backend)
       - [Development and Production](#development-and-production)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with
@@ -43,6 +43,13 @@ python manage.py migrate
 `python manage.py runserver`
 
 ## Environment variables
+
+Create a `.env` file inside `backend` folder with the following environment variables:
+
+```
+# set this to True only in development, DON'T include in production
+DEBUG=True
+```
 
 ### Django
 
