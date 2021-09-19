@@ -61,6 +61,10 @@ class MentorViewSerializer(MentorSerializer):
     designation_label = serializers.SerializerMethodField(method_name='get_designation_label', read_only=True)
     department_label = serializers.SerializerMethodField(method_name='get_department_label', read_only=True)
     discipline_label = serializers.SerializerMethodField(method_name='get_discipline_label', read_only=True)
+    accepted_mentee_type_labels = serializers.SerializerMethodField(method_name='get_accepted_mentee_type_labels',
+                                                                    read_only=True)
+    responsibility_descriptions = serializers.SerializerMethodField(method_name='get_responsibility_descriptions',
+                                                                    read_only=True)
 
     class Meta(MentorSerializer.Meta):
         fields = MentorSerializer.Meta.fields + ('first_name',
@@ -68,7 +72,9 @@ class MentorViewSerializer(MentorSerializer):
                                                  'username',
                                                  'designation_label',
                                                  'department_label',
-                                                 'discipline_label')
+                                                 'discipline_label',
+                                                 'accepted_mentee_type_labels',
+                                                 'responsibility_descriptions')
 
     def get_first_name(self, instance):
         return instance.user.first_name
@@ -87,6 +93,12 @@ class MentorViewSerializer(MentorSerializer):
 
     def get_discipline_label(self, instance):
         return getattr(instance.discipline, 'label', None)
+
+    def get_accepted_mentee_type_labels(self, instance):
+        return [getattr(r, 'label', None) for r in instance.accepted_mentee_types.all()]
+
+    def get_responsibility_descriptions(self, instance):
+        return [getattr(r, 'description', None) for r in instance.responsibilities.all()]
 
     def create(self, validated_data):
         raise rest_exceptions.PermissionDenied('Invalid request.')

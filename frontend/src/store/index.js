@@ -1,9 +1,10 @@
 import { createStore } from "vuex";
 
 const store = createStore({
+	strict: true,
 	state: {
 		token: localStorage.getItem("rmp_token"),
-		current_user: JSON.parse(localStorage.getItem("rmp_current_user")) || {
+		user: JSON.parse(localStorage.getItem("rmp_user")) || {
 			uid: null,
 			profile_uid: null,
 			email: null,
@@ -13,12 +14,25 @@ const store = createStore({
 			date_of_birth: null,
 			is_mentor: false,
 			is_mentee: false,
-		}
+		},
+		show_loading: false,
 	},
 	getters: {
 		logged_in(state)
 		{
 			return state.token != null; // Not using !==
+		},
+
+		role(state)
+		{
+			if (state.user.is_mentor) {
+				return "mentor";
+			}
+			else if (state.user.is_mentee) {
+				return "mentee";
+			}
+
+			return null;
 		}
 	},
 	mutations: {
@@ -28,15 +42,13 @@ const store = createStore({
 			state.token = token;
 		},
 
-		set_current_user(state, data)
+		set_user(state, data)
 		{
-			localStorage.setItem("rmp_current_user", JSON.stringify(data)); // Stringify is needed
-			for (const key in state.current_user) {
-				state.current_user[key] = data[key];
-			}
-
 			// TODO Logout and redirect to 'Home' if this is the case
-			// if (state.is_mentor === state.is_mentee) {  }
+			// if (state.is_mentor === state.is_mentee) {}
+
+			localStorage.setItem("rmp_user", JSON.stringify(data)); // Stringify is needed
+			state.user = {...data};
 		},
 
 		update_token(state, token)
@@ -50,17 +62,22 @@ const store = createStore({
 			localStorage.removeItem("rmp_token");
 		},
 
-		destroy_current_user(state)
+		destroy_user(state)
 		{
-			state.current_user = null;
-			localStorage.removeItem("rmp_current_user");
+			state.user = {};
+			localStorage.removeItem("rmp_user");
+		},
+
+		set_show_loading(state, value)
+		{
+			state.show_loading = value;
 		}
 	},
 	actions: {
-		logout(context)
+		logout_user(context)
 		{
 			context.commit("destroy_token");
-			context.commit("destroy_current_user");
+			context.commit("destroy_user");
 		}
 	},
 	modules: {

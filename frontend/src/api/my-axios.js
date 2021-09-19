@@ -1,5 +1,7 @@
 import { default as my_axios } from "axios";
-const API_URL = "http://localhost:8000/";
+import store from "../store";
+
+const API_URL = "http://localhost:8000/"; // URL for the backend API server
 
 const axios = my_axios.create({
 	baseURL: API_URL,
@@ -8,11 +10,23 @@ const axios = my_axios.create({
 	}
 });
 
-// For setting Authorization headers automatically
+// For setting Authorization request headers automatically
 axios.interceptors.request.use((config) => {
-	const bearer_token = localStorage.getItem("rmp_token");
+	store.commit("set_show_loading", true);
+	const bearer_token = store.state.token;
 	if (bearer_token) { config.headers.Authorization = `Bearer ${bearer_token}`; }
 	return config;
+}, (error) => {
+	store.commit("set_show_loading", false);
+	return Promise.reject(error);
+});
+
+axios.interceptors.response.use((response) => {
+	store.commit("set_show_loading", false);
+	return response;
+}, (error) => {
+	store.commit("set_show_loading", false);
+	return Promise.reject(error);
 });
 
 export default axios;

@@ -1,0 +1,8 @@
+.hyperlink {
+	color: royalblue !important;
+	font-weight: bold;
+}
+
+.hyperlink:hover {
+	text-decoration: underline !important;
+}

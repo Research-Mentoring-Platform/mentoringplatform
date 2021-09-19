@@ -1,11 +1,35 @@
 import { createRouter, createWebHistory } from "vue-router";
-import store from "@/store";
-import Home from "@/views/Home.vue";
-import About from "@/views/About.vue";
-import Login from "@/components/Login.vue";
-import Register from "@/components/Register.vue";
-import MenteeProfile from "@/components/mentee/MenteeProfile.vue";
-import MentorProfile from "@/components/mentor/MentorProfile.vue";
+import store from "../store";
+
+// Basic (Visitor)
+import HomePage from "../views/HomePage";
+import AboutPage from "../views/AboutPage";
+import LoginPage from "../views/LoginPage";
+import RegisterPage from "../views/RegisterPage";
+import VerifyTokenPage from "../views/VerifyTokenPage";
+import ForgotPasswordPage from "../views/ForgotPasswordPage";
+
+// Common
+import ChangePasswordPage from "../views/common/ChangePasswordPage";
+
+// Mentor
+import MentorBasePage from "../views/mentor/MentorBasePage";
+import MentorProfilePage from "../views/mentor/MentorProfilePage";
+import MentorProfileSettingsPage from "../views/mentor/MentorProfileSettingsPage";
+import MentorPendingRequestsPage from "../views/mentor/MentorPendingRequestsPage";
+import MyMenteesPage from "../views/mentor/MyMenteesPage";
+import MentorSettingsPage from "../views/mentor/MentorSettingsPage";
+
+// Mentee
+import MenteeBasePage from "../views/mentee/MenteeBasePage";
+import MenteeProfilePage from "../views/mentee/MenteeProfilePage";
+import MenteeProfileSettingsPage from "../views/mentee/MenteeProfileSettingsPage";
+import MenteePendingRequestsPage from "../views/mentee/MenteePendingRequestsPage";
+import MyMentorsPage from "../views/mentee/MyMentorsPage";
+import FindMentorPage from "../views/mentee/FindMentorPage";
+
+// Mentorship
+import MentorshipPage from "../views/mentorship/MentorshipPage";
 
 
 // TODO Look for lazy loading for routes
@@ -13,42 +37,135 @@ import MentorProfile from "@/components/mentor/MentorProfile.vue";
 const routes = [
 	{
 		path: "/",
-		name: "Home",
-		component: Home,
-		meta: {	requires_auth: false }
+		name: "HomePage",
+		component: HomePage
 	},
 	{
 		path: "/about",
-		name: "About",
-		component: About,
-		meta: { requires_auth: false }
+		name: "AboutPage",
+		component: AboutPage
 	},
 	{
-		path: "/login",
-		name: "Login",
-		component: Login,
-		meta: {	requires_visitor: true }
+		path: "/verify-token",
+		name: "VerifyTokenPage",
+		component: VerifyTokenPage,
+		meta: { requires_visitor: true }
 	},
 	{
 		path: "/register-mentor",
-		name: "RegisterMentor",
-		component: Register,
+		name: "RegisterMentorPage",
+		component: RegisterPage,
 		props: { register_as_mentor: true },
 		meta: { requires_visitor: true }
 	},
 	{
 		path: "/register-mentee",
-		name: "RegisterMentee",
-		component: Register,
+		name: "RegisterMenteePage",
+		component: RegisterPage,
 		props: { register_as_mentor: false },
 		meta: { requires_visitor: true }
 	},
 	{
-		path: "/profile",
-		name: 'Profile',
-		component: (store.state.is_mentor === true) ? MentorProfile : MenteeProfile,
-		// The following statement gives a warning (Promise not returned)
-		// component: () => (store.state.is_mentor === true) ? MentorProfile : MenteeProfile,
+		path: "/login",
+		name: "LoginPage",
+		component: LoginPage,
+		meta: {	requires_visitor: true }
+	},
+	{
+		path: "/forgot-password",
+		name: "ForgotPasswordPage",
+		component: ForgotPasswordPage,
+		meta: {	requires_visitor: true }
+	},
+	{
+		path: "/change-password",
+		name: "ChangePasswordPage",
+		component: ChangePasswordPage,
+		meta: {	requires_auth: true }
+	},
+	{
+		path: "/mentor",
+		name: "MentorPage",
+		component: MentorBasePage,
+		meta: { requires_auth: true },
+
+		children: [
+			{
+				path: "profile/:profile_uid?",
+				name: "MentorProfilePage",
+				component: MentorProfilePage,
+				// Mentees can view the profile too
+			},
+			{
+				path: "profile-settings",
+				name: "MentorProfileSettingsPage",
+				component: MentorProfileSettingsPage,
+				meta: { requires_mentor: true }
+			},
+			{
+				path: "pending-requests",
+				name: "MentorPendingRequestsPage",
+				component: MentorPendingRequestsPage,
+				meta: { requires_mentor: true }
+			},
+			{
+				path: "my-mentees",
+				name: "MyMenteesPage",
+				component: MyMenteesPage,
+				meta: { requires_mentor: true }
+			},
+			{
+				path: "mentor-settings",
+				name: "MentorSettingsPage",
+				component: MentorSettingsPage,
+				props: { is_editable: true },
+				meta: { requires_mentor: true }
+			}
+		]
+	},
+	{
+		path: "/mentee",
+		name: "MenteePage",
+		component: MenteeBasePage,
+		meta: { requires_auth: true },
+
+		children: [
+			{
+				path: "profile/:profile_uid?",
+				name: "MenteeProfilePage",
+				component: MenteeProfilePage,
+				// meta: { requires_mentee: true }
+			},
+			{
+				path: "profile-settings",
+				name: "MenteeProfileSettingsPage",
+				component: MenteeProfileSettingsPage,
+				meta: { requires_mentee: true }
+			},
+			{
+				path: "pending-requests",
+				name: "MenteePendingRequestsPage",
+				component: MenteePendingRequestsPage,
+				meta: { requires_mentee: true }
+			},
+			{
+				path: "my-mentors",
+				name: "MyMentorsPage",
+				component: MyMentorsPage,
+				meta: { requires_mentee: true }
+			},
+			{
+				path: "find-mentor",
+				name: "FindMentorPage",
+				component: FindMentorPage,
+				meta: { requires_mentee: true }
+			},
+		]
+	},
+	{
+		path: "/mentorship/:mentorship_uid",
+		name: "MentorshipPage",
+		component: MentorshipPage,
 		meta: { requires_auth: true }
 	}
 ];
@@ -61,7 +178,23 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
 	if (to.matched.some(record => record.meta.requires_auth)) {
 		if (!store.getters.logged_in) {
-			next({ name: "Login" })
+			next({ name: "LoginPage" })
+		}
+		else if (to.matched.some(record => record.meta.requires_mentor)) {
+			if (!store.state.user.is_mentor) {
+				next({ name: "HomePage" })
+			}
+			else {
+				next()
+			}
+		}
+		else if (to.matched.some(record => record.meta.requires_mentee)) {
+			if (!store.state.user.is_mentee) {
+				next({ name: "HomePage" })
+			}
+			else {
+				next()
+			}
 		}
 		else {
 			next()
@@ -69,7 +202,7 @@ router.beforeEach((to, from, next) => {
 	}
 	else if (to.matched.some(record => record.meta.requires_visitor)) {
 		if (store.getters.logged_in) {
-			next({ name: "Home" })
+			next({ name: "HomePage" })
 		}
 		else {
 			next()

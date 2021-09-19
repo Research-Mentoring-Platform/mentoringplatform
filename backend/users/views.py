@@ -8,16 +8,19 @@ from rest_framework_simplejwt.views import TokenObtainSlidingView
 
 from main.mixins import ViewSetPermissionByMethodMixin
 from users.serializers import CustomUserSerializer, CustomUserUpdateSerializer, CustomUserPasswordUpdateSerializer, \
-    CustomTokenObtainSlidingSerializer
+    CustomTokenObtainSlidingSerializer, CustomUserForgotPasswordTokenSerializer, CustomUserForgotPasswordSerializer
 from . import permissions as user_permissions
-from .methods import send_email_async
+from .methods import send_email_async, invalidate_old_authentication_token
+from .models import ForgotPasswordToken, CustomUser
 
 
 class CustomUserViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
     permission_classes = (user_permissions.CanAccessCustomUser,)
     permission_action_classes = dict(
-        create=[permissions.AllowAny],
-        list=[~permissions.AllowAny],
+        create=(permissions.AllowAny,),
+        list=(~permissions.AllowAny,),
+        generate_forgot_password_token=(permissions.AllowAny,),
+        forgot_password=(permissions.AllowAny,),
     )
     queryset = get_user_model().objects.all()
     lookup_field = 'uid'
@@ -27,12 +30,40 @@ class CustomUserViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
             return CustomUserUpdateSerializer
         return CustomUserSerializer
 
-    @action(methods=['post'], detail=False, url_path='change-password', url_name='change-password')
-    def change_password(self, request):
+    @action(methods=['post'], detail=True, url_path='change-password', url_name='change-password')
+    def change_password(self, request, uid):
+        if uid != request.user.uid:
+            raise rest_exceptions.PermissionDenied('Invalid change password request')
+
         serializer = CustomUserPasswordUpdateSerializer(data=request.data, context=dict(request=request),
                                                         instance=request.user)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)  # https://stackoverflow.com/a/31175629/5394180
+        return Response(status=status.HTTP_200_OK)
+
+    @action(methods=['post'], detail=False, url_path='forgot-password-token', url_name='forgot-password-token')
+    def generate_forgot_password_token(self, request):
+        serializer = CustomUserForgotPasswordTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = CustomUser.objects.get(email=request.data['email'])
+        ForgotPasswordToken.objects.filter(user=user).delete()
+        token = ForgotPasswordToken.objects.create(user=user)
+
+        send_email_async(subject='RMP - Forgot Password Token', body='Token: {}'.format(token.token),
+                         recipient_list=[user.email])
+        return Response(status=status.HTTP_200_OK)
+
+    @action(methods=['post'], detail=False, url_path='forgot-password', url_name='forgot-password')
+    def forgot_password(self, request):
+        serializer = CustomUserForgotPasswordSerializer(data=request.data, context=dict(request=request))
+        serializer.is_valid(raise_exception=True)
+        token = ForgotPasswordToken.objects.get(token=request.data['token'])
+        user = token.user
+        user.set_password(request.data['new_password'])
+        user.save()
+        invalidate_old_authentication_token(user)
+        token.delete()
         return Response(status=status.HTTP_200_OK)
 
     @action(methods=['get'], detail=False,

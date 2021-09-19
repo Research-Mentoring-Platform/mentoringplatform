@@ -3,8 +3,10 @@ import uuid
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 
-from users.methods import generate_email_verification_token
+from users.methods import generate_email_verification_token, generate_forgot_password_token, \
+    generate_forgot_password_expiration_date_time
 
 
 class CustomUserManager(BaseUserManager):
@@ -94,3 +96,13 @@ class CustomUser(AbstractBaseUser):
     @property
     def full_name(self):
         return self.get_full_name()
+
+
+class ForgotPasswordToken(models.Model):
+    user = models.OneToOneField('users.CustomUser', on_delete=models.CASCADE, related_name='forgot_password_token')
+    token = models.CharField(max_length=32, default=generate_forgot_password_token)
+    valid_until = models.DateTimeField(default=generate_forgot_password_expiration_date_time)
+
+    @property
+    def is_expired(self):
+        return timezone.now() > self.valid_until

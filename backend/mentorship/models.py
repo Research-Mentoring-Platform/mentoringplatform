@@ -39,8 +39,8 @@ class Mentorship(models.Model):
 
 class MentorshipRequest(models.Model):  # TODO Change fields, give better names, make more organized and comprehensible
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    mentor = models.ForeignKey('mentor.Mentor', on_delete=models.CASCADE)
-    mentee = models.ForeignKey('mentee.Mentee', on_delete=models.CASCADE)
+    mentor = models.ForeignKey('mentor.Mentor', on_delete=models.CASCADE, related_name='mentor_mentorship_requests')
+    mentee = models.ForeignKey('mentee.Mentee', on_delete=models.CASCADE, related_name='mentee_mentorship_requests')
 
     statement_of_purpose = models.TextField(max_length=512, blank=True)
     expectations = models.TextField(max_length=256, blank=True)
@@ -84,7 +84,7 @@ class MeetingSummary(models.Model):
     meeting = models.OneToOneField('mentorship.Meeting', on_delete=models.CASCADE, related_name='summary')
 
     date_time = models.DateTimeField(auto_now_add=True)
-    duration = models.DurationField(null=True, blank=True)
+    duration = models.FloatField(null=True, blank=True)  # Number of hours (e.g. 1, 1.5 etc)
     description = models.TextField(max_length=512, blank=True)
     todos = models.TextField(max_length=512, blank=True)
 
@@ -105,16 +105,17 @@ class Milestone(models.Model):
     uid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     mentorship = models.ForeignKey('mentorship.Mentorship', on_delete=models.CASCADE, related_name='milestones')
 
-    date = models.DateField(auto_now_add=True)
+    title = models.CharField(max_length=64)
+    date = models.DateField()
     description = models.TextField(max_length=256)
 
     class Meta:
         ordering = ['date']
 
     def __str__(self):
-        return "{}(mentor={}, mentee={}, date={})".format(self.__class__.__name__,
-                                                          self.mentorship.mentor.user.email,
-                                                          self.mentorship.mentee.user.email,
-                                                          self.date)
+        return "{}(mentor={}, mentee={}, title={})".format(self.__class__.__name__,
+                                                           self.mentorship.mentor.user.email,
+                                                           self.mentorship.mentee.user.email,
+                                                           self.title)
 
 # TODO Add class DeletedMentorMenteeRelation(models.Model)
