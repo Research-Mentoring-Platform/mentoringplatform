@@ -1,5 +1,9 @@
 from django.test import TestCase
 
+from mentee.models import MenteeDiscipline
+from mentorship.models import Mentorship
+from users.models import CustomUser
+
 
 class ExampleTestCase(TestCase):
 
