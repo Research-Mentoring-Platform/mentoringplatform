@@ -13,9 +13,10 @@ jobs:
       postgres:
         image: postgres
         env:
-          POSTGRES_USER: pg_user
-          POSTGRES_PASSWORD: pg_password
-          POSTGRES_DB: pg_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_HOST: postgres
         ports:
           - 5432:5432
         options: >-
@@ -48,7 +49,7 @@ jobs:
       run: |
         cat << EOF >> .env
         DEBUG=True
-        RMP_DB_URL=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@127.0.0.1:5432/$POSTGRES_DB
+        RMP_DB_URL=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:5432/$POSTGRES_DB
         RMP_EMAIL_HOST_PASSWORD=null
         RMP_EMAIL_HOST_USER=apikey
         RMP_SECRET_KEY=9@g*@ih^l8kp&uqipj-*hpbnll!bq7pdr%8ca3a1mc#$3(6=j@
