@@ -38,18 +38,20 @@ class RegistrationTestCases(TransactionTestCase):
     def test_user_valid(self):
         response = self.client.post('/api/users/user/', data=VALID_USER_DATA)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(CustomUser.objects.get(username=VALID_USER_DATA['username']))
+        self.assertTrue(CustomUser.objects.filter(username=VALID_USER_DATA['username']).exists())
 
     def test_user_both_mentor_and_mentee(self):
         data1 = VALID_USER_DATA.copy()
         data1['is_mentor'] = True
         data1['is_mentee'] = False
         response = self.client.post('/api/users/user/', data=data1)
+        self.assertEqual(response.status_code, 200)
         data1['is_mentor'] = False
         data1['is_mentee'] = True
         response = self.client.post('/api/users/user/', data=data1)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(CustomUser.objects.count(), 1)
+        self.assertTrue(CustomUser.objects.filter(username=data1['username']).exists())
 
     def test_user_both_mentor_mentee_true(self):
         data = VALID_USER_DATA.copy()
@@ -69,17 +71,19 @@ class RegistrationTestCases(TransactionTestCase):
 
     def test_user_already_registered(self):
         response = self.client.post('/api/users/user/', data=VALID_USER_DATA)
+        self.assertEqual(response.status_code, 200)
         response = self.client.post('/api/users/user/', data=VALID_USER_DATA)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(CustomUser.objects.count(), 1)
+        self.assertTrue(CustomUser.objects.filter(username=VALID_USER_DATA['username']).exists())
 
     def test_multiple_user_register_valid(self):
-        response1 = self.client.post('/api/users/user/', data=VALID_USER_DATA)
-        response2 = self.client.post('/api/users/user/', data=VALID_USER_DATA2)
-        self.assertEqual(response1.status_code, 200)
-        self.assertEqual(response2.status_code, 200)
-        self.assertTrue(CustomUser.objects.get(username=VALID_USER_DATA['username']))
-        self.assertTrue(CustomUser.objects.get(username=VALID_USER_DATA2['username']))
+        response = self.client.post('/api/users/user/', data=VALID_USER_DATA)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(CustomUser.objects.filter(username=VALID_USER_DATA['username']).exists())
+        response = self.client.post('/api/users/user/', data=VALID_USER_DATA2)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(CustomUser.objects.filter(username=VALID_USER_DATA2['username']).exists())
 
     def test_user_weak_password(self):
         data = VALID_USER_DATA.copy()
