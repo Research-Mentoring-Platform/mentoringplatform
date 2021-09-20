@@ -1,0 +1,65 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: pg_user
+          POSTGRES_PASSWORD: pg_pwd
+          POSTGRES_DB: pg_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.9]
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: psycopg2 prerequisites
+      run: sudo apt-get install python3-dev libpq-dev
+    
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r ./backend/requirements.txt
+    
+    - name: Setup environment
+      working-directory: ./backend
+      run: |
+        cat << EOF >> .env
+        DEBUG=True
+        RMP_DB_URL=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@127.0.0.1:5432/$POSTGRES_DB
+        RMP_EMAIL_HOST_PASSWORD=null
+        RMP_EMAIL_HOST_USER=apikey
+        RMP_SECRET_KEY=9@g*@ih^l8kp&uqipj-*hpbnll!bq7pdr%8ca3a1mc#$3(6=j@
+        RMP_EMAIL_HOST=smtp.sendgrid.net
+        EOF
+    
+    - name: Run migrations
+      working-directory: ./backend
+      run: python manage.py migrate
+    
+    - name: Run Tests
+      working-directory: ./backend
+      run: |
+        python manage.py test
