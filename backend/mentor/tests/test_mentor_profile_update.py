@@ -49,19 +49,19 @@ class MentorProfileUpdateTestCase(TestCase):
         }
 
     def test_mentor_updates_own_profile(self):
-        """ tests that check the response when mentor updates own profile """
+        """ tests the response when mentor updates own profile """
         m_uid = self.mentor['uid']
         response = self.client.put(f'/api/mentor/mentor/{m_uid}', data=self.data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_mentor_updates_different_profile(self):
-        """ tests that check the response when mentor updates a different mentor's profile """
+        """ tests the response when mentor updates a different mentor's profile """
         m_uid = str(self.mentors[1]['uid'])
         response = self.client.put(f'/api/mentor/mentor/{m_uid}', data=self.data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_mentor_updates_invalid_profile(self):
-        """ tests that check the response when mentor updates an invalid profile """
+        """ tests the response when mentor updates an invalid profile """
         m_uid = "abcdef"
         response = self.client.put(f'/api/mentor/mentor/{m_uid}', data=self.data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
