@@ -1,8 +1,8 @@
+from mentor.models import Mentor
 from users.models import CustomUser
-import logging, random, json
+import logging, json
 from django.test import TestCase
 from rest_framework import status
-
 
 class MentorProfileUpdateTestCase(TestCase):
     @classmethod
@@ -10,9 +10,8 @@ class MentorProfileUpdateTestCase(TestCase):
         super().setUpClass()
         logging.disable(logging.CRITICAL)
 
-
     @classmethod
-    def tearDownClass(self):
+    def tearDownClass(cls):
         return super().tearDownClass()
 
     def setUp(self):
@@ -30,21 +29,15 @@ class MentorProfileUpdateTestCase(TestCase):
                 self.mentor = mentor
 
         res = self.client.get('/api/mentor/designation', format='json', follow=True)
-        des = json.loads(res.content)
-        self.designation = str(des[random.randint(0, len(des) - 1)]['uid'])
+        self.designation = str(json.loads(res.content)[0]['uid'])
 
         res = self.client.get('/api/mentor/department', format='json', follow=True)
-        deptt = json.loads(res.content)
-        self.department = str(deptt[random.randint(0, len(deptt) - 1)]['uid'])
+        self.department = str(json.loads(res.content)[1]['uid'])
 
         res = self.client.get('/api/mentor/discipline', format='json', follow=True)
-        disc = json.loads(res.content)
-        self.discipline = str(disc[random.randint(0, len(disc) - 1)]['uid'])
+        self.discipline = str(json.loads(res.content)[14]['uid'])
 
-
-    def test_mentor_updates_own_profile(self):
-        """ tests that the mentor is updating their own profile only """
-        data = {
+        self.data = {
             'about_self': 'Fugiat ad id ut ullamco commodo irure duis reprehenderit reprehenderit irure non in ex Lorem.',
             'department': self.department,
             'discipline': self.discipline,
@@ -55,12 +48,20 @@ class MentorProfileUpdateTestCase(TestCase):
             'is_accepting_mentorship_requests': False
         }
 
-        idx = random.randint(0, len(self.mentors) - 1)
-        m_uid = str(self.mentors[idx]['uid'])
-        response = self.client.put(f'/api/mentor/mentor/{m_uid}', data, content_type='application/json', follow=True)
+    def test_mentor_updates_own_profile(self):
+        """ tests that check the response when mentor updates own profile """
+        m_uid = self.mentor['uid']
+        response = self.client.put(f'/api/mentor/mentor/{m_uid}', data=self.data, content_type='application/json', follow=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        if m_uid == str(self.mentor['uid']):
-            self.assertEquals(response.status_code, status.HTTP_200_OK)
-        else:
-            print(response.status_code)
-            self.assertNotEquals(response.status_code, status.HTTP_200_OK)
+    def test_mentor_updates_different_profile(self):
+        """ tests that check the response when mentor updates a different mentor's profile """
+        m_uid = str(self.mentors[1]['uid'])
+        response = self.client.put(f'/api/mentor/mentor/{m_uid}', data=self.data, content_type='application/json', follow=True)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_mentor_updates_invalid_profile(self):
+        """ tests that check the response when mentor updates an invalid profile """
+        m_uid = "abcdef"
+        response = self.client.put(f'/api/mentor/mentor/{m_uid}', data=self.data, content_type='application/json', follow=True)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
