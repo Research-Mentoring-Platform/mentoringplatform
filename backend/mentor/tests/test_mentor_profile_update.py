@@ -8,6 +8,10 @@ class MentorProfileUpdateTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # select a mentor from the test_users.json list to login for tests
+        with open('config/test_users.json') as f:
+            users_data = json.load(f)['users']
+            cls.login_user = next(user for user in users_data if user['email'] ==  'prince17080@iiitd.ac.in')
         logging.disable(logging.CRITICAL)
 
     @classmethod
@@ -15,33 +19,37 @@ class MentorProfileUpdateTestCase(TestCase):
         return super().tearDownClass()
 
     def setUp(self):
-        data = {
-            'email': 'prince17080@iiitd.ac.in',
-            'password': 'pass4321'
-        }
-        self.client.login(**data)
+        # log in the mentor
+        self.client.login(email= self.login_user['email'], password=self.login_user['password'])
 
+        # get list of all mentors in the database
         res = self.client.get('/api/mentor/mentor', follow=True)
         self.mentors = json.loads(res.content)
-        self.user = CustomUser.objects.get(email=data['email'])
+        self.user = CustomUser.objects.get(email=self.login_user['email'])
+
+        # get the mentor object with the same user uid as the logged in user
         for mentor in self.mentors:
             if str(mentor['user']) == str(self.user.uid):
                 self.mentor = mentor
 
+        # get list of all mentor designations
         res = self.client.get('/api/mentor/designation', format='json', follow=True)
         self.designation = str(json.loads(res.content)[0]['uid'])
 
+        # get list of all mentor departments
         res = self.client.get('/api/mentor/department', format='json', follow=True)
         self.department = str(json.loads(res.content)[1]['uid'])
 
+        # get list of all mentor disciplines
         res = self.client.get('/api/mentor/discipline', format='json', follow=True)
         self.discipline = str(json.loads(res.content)[14]['uid'])
 
+        # construct a profile data object which contains all the mentor fields to be modified
         self.data = {
             'about_self': 'Fugiat ad id ut ullamco commodo irure duis reprehenderit reprehenderit irure non in ex Lorem.',
-            'department': self.department,
-            'discipline': self.discipline,
-            'designation': self.designation,
+            'department': self.department,      # mandatory field
+            'discipline': self.discipline,      # mandatory field
+            'designation': self.designation,    # mandatory field
             'specialization': 'lorem ipsum',
             'expected_min_mentorship_duration': 2,
             'expected_max_mentorship_duration': 4,
