@@ -3,7 +3,7 @@ import logging
 from mentee.models import Mentee
 from users.models import CustomUser
 
-VALID_USER_DATA2 = {
+VALID_USER_DATA = {
     'username': 'name',
     'password': 'pass@4321',
     'email': 'name@def.gh',
@@ -14,7 +14,7 @@ VALID_USER_DATA2 = {
     'is_mentee': True,
 }
 
-LOGIN_USER_DATA2 = {
+LOGIN_USER_DATA = {
     'email': 'name@def.gh',
     'password': 'pass@4321'
 }
@@ -31,8 +31,8 @@ class RegistrationTestCases(TransactionTestCase):
         return super().tearDownClass()
 
     def setUp(self):
-        self.client.post('/api/users/user/', data=VALID_USER_DATA2)
-        self.user = CustomUser.objects.get(username=VALID_USER_DATA2['username'])
+        self.client.post('/api/users/user/', data=VALID_USER_DATA)
+        self.user = CustomUser.objects.get(username=VALID_USER_DATA['username'])
 
     def test_mentee_profile_not_created_after_registration(self):
         self.assertFalse(Mentee.objects.filter(user=self.user).exists())
@@ -45,5 +45,5 @@ class RegistrationTestCases(TransactionTestCase):
     def test_mentee_profile_created_after_login(self):
         self.user.email_verified = True
         self.user.save()
-        self.client.post('/api/users/token/', data=LOGIN_USER_DATA2, follow=True)
+        self.client.post('/api/users/token/', data=LOGIN_USER_DATA, follow=True)
         self.assertTrue(Mentee.objects.filter(user=self.user).exists())
