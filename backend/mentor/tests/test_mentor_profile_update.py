@@ -1,8 +1,10 @@
-from mentor.models import Mentor
-from users.models import CustomUser
-import logging, json
+import json
+import logging
+
 from django.test import TestCase
 from rest_framework import status
+from users.models import CustomUser
+
 
 class MentorProfileUpdateTestCase(TestCase):
     @classmethod
