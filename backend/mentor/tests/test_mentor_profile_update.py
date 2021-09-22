@@ -4,6 +4,7 @@ import logging
 from django.test import TestCase
 from rest_framework import status
 from users.models import CustomUser
+from mentor.models import Mentor, MentorDepartment, MentorDesignation, MentorDiscipline
 
 
 class MentorProfileUpdateTestCase(TestCase):
@@ -21,37 +22,23 @@ class MentorProfileUpdateTestCase(TestCase):
         return super().tearDownClass()
 
     def setUp(self):
-        # log in the mentor
-        self.client.login(email= self.login_user['email'], password=self.login_user['password'])
+        # log in the mentor and get the logged in user object
+        self.client.login(email=self.login_user['email'], password=self.login_user['password'])
 
-        # get list of all mentors in the database
-        res = self.client.get('/api/mentor/mentor', follow=True)
-        self.mentors = json.loads(res.content)
-        self.user = CustomUser.objects.get(email=self.login_user['email'])
+        # get the mentor object for the logged in user
+        self.mentor = CustomUser.objects.get(email=self.login_user['email']).mentor
 
-        # get the mentor object with the same user uid as the logged in user
-        for mentor in self.mentors:
-            if str(mentor['user']) == str(self.user.uid):
-                self.mentor = mentor
-
-        # get list of all mentor designations
-        res = self.client.get('/api/mentor/designation', format='json', follow=True)
-        self.designation = str(json.loads(res.content)[0]['uid'])
-
-        # get list of all mentor departments
-        res = self.client.get('/api/mentor/department', format='json', follow=True)
-        self.department = str(json.loads(res.content)[1]['uid'])
-
-        # get list of all mentor disciplines
-        res = self.client.get('/api/mentor/discipline', format='json', follow=True)
-        self.discipline = str(json.loads(res.content)[14]['uid'])
+        # get the mentor designation, department and discipline uids
+        desig_uid = MentorDesignation.objects.get(label='Industry Researcher').uid
+        deptt_uid = MentorDepartment.objects.get(label='Computer Science and Design').uid
+        disc_uid= MentorDiscipline.objects.get(label='Human-Computer Interaction').uid
 
         # construct a profile data object which contains all the mentor fields to be modified
         self.data = {
             'about_self': 'Fugiat ad id ut ullamco commodo irure duis reprehenderit reprehenderit irure non in ex Lorem.',
-            'department': self.department,      # mandatory field
-            'discipline': self.discipline,      # mandatory field
-            'designation': self.designation,    # mandatory field
+            'department': deptt_uid,        # mandatory field
+            'discipline': disc_uid,         # mandatory field
+            'designation': desig_uid,       # mandatory field
             'specialization': 'lorem ipsum',
             'expected_min_mentorship_duration': 2,
             'expected_max_mentorship_duration': 4,
@@ -60,13 +47,14 @@ class MentorProfileUpdateTestCase(TestCase):
 
     def test_mentor_updates_own_profile(self):
         """ tests the response when mentor updates own profile """
-        m_uid = self.mentor['uid']
+        m_uid = self.mentor.uid
         response = self.client.put(f'/api/mentor/mentor/{m_uid}', data=self.data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_mentor_updates_different_profile(self):
         """ tests the response when mentor updates a different mentor's profile """
-        m_uid = str(self.mentors[1]['uid'])
+        m_user = CustomUser.objects.get(email='ananya17020@iiitd.ac.in')
+        m_uid = m_user.mentor.uid
         response = self.client.put(f'/api/mentor/mentor/{m_uid}', data=self.data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
