@@ -58,3 +58,10 @@ class MenteeProfileUpdateTestCase(TestCase):
         m_uid = "abcdef"
         response = self.client.put(f'/api/mentee/mentee/{m_uid}', data=self.data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_mentee_updates_mentor_profile(self):
+        """ tests the response when mentee updates a mentor's profile """
+        m_user = CustomUser.objects.get(email='shaurya17104@iiitd.ac.in')
+        m_uid = m_user.mentor.uid
+        response = self.client.put(f'/api/mentor/mentor/{m_uid}', data=self.data, content_type='application/json', follow=True)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
