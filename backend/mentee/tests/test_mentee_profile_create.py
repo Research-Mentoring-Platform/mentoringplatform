@@ -20,7 +20,7 @@ LOGIN_USER_DATA = {
 }
 
 
-class RegistrationTestCases(TransactionTestCase):
+class MenteeProfileCreationTestCases(TransactionTestCase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
