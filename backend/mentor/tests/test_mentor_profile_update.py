@@ -109,10 +109,10 @@ class MentorProfileUpdateTestCase(TestCase):
 
         mentee = Mentee.objects.get(uid=m_uid)
         self.assertNotEqual(mentee.about_self, mentee_data['about_self'])
-        if m_user.mentee.department.uid != self.data['department']:
+        if m_user.mentee.department.uid != mentee_data['department']:
             self.assertNotEqual(mentee.department.uid, mentee_data['department'])
-        if m_user.mentee.discipline.uid != self.data['discipline']:
+        if m_user.mentee.discipline.uid != mentee_data['discipline']:
             self.assertNotEqual(mentee.discipline.uid, mentee_data['discipline'])
-        if m_user.mentee.designation.uid != self.data['designation']:
+        if m_user.mentee.designation.uid != mentee_data['designation']:
             self.assertNotEqual(mentee.designation.uid, mentee_data['designation'])
         self.assertNotEqual(mentee.specialization, mentee_data['specialization'])
