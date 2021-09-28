@@ -5,6 +5,7 @@ from django.test import TestCase
 from rest_framework import status
 from users.models import CustomUser
 from mentor.models import Mentor, MentorDepartment, MentorDesignation, MentorDiscipline
+from mentee.models import Mentee, MenteeDepartment, MenteeDesignation, MenteeDiscipline
 
 
 class MentorProfileUpdateTestCase(TestCase):
@@ -51,12 +52,32 @@ class MentorProfileUpdateTestCase(TestCase):
         response = self.client.put(f'/api/mentor/mentor/{m_uid}', data=self.data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+        mentor = Mentor.objects.get(uid=m_uid)
+        self.assertEqual(mentor.about_self, self.data['about_self'])
+        self.assertEqual(mentor.department.uid, self.data['department'])
+        self.assertEqual(mentor.discipline.uid, self.data['discipline'])
+        self.assertEqual(mentor.designation.uid, self.data['designation'])
+        self.assertEqual(mentor.specialization, self.data['specialization'])
+        self.assertEqual(mentor.expected_min_mentorship_duration, self.data['expected_min_mentorship_duration'])
+        self.assertEqual(mentor.expected_max_mentorship_duration, self.data['expected_max_mentorship_duration'])
+        self.assertEqual(mentor.is_accepting_mentorship_requests, self.data['is_accepting_mentorship_requests'])
+
     def test_mentor_updates_different_profile(self):
         """ tests the response when mentor updates a different mentor's profile """
         m_user = CustomUser.objects.get(email='ananya17020@iiitd.ac.in')
         m_uid = m_user.mentor.uid
         response = self.client.put(f'/api/mentor/mentor/{m_uid}', data=self.data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        diff_mentor = Mentor.objects.get(uid=m_uid)
+        self.assertNotEqual(diff_mentor.about_self, self.data['about_self'])
+        self.assertNotEqual(diff_mentor.department.uid, self.data['department'])
+        self.assertNotEqual(diff_mentor.discipline.uid, self.data['discipline'])
+        self.assertNotEqual(diff_mentor.specialization, self.data['specialization'])
+        self.assertNotEqual(diff_mentor.expected_min_mentorship_duration, self.data['expected_min_mentorship_duration'])
+        self.assertNotEqual(diff_mentor.expected_max_mentorship_duration, self.data['expected_max_mentorship_duration'])
+        self.assertNotEqual(diff_mentor.is_accepting_mentorship_requests, self.data['is_accepting_mentorship_requests'])
+
 
     def test_mentor_updates_invalid_profile(self):
         """ tests the response when mentor updates an invalid profile """
@@ -68,5 +89,19 @@ class MentorProfileUpdateTestCase(TestCase):
         """ tests the response when mentor updates a mentee's profile """
         m_user = CustomUser.objects.get(email='karan17058@iiitd.ac.in')
         m_uid = m_user.mentee.uid
-        response = self.client.put(f'/api/mentee/mentee/{m_uid}', data=self.data, content_type='application/json', follow=True)
+        mentee_data = {
+            'about_self': self.data['about_self'],
+            'department': MenteeDepartment.objects.get(label='Computer Science and Design').uid,
+            'discipline': MenteeDiscipline.objects.get(label='Operating Systems').uid,
+            'designation': MenteeDesignation.objects.get(label='MTech').uid,
+            'specialization': 'lorem ipsum',
+        }
+        response = self.client.put(f'/api/mentee/mentee/{m_uid}', data=mentee_data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+        mentee = Mentee.objects.get(uid=m_uid)
+        self.assertNotEqual(mentee.about_self, mentee_data['about_self'])
+        self.assertNotEqual(mentee.department.uid, mentee_data['department'])
+        self.assertNotEqual(mentee.discipline.uid, mentee_data['discipline'])
+        self.assertNotEqual(mentee.designation.uid, mentee_data['designation'])
+        self.assertNotEqual(mentee.specialization, mentee_data['specialization'])
