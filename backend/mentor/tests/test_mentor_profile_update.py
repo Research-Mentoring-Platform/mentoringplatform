@@ -72,11 +72,11 @@ class MentorProfileUpdateTestCase(TestCase):
 
         diff_mentor = Mentor.objects.get(uid=m_uid)
         self.assertNotEqual(diff_mentor.about_self, self.data['about_self'])
-        if m_user.mentor.department != self.data['department']:
+        if m_user.mentor.department.uid != self.data['department']:
             self.assertNotEqual(diff_mentor.department.uid, self.data['department'])
-        if m_user.mentor.discipline != self.data['discipline']:
+        if m_user.mentor.discipline.uid != self.data['discipline']:
             self.assertNotEqual(diff_mentor.discipline.uid, self.data['discipline'])
-        if m_user.mentor.designation != self.data['designation']:
+        if m_user.mentor.designation.uid != self.data['designation']:
             self.assertNotEqual(diff_mentor.designation.uid, self.data['designation'])
         self.assertNotEqual(diff_mentor.specialization, self.data['specialization'])
         if m_user.mentor.expected_min_mentorship_duration != self.data['expected_min_mentorship_duration']:
