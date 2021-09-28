@@ -49,10 +49,11 @@ class MentorProfileUpdateTestCase(TestCase):
     def test_mentor_updates_own_profile(self):
         """ tests the response when mentor updates own profile """
         m_uid = self.mentor.uid
-        response = self.client.put(f'/api/mentor/mentor/{m_uid}', data=self.data, content_type='application/json', follow=True)
+        response = self.client.patch(f'/api/mentor/mentor/{m_uid}/', data=self.data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
+        # print(response.data)
         mentor = Mentor.objects.get(uid=m_uid)
+
         self.assertEqual(mentor.about_self, self.data['about_self'])
         self.assertEqual(mentor.department.uid, self.data['department'])
         self.assertEqual(mentor.discipline.uid, self.data['discipline'])
@@ -66,23 +67,30 @@ class MentorProfileUpdateTestCase(TestCase):
         """ tests the response when mentor updates a different mentor's profile """
         m_user = CustomUser.objects.get(email='ananya17020@iiitd.ac.in')
         m_uid = m_user.mentor.uid
-        response = self.client.put(f'/api/mentor/mentor/{m_uid}', data=self.data, content_type='application/json', follow=True)
+        response = self.client.patch(f'/api/mentor/mentor/{m_uid}/', data=self.data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         diff_mentor = Mentor.objects.get(uid=m_uid)
         self.assertNotEqual(diff_mentor.about_self, self.data['about_self'])
-        self.assertNotEqual(diff_mentor.department.uid, self.data['department'])
-        self.assertNotEqual(diff_mentor.discipline.uid, self.data['discipline'])
+        if m_user.mentor.department != self.data['department']:
+            self.assertNotEqual(diff_mentor.department.uid, self.data['department'])
+        if m_user.mentor.discipline != self.data['discipline']:
+            self.assertNotEqual(diff_mentor.discipline.uid, self.data['discipline'])
+        if m_user.mentor.designation != self.data['designation']:
+            self.assertNotEqual(diff_mentor.designation.uid, self.data['designation'])
         self.assertNotEqual(diff_mentor.specialization, self.data['specialization'])
-        self.assertNotEqual(diff_mentor.expected_min_mentorship_duration, self.data['expected_min_mentorship_duration'])
-        self.assertNotEqual(diff_mentor.expected_max_mentorship_duration, self.data['expected_max_mentorship_duration'])
-        self.assertNotEqual(diff_mentor.is_accepting_mentorship_requests, self.data['is_accepting_mentorship_requests'])
+        if m_user.mentor.expected_min_mentorship_duration != self.data['expected_min_mentorship_duration']:
+            self.assertNotEqual(diff_mentor.expected_min_mentorship_duration, self.data['expected_min_mentorship_duration'])
+        if m_user.mentor.expected_max_mentorship_duration != self.data['expected_max_mentorship_duration']:
+            self.assertNotEqual(diff_mentor.expected_max_mentorship_duration, self.data['expected_max_mentorship_duration'])
+        if m_user.mentor.is_accepting_mentorship_requests != self.data['is_accepting_mentorship_requests']:
+            self.assertNotEqual(diff_mentor.is_accepting_mentorship_requests, self.data['is_accepting_mentorship_requests'])
 
 
     def test_mentor_updates_invalid_profile(self):
         """ tests the response when mentor updates an invalid profile """
         m_uid = "abcdef"
-        response = self.client.put(f'/api/mentor/mentor/{m_uid}', data=self.data, content_type='application/json', follow=True)
+        response = self.client.patch(f'/api/mentor/mentor/{m_uid}/', data=self.data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_mentor_updates_mentee_profile(self):
@@ -96,12 +104,15 @@ class MentorProfileUpdateTestCase(TestCase):
             'designation': MenteeDesignation.objects.get(label='MTech').uid,
             'specialization': 'lorem ipsum',
         }
-        response = self.client.put(f'/api/mentee/mentee/{m_uid}', data=mentee_data, content_type='application/json', follow=True)
+        response = self.client.patch(f'/api/mentee/mentee/{m_uid}/', data=mentee_data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
         mentee = Mentee.objects.get(uid=m_uid)
         self.assertNotEqual(mentee.about_self, mentee_data['about_self'])
-        self.assertNotEqual(mentee.department.uid, mentee_data['department'])
-        self.assertNotEqual(mentee.discipline.uid, mentee_data['discipline'])
-        self.assertNotEqual(mentee.designation.uid, mentee_data['designation'])
+        if m_user.mentee.department.uid != self.data['department']:
+            self.assertNotEqual(mentee.department.uid, mentee_data['department'])
+        if m_user.mentee.discipline.uid != self.data['discipline']:
+            self.assertNotEqual(mentee.discipline.uid, mentee_data['discipline'])
+        if m_user.mentee.designation.uid != self.data['designation']:
+            self.assertNotEqual(mentee.designation.uid, mentee_data['designation'])
         self.assertNotEqual(mentee.specialization, mentee_data['specialization'])
