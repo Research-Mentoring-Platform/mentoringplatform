@@ -32,7 +32,7 @@ class CustomUserViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
 
     @action(methods=['post'], detail=True, url_path='change-password', url_name='change-password')
     def change_password(self, request, uid):
-        if uid != request.user.uid:
+        if str(uid) != str(request.user.uid):
             raise rest_exceptions.PermissionDenied('Invalid change password request')
 
         serializer = CustomUserPasswordUpdateSerializer(data=request.data, context=dict(request=request),
