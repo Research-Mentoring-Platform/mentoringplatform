@@ -21,7 +21,6 @@ class MenteeProfileUpdateTestCase(TestCase):
         return super().tearDownClass()
 
     def setUp(self):
-        # log in the mentee and get the logged in user object
         self.client.login(email=self.login_user['email'], password=self.login_user['password'])
 
         # get the mentee object for the logged in user
@@ -100,3 +99,15 @@ class MenteeProfileUpdateTestCase(TestCase):
         if m_user.mentor.discipline.uid != mentor_data['discipline']:
             self.assertNotEqual(mentor.discipline.uid, mentor_data['discipline'])
         self.assertNotEqual(mentor.specialization, mentor_data['specialization'])
+
+    def test_mentee_updates_restricted_field(self):
+        """ tests the response when mentee updates their rating (restricted) """
+        prev_rating = self.mentee.rating
+        m_uid = self.mentee.uid
+        data = {
+            'rating': 10
+        }
+        response = self.client.patch(f'/api/mentee/mentee/{m_uid}/', data, content_type='application/json', follow=True)
+        self.assertEqual(response.status_code, 403)
+        mentee = Mentee.objects.get(uid=m_uid)
+        self.assertEqual(mentee.rating, prev_rating)
