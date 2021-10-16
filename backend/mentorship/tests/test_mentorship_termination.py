@@ -3,10 +3,9 @@ import logging
 
 from django.test import TestCase
 from rest_framework import status
-from mentorship.models import Mentorship, MentorshipRequest, MentorshipRequestStatus
+from mentorship.models import Mentorship, MentorshipRequest
 from mentee.models import MenteeDesignation
 from users.models import CustomUser
-import datetime
 
 class MentorshipTerminationTestCase(TestCase):
     @classmethod
@@ -73,6 +72,7 @@ class MentorshipTerminationTestCase(TestCase):
         self.client.logout()
 
     def test_mentee_terminates_own_mentorship(self):
+        """ tests response when a mentee terminates their own mentorship """
         self.client.login(email=self.login_mentee1['email'], password=self.login_mentee1['password'])
         res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/terminate/', data={}, content_type='application/json', follow=True)
         m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
@@ -80,10 +80,25 @@ class MentorshipTerminationTestCase(TestCase):
         self.assertEqual(m_obj.status, 3)
 
     def test_mentor_terminates_own_mentorship(self):
-        print('two')
+        """ tests response when a mentor terminates their own mentorship """
+        self.client.login(email=self.login_mentor1['email'], password=self.login_mentor1['password'])
+        res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/terminate/', data={}, content_type='application/json', follow=True)
+        m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(m_obj.status, 3)
 
     def test_mentee_terminates_other_mentorship(self):
-        print('three')
+        """ tests response when a mentee terminates a different mentee's mentorship """
+        self.client.login(email=self.login_mentee2['email'], password=self.login_mentee2['password'])
+        res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/terminate/', data={}, content_type='application/json', follow=True)
+        m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(m_obj.status, 1)
 
     def test_mentor_terminates_other_mentorship(self):
-        print('four')
+        """ tests response when a mentor terminates a different mentor's mentorship """
+        self.client.login(email=self.login_mentor2['email'], password=self.login_mentor2['password'])
+        res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/terminate/', data={}, content_type='application/json', follow=True)
+        m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(m_obj.status, 1)

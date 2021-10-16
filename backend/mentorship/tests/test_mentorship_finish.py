@@ -3,10 +3,9 @@ import logging
 
 from django.test import TestCase
 from rest_framework import status
-from mentorship.models import Mentorship, MentorshipRequest, MentorshipRequestStatus
+from mentorship.models import Mentorship, MentorshipRequest
 from mentee.models import MenteeDesignation
 from users.models import CustomUser
-import datetime
 
 class MentorshipFinishTestCase(TestCase):
     @classmethod
@@ -73,17 +72,33 @@ class MentorshipFinishTestCase(TestCase):
         self.client.logout()
 
     def test_mentee_finishes_own_mentorship(self):
+        """ tests response when a mentee finishes their own mentorship """
         self.client.login(email=self.login_mentee1['email'], password=self.login_mentee1['password'])
-        res = self.client.post(f'/api/mentorship/mentorship/finish/', data={}, content_type='application/json', follow=True)
+        res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/finish/', data={}, content_type='application/json', follow=True)
         m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(m_obj.status, 2)
 
     def test_mentor_finishes_own_mentorship(self):
-        print('two')
+        """ tests response when a mentor finishes their own mentorship """
+        self.client.login(email=self.login_mentor1['email'], password=self.login_mentor1['password'])
+        res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/finish/', data={}, content_type='application/json', follow=True)
+        m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(m_obj.status, 2)
 
     def test_mentee_finishes_other_mentorship(self):
-        print('three')
+        """ tests response when a mentee finishes a different mentee's mentorship """
+        self.client.login(email=self.login_mentee2['email'], password=self.login_mentee2['password'])
+        res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/finish/', data={}, content_type='application/json', follow=True)
+        m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(m_obj.status, 1)
 
     def test_mentor_finishes_other_mentorship(self):
-        print('four')
+        """ tests response when a mentor finishes a different mentor's mentorship """
+        self.client.login(email=self.login_mentor2['email'], password=self.login_mentor2['password'])
+        res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/finish/', data={}, content_type='application/json', follow=True)
+        m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(m_obj.status, 1)
