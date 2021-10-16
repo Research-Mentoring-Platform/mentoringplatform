@@ -74,7 +74,7 @@ class MentorshipTerminationTestCase(TestCase):
 
     def test_mentee_terminates_own_mentorship(self):
         self.client.login(email=self.login_mentee1['email'], password=self.login_mentee1['password'])
-        res = self.client.post(f'/api/mentorship/mentorship/terminate/', data={}, content_type='application/json', follow=True)
+        res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/terminate/', data={}, content_type='application/json', follow=True)
         m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(m_obj.status, 3)
