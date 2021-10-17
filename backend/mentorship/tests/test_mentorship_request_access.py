@@ -8,7 +8,7 @@ from mentee.models import MenteeDesignation
 from users.models import CustomUser
 
 
-class MentorshipFinishTestCase(TestCase):
+class MentorshipRequestViewAccessTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
