@@ -88,4 +88,4 @@ class MentorshipFinishTestCase(TestCase):
     def test_update_mentorship_post(self):
         self.client.login(email=self.login_mentor1['email'], password=self.login_mentor1['password'])
         res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/', data=self.data, follow=True, content_type='application/json')
-        self.assertEqual(res.status_code, status.HTTP_405_FORBIDDEN)
+        self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
