@@ -44,7 +44,8 @@ def send_email_async(subject, body, recipient_list):
 
 def verify_login(user):
     """
-    This served to both DRF's token-auth and session-auth
+    This served to both DRF's token-auth, browsable-API session-auth and
+    plain Django's session auth (for tests).
     """
     if user.is_admin and (not user.is_mentor):
         raise rest_exceptions.ValidationError('Non-mentor admins should use backend admin-login instead')

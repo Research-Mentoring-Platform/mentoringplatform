@@ -10,3 +10,4 @@ class MyTestSuiteRunner(DiscoverRunner):
     def setup_test_environment(self, **kwargs):
         super(MyTestSuiteRunner, self).setup_test_environment(debug=self.debug_mode)
         settings.EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+        settings.AUTHENTICATION_BACKENDS = ['users.authentication.CustomDjangoTestsSessionAuthentication']
