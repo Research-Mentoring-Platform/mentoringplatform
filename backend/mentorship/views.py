@@ -45,7 +45,7 @@ class MentorshipViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
         return super().get_queryset()
 
     @action(methods=['post'], detail=True, url_path='finish', url_name='finish-mentorship')
-    def finish(self, request):
+    def finish(self, request, uid=None):
         obj = self.get_object()
         if obj.status == MentorshipStatus.ONGOING:
             obj.status = MentorshipStatus.FINISHED
@@ -56,7 +56,7 @@ class MentorshipViewSet(ViewSetPermissionByMethodMixin, viewsets.ModelViewSet):
         raise rest_exceptions.PermissionDenied('Cannot change status of a non-ongoing mentorship.')
 
     @action(methods=['post'], detail=True, url_path='terminate', url_name='terminate-mentorship')
-    def terminate(self, request):
+    def terminate(self, request, uid=None):
         obj = self.get_object()
         if obj.status == MentorshipStatus.ONGOING:
             obj.status = MentorshipStatus.TERMINATED
