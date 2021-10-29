@@ -92,7 +92,6 @@ class MenteeProfileUpdateTestCase(TestCase):
         """ tests the response when mentee updates a mentor's profile """
         m_user = CustomUser.objects.get(email='shaurya17104@iiitd.ac.in')
         mentor = m_user.mentor
-        m_uid = mentor.uid
 
         # mentee's data before the PATCH request
         prev_data = {
@@ -117,7 +116,7 @@ class MenteeProfileUpdateTestCase(TestCase):
             'specialization': 'lorem ipsum',
         }
 
-        response = self.client.patch(f'/api/mentor/mentor/{m_uid}/', data=mentor_data, content_type='application/json', follow=True)
+        response = self.client.patch(f'/api/mentor/mentor/{mentor.uid}/', data=mentor_data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         mentor.refresh_from_db()
 
