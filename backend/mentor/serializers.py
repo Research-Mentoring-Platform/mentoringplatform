@@ -53,6 +53,11 @@ class MentorSerializer(serializers.ModelSerializer):
                   'rating')  # TODO make it compact if possible
         read_only_fields = ('uid', 'rating', 'profile_completed', 'is_verified', 'user')
 
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        if 'rating' in data:
+            raise rest_exceptions.PermissionDenied("Rating is a restricted field and cannot be updated.")
+
 
 class MentorViewSerializer(MentorSerializer):
     first_name = serializers.SerializerMethodField(method_name='get_first_name', read_only=True)

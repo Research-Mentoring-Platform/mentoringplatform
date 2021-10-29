@@ -34,6 +34,11 @@ class MenteeSerializer(serializers.ModelSerializer):
                   'designation', 'department', 'discipline', 'specialization', 'rating')
         read_only_fields = ('uid', 'rating', 'profile_completed')  # user is already read-only
 
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        if 'rating' in data:
+            raise rest_exceptions.PermissionDenied("Rating is a restricted field and cannot be updated.")
+
 
 class MenteeViewSerializer(MenteeSerializer):
     first_name = serializers.SerializerMethodField(method_name='get_first_name', read_only=True)
