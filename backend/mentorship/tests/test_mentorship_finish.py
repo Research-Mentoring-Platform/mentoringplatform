@@ -3,7 +3,7 @@ import logging
 
 from django.test import TestCase
 from rest_framework import status
-from mentorship.models import Mentorship, MentorshipRequest
+from mentorship.models import Mentorship, MentorshipRequest, MentorshipStatus
 from mentee.models import MenteeDesignation
 from users.models import CustomUser
 
@@ -77,7 +77,7 @@ class MentorshipFinishTestCase(TestCase):
         res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/finish/', data={}, content_type='application/json', follow=True)
         m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(m_obj.status, 2)
+        self.assertEqual(m_obj.status, MentorshipStatus['FINISHED'])
 
     def test_mentor_finishes_own_mentorship(self):
         """ tests response when a mentor finishes their own mentorship """
@@ -85,7 +85,7 @@ class MentorshipFinishTestCase(TestCase):
         res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/finish/', data={}, content_type='application/json', follow=True)
         m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(m_obj.status, 2)
+        self.assertEqual(m_obj.status, MentorshipStatus['FINISHED'])
 
     def test_mentee_finishes_other_mentorship(self):
         """ tests response when a mentee finishes a different mentee's mentorship """
@@ -93,7 +93,7 @@ class MentorshipFinishTestCase(TestCase):
         res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/finish/', data={}, content_type='application/json', follow=True)
         m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(m_obj.status, 1)
+        self.assertEqual(m_obj.status, MentorshipStatus['ONGOING'])
 
     def test_mentor_finishes_other_mentorship(self):
         """ tests response when a mentor finishes a different mentor's mentorship """
@@ -101,4 +101,4 @@ class MentorshipFinishTestCase(TestCase):
         res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/finish/', data={}, content_type='application/json', follow=True)
         m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(m_obj.status, 1)
+        self.assertEqual(m_obj.status, MentorshipStatus['ONGOING'])

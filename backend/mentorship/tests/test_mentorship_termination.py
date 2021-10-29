@@ -3,7 +3,7 @@ import logging
 
 from django.test import TestCase
 from rest_framework import status
-from mentorship.models import Mentorship, MentorshipRequest
+from mentorship.models import Mentorship, MentorshipRequest, MentorshipStatus
 from mentee.models import MenteeDesignation
 from users.models import CustomUser
 
@@ -77,7 +77,7 @@ class MentorshipTerminationTestCase(TestCase):
         res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/terminate/', data={}, content_type='application/json', follow=True)
         m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(m_obj.status, 3)
+        self.assertEqual(m_obj.status, MentorshipStatus['TERMINATED'])
 
     def test_mentor_terminates_own_mentorship(self):
         """ tests response when a mentor terminates their own mentorship """
@@ -85,7 +85,7 @@ class MentorshipTerminationTestCase(TestCase):
         res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/terminate/', data={}, content_type='application/json', follow=True)
         m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(m_obj.status, 3)
+        self.assertEqual(m_obj.status, MentorshipStatus['TERMINATED'])
 
     def test_mentee_terminates_other_mentorship(self):
         """ tests response when a mentee terminates a different mentee's mentorship """
@@ -93,7 +93,7 @@ class MentorshipTerminationTestCase(TestCase):
         res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/terminate/', data={}, content_type='application/json', follow=True)
         m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(m_obj.status, 1)
+        self.assertEqual(m_obj.status, MentorshipStatus['ONGOING'])
 
     def test_mentor_terminates_other_mentorship(self):
         """ tests response when a mentor terminates a different mentor's mentorship """
@@ -101,4 +101,4 @@ class MentorshipTerminationTestCase(TestCase):
         res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/terminate/', data={}, content_type='application/json', follow=True)
         m_obj = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(m_obj.status, 1)
+        self.assertEqual(m_obj.status, MentorshipStatus['ONGOING'])

@@ -3,7 +3,7 @@ import logging
 
 from django.test import TestCase
 from rest_framework import status
-from mentorship.models import Mentorship, MentorshipRequest
+from mentorship.models import Mentorship, MentorshipRequest, MentorshipStatus
 from mentee.models import MenteeDesignation
 from users.models import CustomUser
 
@@ -13,8 +13,8 @@ class MentorshipFinishTestCase(TestCase):
         super().setUpClass()
         with open('config/test_users.json') as f:
             users_data = json.load(f)['users']
-            cls.login_mentee1 = next(user for user in users_data if user['email'] ==  'reeshabh17086@iiitd.ac.in')
-            cls.login_mentor1 = next(user for user in users_data if user['email'] ==  'prince17080@iiitd.ac.in')
+            cls.login_mentee = next(user for user in users_data if user['email'] ==  'reeshabh17086@iiitd.ac.in')
+            cls.login_mentor = next(user for user in users_data if user['email'] ==  'prince17080@iiitd.ac.in')
         logging.disable(logging.CRITICAL)
 
     @classmethod
@@ -22,11 +22,11 @@ class MentorshipFinishTestCase(TestCase):
         return super().tearDownClass()
 
     def setUp(self):
-        """ create a Mentorship object for login_mentor1 and login_mentee1 """
+        """ create a Mentorship object for login_mentor and login_mentee """
 
         # login as mentor and update accepted_mentee_types to include all MenteeDesginations
-        self.client.login(email=self.login_mentor1['email'], password=self.login_mentor1['password'])
-        self.mentor = CustomUser.objects.get(email=self.login_mentor1['email']).mentor
+        self.client.login(email=self.login_mentor['email'], password=self.login_mentor['password'])
+        self.mentor = CustomUser.objects.get(email=self.login_mentor['email']).mentor
 
         accepted_types = []
         mentee_desig = MenteeDesignation.objects.all()
@@ -48,8 +48,8 @@ class MentorshipFinishTestCase(TestCase):
         self.client.logout()
 
         # login as mentee and send a mentorship request to the mentor
-        self.client.login(email=self.login_mentee1['email'], password=self.login_mentee1['password'])
-        self.mentee = CustomUser.objects.get(email=self.login_mentee1['email']).mentee
+        self.client.login(email=self.login_mentee['email'], password=self.login_mentee['password'])
+        self.mentee = CustomUser.objects.get(email=self.login_mentee['email']).mentee
 
         request_data = {
             "mentor": self.mentor.uid,
@@ -64,28 +64,79 @@ class MentorshipFinishTestCase(TestCase):
         self.client.logout()
 
         # login as mentor and accept the mentorship request
-        self.client.login(email=self.login_mentor1['email'], password=self.login_mentor1['password'])
+        self.client.login(email=self.login_mentor['email'], password=self.login_mentor['password'])
         res = self.client.post(f'/api/mentorship/request/{self.mentorship_req.uid}/respond/', data={'accepted': True}, follow=True)
         self.mentorship = Mentorship.objects.get(mentor=self.mentor, mentee=self.mentee)
         self.client.logout()
 
         self.data = {
-            'status': 3,
+            'status': MentorshipStatus['TERMINATED'],
             'start_date': '16/10/2021',
             'end_date': '16/12/2021'
         }
 
-    def test_update_mentorship_put(self):
-        self.client.login(email=self.login_mentor1['email'], password=self.login_mentor1['password'])
+    def test_mentor_updates_mentorship_put(self):
+        """ tests that a PUT request by a mentor to update their mentorship fails """
+        self.client.login(email=self.login_mentor['email'], password=self.login_mentor['password'])
         res = self.client.put(f'/api/mentorship/mentorship/{self.mentorship.uid}/', data=self.data, follow=True, content_type='application/json')
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.mentorship.refresh_from_db()
+        self.assertNotEqual(self.mentorship.status, self.data['status'])
+        self.assertNotEqual(self.mentorship.start_date, self.data['start_date'])
+        self.assertNotEqual(self.mentorship.end_date, self.data['end_date'])
+        self.client.logout()
 
-    def test_update_mentorship_patch(self):
-        self.client.login(email=self.login_mentor1['email'], password=self.login_mentor1['password'])
+    def test_mentor_updates_mentorship_patch(self):
+        """ tests that a PATCH request by a mentor to update their mentorship fails """
+        self.client.login(email=self.login_mentor['email'], password=self.login_mentor['password'])
         res = self.client.patch(f'/api/mentorship/mentorship/{self.mentorship.uid}/', data=self.data, follow=True, content_type='application/json')
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.mentorship.refresh_from_db()
+        self.assertNotEqual(self.mentorship.status, self.data['status'])
+        self.assertNotEqual(self.mentorship.start_date, self.data['start_date'])
+        self.assertNotEqual(self.mentorship.end_date, self.data['end_date'])
+        self.client.logout()
 
-    def test_update_mentorship_post(self):
-        self.client.login(email=self.login_mentor1['email'], password=self.login_mentor1['password'])
+    def test_mentor_updates_mentorship_post(self):
+        """ tests that a POST request by a mentor to update their mentorship fails """
+        self.client.login(email=self.login_mentor['email'], password=self.login_mentor['password'])
         res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/', data=self.data, follow=True, content_type='application/json')
         self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.mentorship.refresh_from_db()
+        self.assertNotEqual(self.mentorship.status, self.data['status'])
+        self.assertNotEqual(self.mentorship.start_date, self.data['start_date'])
+        self.assertNotEqual(self.mentorship.end_date, self.data['end_date'])
+        self.client.logout()
+
+    def test_mentee_updates_mentorship_put(self):
+        """ tests that a PUT request by a mentee to update their mentorship fails """
+        self.client.login(email=self.login_mentee['email'], password=self.login_mentee['password'])
+        res = self.client.put(f'/api/mentorship/mentorship/{self.mentorship.uid}/', data=self.data, follow=True, content_type='application/json')
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.mentorship.refresh_from_db()
+        self.assertNotEqual(self.mentorship.status, self.data['status'])
+        self.assertNotEqual(self.mentorship.start_date, self.data['start_date'])
+        self.assertNotEqual(self.mentorship.end_date, self.data['end_date'])
+        self.client.logout()
+
+    def test_mentee_updates_mentorship_patch(self):
+        """ tests that a PATCH request by a mentee to update their mentorship fails """
+        self.client.login(email=self.login_mentee['email'], password=self.login_mentee['password'])
+        res = self.client.patch(f'/api/mentorship/mentorship/{self.mentorship.uid}/', data=self.data, follow=True, content_type='application/json')
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.mentorship.refresh_from_db()
+        self.assertNotEqual(self.mentorship.status, self.data['status'])
+        self.assertNotEqual(self.mentorship.start_date, self.data['start_date'])
+        self.assertNotEqual(self.mentorship.end_date, self.data['end_date'])
+        self.client.logout()
+
+    def test_mentee_updates_mentorship_post(self):
+        """ tests that a POST request by a mentee to update their mentorship fails """
+        self.client.login(email=self.login_mentee['email'], password=self.login_mentee['password'])
+        res = self.client.post(f'/api/mentorship/mentorship/{self.mentorship.uid}/', data=self.data, follow=True, content_type='application/json')
+        self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.mentorship.refresh_from_db()
+        self.assertNotEqual(self.mentorship.status, self.data['status'])
+        self.assertNotEqual(self.mentorship.start_date, self.data['start_date'])
+        self.assertNotEqual(self.mentorship.end_date, self.data['end_date'])
+        self.client.logout()
