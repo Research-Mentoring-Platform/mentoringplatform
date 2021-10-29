@@ -26,10 +26,10 @@ class MenteeProfileUpdateTestCase(TestCase):
         # get the mentee object for the logged in user
         self.mentee = CustomUser.objects.get(email=self.login_user['email']).mentee
 
-        # get the mentee designation, department and discipline uids
-        desig_uid = MenteeDesignation.objects.get(label='Industry Researcher').uid
-        deptt_uid = MenteeDepartment.objects.get(label='Computer Science and Design').uid
-        disc_uid= MenteeDiscipline.objects.get(label='Human-Computer Interaction').uid
+        # get a designation, department, discipline that are different from the mentee's values
+        desig_uid = next(d for d in list(MenteeDesignation.objects.all()) if d.uid != self.mentee.designation).uid
+        deptt_uid = next(d for d in list(MenteeDepartment.objects.all()) if d.uid != self.mentee.department).uid
+        disc_uid = next(d for d in list(MenteeDepartment.objects.all()) if d.uid != self.mentee.discipline).uid
 
         # # construct a profile data object which contains all the mentee fields to be modified
         self.data = {
@@ -40,35 +40,47 @@ class MenteeProfileUpdateTestCase(TestCase):
             'specialization': 'lorem ipsum',
         }
 
+    def tearDown(self):
+        self.client.logout()
+
     def test_mentee_updates_own_profile(self):
         """ tests the response when mentee updates own profile """
         m_uid = self.mentee.uid
+
         response = self.client.patch(f'/api/mentee/mentee/{m_uid}/', data=self.data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.mentee.refresh_from_db()
 
-        mentee = Mentee.objects.get(uid=m_uid)
-        self.assertEqual(mentee.about_self, self.data['about_self'])
-        self.assertEqual(mentee.department.uid, self.data['department'])
-        self.assertEqual(mentee.discipline.uid, self.data['discipline'])
-        self.assertEqual(mentee.designation.uid, self.data['designation'])
-        self.assertEqual(mentee.specialization, self.data['specialization'])
+        self.assertEqual(self.mentee.about_self, self.data['about_self'])
+        self.assertEqual(self.mentee.department.uid, self.data['department'])
+        self.assertEqual(self.mentee.discipline.uid, self.data['discipline'])
+        self.assertEqual(self.mentee.designation.uid, self.data['designation'])
+        self.assertEqual(self.mentee.specialization, self.data['specialization'])
 
     def test_mentee_updates_different_profile(self):
         """ tests the response when mentee updates a different mentee's profile """
         m_user = CustomUser.objects.get(email='karan17058@iiitd.ac.in')
-        m_uid = m_user.mentee.uid
+        diff_mentee = m_user.mentee
+        m_uid = diff_mentee.uid
+
+        # mentor's data before the PATCH request
+        prev_data = {
+            'about_self': diff_mentee.about_self,
+            'department': diff_mentee.department.uid,
+            'designation': diff_mentee.designation.uid,
+            'discipline': diff_mentee.discipline.uid,
+            'specialization': diff_mentee.specialization,
+        }
+
         response = self.client.patch(f'/api/mentee/mentee/{m_uid}/', data=self.data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        diff_mentee.refresh_from_db()
 
-        diff_mentee = Mentee.objects.get(uid=m_uid)
-        self.assertNotEqual(diff_mentee.about_self, self.data['about_self'])
-        if m_user.mentee.department.uid != self.data['department']:
-            self.assertNotEqual(diff_mentee.department.uid, self.data['department'])
-        if m_user.mentee.discipline.uid != self.data['discipline']:
-            self.assertNotEqual(diff_mentee.discipline.uid, self.data['discipline'])
-        if m_user.mentee.designation.uid != self.data['designation']:
-            self.assertNotEqual(diff_mentee.designation.uid, self.data['designation'])
-        self.assertNotEqual(diff_mentee.specialization, self.data['specialization'])
+        self.assertEqual(diff_mentee.about_self, prev_data['about_self'])
+        self.assertEqual(diff_mentee.department.uid, prev_data['department'])
+        self.assertEqual(diff_mentee.discipline.uid, prev_data['discipline'])
+        self.assertEqual(diff_mentee.designation.uid, prev_data['designation'])
+        self.assertEqual(diff_mentee.specialization, prev_data['specialization'])
 
     def test_mentee_updates_invalid_profile(self):
         """ tests the response when mentee updates an invalid profile """
@@ -79,26 +91,41 @@ class MenteeProfileUpdateTestCase(TestCase):
     def test_mentee_updates_mentor_profile(self):
         """ tests the response when mentee updates a mentor's profile """
         m_user = CustomUser.objects.get(email='shaurya17104@iiitd.ac.in')
-        m_uid = m_user.mentor.uid
-        mentor_data = {
-            'about_self': 'Fugiat ad id ut ullamco commodo irure duis reprehenderit reprehenderit irure non in ex Lorem.',
-            'department': MentorDepartment.objects.get(label='Computer Science and Design').uid,
-            'discipline': MentorDiscipline.objects.get(label='Human-Computer Interaction').uid,
-            'designation': MentorDesignation.objects.get(label='Industry Researcher').uid,
-            'specialization': 'lorem ipsum'
+        mentor = m_user.mentor
+        m_uid = mentor.uid
+
+        # mentee's data before the PATCH request
+        prev_data = {
+            'about_self': mentor.about_self,
+            'department': mentor.department.uid,
+            'discipline': mentor.discipline.uid,
+            'designation': mentor.designation.uid,
+            'specialization': mentor.specialization,
         }
+
+        # get a designation, department, discipline that are different from the mentor's values
+        desig_uid = next(d for d in list(MentorDesignation.objects.all()) if d.uid != mentor.designation).uid
+        deptt_uid = next(d for d in list(MentorDepartment.objects.all()) if d.uid != mentor.department).uid
+        disc_uid = next(d for d in list(MentorDepartment.objects.all()) if d.uid != mentor.discipline).uid
+
+
+        mentor_data = {
+            'about_self': self.data['about_self'],
+            'department': deptt_uid,
+            'discipline': disc_uid,
+            'designation': desig_uid,
+            'specialization': 'lorem ipsum',
+        }
+
         response = self.client.patch(f'/api/mentor/mentor/{m_uid}/', data=mentor_data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        mentor.refresh_from_db()
 
-        mentor = Mentor.objects.get(uid=m_uid)
-        self.assertNotEqual(mentor.about_self, mentor_data['about_self'])
-        if m_user.mentor.department.uid != mentor_data['department']:
-            self.assertNotEqual(mentor.department.uid, mentor_data['department'])
-        if m_user.mentor.designation.uid != mentor_data['designation']:
-            self.assertNotEqual(mentor.designation.uid, mentor_data['designation'])
-        if m_user.mentor.discipline.uid != mentor_data['discipline']:
-            self.assertNotEqual(mentor.discipline.uid, mentor_data['discipline'])
-        self.assertNotEqual(mentor.specialization, mentor_data['specialization'])
+        self.assertEqual(mentor.about_self, prev_data['about_self'])
+        self.assertEqual(mentor.department.uid, prev_data['department'])
+        self.assertEqual(mentor.discipline.uid, prev_data['discipline'])
+        self.assertEqual(mentor.designation.uid, prev_data['designation'])
+        self.assertEqual(mentor.specialization, prev_data['specialization'])
 
     def test_mentee_updates_restricted_field(self):
         """ tests the response when mentee updates their rating (restricted) """
@@ -109,5 +136,5 @@ class MenteeProfileUpdateTestCase(TestCase):
         }
         response = self.client.patch(f'/api/mentee/mentee/{m_uid}/', data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, 403)
-        mentee = Mentee.objects.get(uid=m_uid)
-        self.assertEqual(mentee.rating, prev_rating)
+        self.mentee.refresh_from_db()
+        self.assertEqual(self.mentee.rating, prev_rating)
