@@ -69,6 +69,8 @@ class MentorshipCreateTestCase(TestCase):
         response = self.client.post(f'/api/mentorship/request/{self.mentorship_req.uid}/respond/',
                                     data={'accepted': True},
                                     follow=True)
+        self.mentorship_req.refresh_from_db()
+        self.assertEqual(self.mentorship_req.status, 2)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(Mentorship.objects.filter(mentor=self.mentor, mentee=self.mentee).exists())
         self.client.logout()
@@ -77,8 +79,9 @@ class MentorshipCreateTestCase(TestCase):
         response = self.client.post('/api/mentorship/request/', data=self.request_data)
         self.mentorship_req = MentorshipRequest.objects.get(mentor=self.mentor, mentee=self.mentee)
         self.client.logout()
+        self.mentorship_req.refresh_from_db()
+        self.assertEqual(self.mentorship_req.status, 1)
         self.assertFalse(Mentorship.objects.filter(mentor=self.mentor, mentee=self.mentee).exists())
-        self.client.logout()
 
     def test_mentorship_request_sent_and_rejected(self):
         response = self.client.post('/api/mentorship/request/', data=self.request_data)
@@ -90,6 +93,8 @@ class MentorshipCreateTestCase(TestCase):
         response = self.client.post(f'/api/mentorship/request/{self.mentorship_req.uid}/respond/',
                                     data={'reject': True, 'reject_reason': 'xyz'},
                                     follow=True)
+        self.mentorship_req.refresh_from_db()
+        self.assertEqual(self.mentorship_req.status, 3)
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Mentorship.objects.filter(mentor=self.mentor, mentee=self.mentee).exists())
         self.client.logout()
