@@ -43,28 +43,22 @@ class MentorProfileUpdateTestCase(TestCase):
             'specialization': 'lorem ipsum',
         }
 
+    def tearDown(self):
+        self.client.logout()
+
     def test_mentor_updates_own_profile(self):
         """ tests the response when mentor updates own profile """
         m_uid = self.mentor.uid
-
-        # mentor's data before the PATCH request
-        prev_data = {
-            'about_self': self.mentor.about_self,
-            'department': self.mentor.department.uid,
-            'designation': self.mentor.designation.uid,
-            'discipline': self.mentor.discipline.uid,
-            'specialization': self.mentor.specialization,
-        }
 
         response = self.client.patch(f'/api/mentor/mentor/{m_uid}/', data=self.data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.mentor.refresh_from_db()
 
-        self.assertEqual(self.mentor.about_self, prev_data['about_self'])
-        self.assertEqual(self.mentor.department.uid, prev_data['department'])
-        self.assertEqual(self.mentor.discipline.uid, prev_data['discipline'])
-        self.assertEqual(self.mentor.designation.uid, prev_data['designation'])
-        self.assertEqual(self.mentor.specialization, prev_data['specialization'])
+        self.assertEqual(self.mentor.about_self, self.data['about_self'])
+        self.assertEqual(self.mentor.department.uid, self.data['department'])
+        self.assertEqual(self.mentor.discipline.uid, self.data['discipline'])
+        self.assertEqual(self.mentor.designation.uid, self.data['designation'])
+        self.assertEqual(self.mentor.specialization, self.data['specialization'])
 
     def test_mentor_updates_different_profile(self):
         """ tests the response when mentor updates a different mentor's profile """
@@ -100,7 +94,6 @@ class MentorProfileUpdateTestCase(TestCase):
         """ tests the response when mentor updates a mentee's profile """
         m_user = CustomUser.objects.get(email='karan17058@iiitd.ac.in')
         mentee = m_user.mentee
-        m_uid = mentee.uid
 
         # mentee's data before the PATCH request
         prev_data = {
@@ -124,7 +117,7 @@ class MentorProfileUpdateTestCase(TestCase):
             'specialization': 'lorem ipsum',
         }
 
-        response = self.client.patch(f'/api/mentee/mentee/{m_uid}/', data=mentee_data, content_type='application/json', follow=True)
+        response = self.client.patch(f'/api/mentee/mentee/{mentee.uid}/', data=mentee_data, content_type='application/json', follow=True)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         mentee.refresh_from_db()
 
