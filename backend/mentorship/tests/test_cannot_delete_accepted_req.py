@@ -52,7 +52,7 @@ class menteeCannotDeleteAnAcceptedRequest(TestCase):
 
 
         #logging in the mentee to send the mentor a mentorship request
-        self.client.login(email=self.login_mentee['email'], password=self.login_mentee1['password'])
+        self.client.login(email=self.login_mentee['email'], password=self.login_mentee['password'])
         self.mentee = CustomUser.objects.get(email=self.login_mentee['email']).mentee
 
         request_data = {
@@ -69,7 +69,7 @@ class menteeCannotDeleteAnAcceptedRequest(TestCase):
 
          #logging in the mentor to accept the request
         self.client.login(email=self.login_mentor['email'], password=self.login_mentor['password'])
-        mentorship_req_uid = self.mentorship_req.uid
+        self.mentorship_req_uid = self.mentorship_req.uid
 
         respond_data = {
             'mentor': self.mentor.uid,
@@ -78,7 +78,7 @@ class menteeCannotDeleteAnAcceptedRequest(TestCase):
             'accepted' : True   #added field to accept
         }
 
-        response = self.client.post(f'/api/mentorship/request/{mentorship_req_uid}/respond/',data=respond_data)
+        response = self.client.post(f'/api/mentorship/request/{self.mentorship_req_uid}/respond/',data=respond_data)
         self.assertEqual(response.status_code, 200)     #Successfully accept mentorship request
         self.mentorship_req.refresh_from_db()
         self.assertEqual(self.mentorship_req.status,MentorshipRequestStatus.REQUEST_ACCEPTED)  #Successfully accept mentorship request in db too
@@ -90,5 +90,5 @@ class menteeCannotDeleteAnAcceptedRequest(TestCase):
         #log in as mentee and try to delete accepted request.
 
         self.client.login(email=self.login_mentee['email'], password=self.login_mentee['password'])
-        response = self.client.delete(f'/api/mentorship/request/{mentorshipreq_uid}/')
+        response = self.client.delete(f'/api/mentorship/request/{self.mentorship_req_uid}/')
         self.assertEqual(response.status_code, 403)  #Authorized but forbidden to do so
