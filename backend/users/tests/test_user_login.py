@@ -1,4 +1,5 @@
 import logging
+import unittest
 from django.test.testcases import TestCase
 from users.models import CustomUser
 
@@ -47,15 +48,20 @@ class LoginTestCases(TestCase):
         cls.test_mentor=CustomUser(**Test_User_1)
         cls.test_mentor.set_password(Test_User_1['password'])
         cls.test_mentor.save()
+        tc=unittest.TestCase()
+        tc.assertNotEqual(cls.test_mentor.password,"pass4321")
         cls.test_mentee=CustomUser(**Test_User_2)
         cls.test_mentee.set_password(Test_User_2['password'])
         cls.test_mentee.save()
+        tc.assertNotEqual(cls.test_mentee.password,"pass4321")
         cls.unverified_test_mentor=CustomUser(**Test_User_3)
         cls.unverified_test_mentor.set_password(Test_User_3['password'])
         cls.unverified_test_mentor.save()
+        tc.assertNotEqual(cls.unverified_test_mentor.password,"pass4321")
         cls.unverified_test_mentee=CustomUser(**Test_User_4)
         cls.unverified_test_mentee.set_password(Test_User_4['password'])
         cls.unverified_test_mentee.save()
+        tc.assertNotEqual(cls.unverified_test_mentee.password,"pass4321")
         super().setUpClass()
        
 
