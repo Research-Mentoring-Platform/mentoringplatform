@@ -5,7 +5,7 @@
 		<router-view />
 	</div>
 
-	<Loading />
+	<!-- <Loading /> -->
 </section>
 </template>
 
