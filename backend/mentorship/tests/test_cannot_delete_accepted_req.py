@@ -37,8 +37,7 @@ class menteeCannotDeleteAnAcceptedRequest(TestCase):
         Faculty_uid = MenteeDesignation.objects.get(label='Faculty').uid
         Phd_uid = MenteeDesignation.objects.get(label='PhD').uid
         IndRes_uid = MenteeDesignation.objects.get(label='Industry Researcher').uid
-
-        
+        trying to upload
         deptt_uid=self.mentor.department.uid
         disc_uid=self.mentor.discipline.uid
         desig_uid=self.mentor.designation.uid
