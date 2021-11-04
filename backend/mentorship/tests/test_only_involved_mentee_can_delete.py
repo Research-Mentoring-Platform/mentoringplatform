@@ -33,26 +33,25 @@ class Only_Involved_Mentee_Can_Delete_Mentorship_Req(TestCase):
         self.mentor = CustomUser.objects.get(email=self.login_mentor['email']).mentor
 
         # get the uid for all designation types
-        Btech_uid = MenteeDesignation.objects.get(label='BTech').uid
-        Mtech_uid = MenteeDesignation.objects.get(label='MTech').uid
-        Faculty_uid = MenteeDesignation.objects.get(label='Faculty').uid
-        Phd_uid = MenteeDesignation.objects.get(label='PhD').uid
-        IndRes_uid = MenteeDesignation.objects.get(label='Industry Researcher').uid
+        accepted_types = []
+        mentee_desig = MenteeDesignation.objects.all()
+        for des in mentee_desig.iterator():
+            accepted_types.append(des.uid)
 
         deptt_uid=self.mentor.department.uid
         disc_uid=self.mentor.discipline.uid
         desig_uid=self.mentor.designation.uid
 
         self.data = {
-            'accepted_mentee_types': [Btech_uid,Mtech_uid,Faculty_uid,Phd_uid,IndRes_uid],  #adding all since randomly mentee gets any
+            'accepted_mentee_types': accepted_types,  #adding all since randomly mentee gets any
             'department': deptt_uid,        # mandatory field
             'discipline': disc_uid,         # mandatory field
             'designation': desig_uid,       # mandatory field
         }
          # Making mentor available to take mentorship request from all types of mentees
         response = self.client.patch(f'/api/mentor/mentor/{self.mentor.uid}/', data=self.data, content_type='application/json', follow=True)
-        self.assertEqual(response.status_code, 200)
-       
+        self.client.logout()
+
         #logging in the mentee to send the mentor a mentorship request
         self.client.login(email=self.login_mentee['email'], password=self.login_mentee['password'])
         self.mentee = CustomUser.objects.get(email=self.login_mentee['email']).mentee
@@ -66,28 +65,26 @@ class Only_Involved_Mentee_Can_Delete_Mentorship_Req(TestCase):
         }
 
         response = self.client.post(f'/api/mentorship/request/', data=request_data)
-        self.assertEqual(response.status_code, 201)
+        self.client.logout()
 
         self.mentorship_req=MentorshipRequest.objects.get(mentor=self.mentor,mentee=self.mentee)
         self.assertEqual(self.mentorship_req.status,MentorshipRequestStatus.REQUEST_PENDING) 
 
-    def test_Involved_Mentee_Can_Delete(self):
-        mentorshipreq_uid= self.mentorship_req.uid
-        response = self.client.delete(f'/api/mentorship/request/{mentorshipreq_uid}/')
-       
-        # self.mentorship_req.refresh_from_db()
-        # print(self.mentorship_req)
+    def test_involved_mentee_can_delete(self):
+        self.client.login(email=self.login_mentee['email'], password=self.login_mentee['password'])
+        mentorship_req_uid = self.mentorship_req.uid
+        response = self.client.delete(f'/api/mentorship/request/{mentorship_req_uid}/')
         self.assertEqual(response.status_code, 204)
         self.assertNotIn(self.mentorship_req,MentorshipRequest.objects.all())
-        
-    def test_Uninvolved_Mentee_Cannot_Delete(self):
+        self.client.logout()
+
+    def test_uninvolved_mentee_cannot_delete(self):
         # Logging in as different mentee
         self.client.login(email=self.login_mentee2['email'], password=self.login_mentee2['password'])
-        mentorshipreq_uid= self.mentorship_req.uid
-        response = self.client.delete(f'/api/mentorship/request/{mentorshipreq_uid}/')
-       
+        mentorship_req_uid = self.mentorship_req.uid
+        response = self.client.delete(f'/api/mentorship/request/{mentorship_req_uid}/')
+    
         self.mentorship_req.refresh_from_db()
-        # print(self.mentorship_req)
         self.assertEqual(response.status_code, 403)
         self.assertIn(self.mentorship_req,MentorshipRequest.objects.all())
-        
+        self.client.logout()
