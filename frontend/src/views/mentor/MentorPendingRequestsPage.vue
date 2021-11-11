@@ -88,17 +88,22 @@
 				<div class="content">
 					<div>
 						<strong>Statement of purpose</strong>
-						<p>{{ pending_requests.modals.request_details.content.statement_of_purpose }}</p>
+						<p style="white-space: pre">{{ pending_requests.modals.request_details.content.statement_of_purpose }}</p>
 					</div>
 					<hr/>
 					<div>
 						<strong>Commitment</strong>
-						<p>{{ pending_requests.modals.request_details.content.commitment }}</p>
+						<p style="white-space: pre">{{ pending_requests.modals.request_details.content.commitment }}</p>
 					</div>
 					<hr/>
 					<div>
 						<strong>Expectations</strong>
-						<p>{{ pending_requests.modals.request_details.content.expectations }}</p>
+						<p style="white-space: pre">{{ pending_requests.modals.request_details.content.expectations }}</p>
+					</div>
+					<hr/>
+					<div>
+						<strong>Achievements</strong>
+						<p style="white-space: pre">{{ pending_requests.modals.request_details.content.achievements }}</p>
 					</div>
 				</div>
 			</div>
@@ -153,7 +158,8 @@ export default {
 						content: {
 							statement_of_purpose: "",
 							commitment: "",
-							expectations: ""
+							expectations: "",
+							achievements: "",
 						}
 					}
 				},

@@ -136,6 +136,9 @@
 
 					<InputBox input_type="textarea" v-model="modal.expectations" v-bind:errors="modal_errors.expectations"
 							  label="Expectations" />
+					
+					<InputBox input_type="textarea" v-model="modal.achievements" v-bind:errors="modal_errors.achievements"
+							  label="Achievements" />
 				</section>
 
 				<footer class="modal-card-foot">

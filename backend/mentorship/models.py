@@ -45,6 +45,7 @@ class MentorshipRequest(models.Model):  # TODO Change fields, give better names,
     statement_of_purpose = models.TextField(max_length=512, blank=True)
     expectations = models.TextField(max_length=256, blank=True)
     commitment = models.TextField(max_length=256, blank=True)
+    achievements = models.TextField(max_length=256, blank=True)
     status = models.IntegerField(choices=MentorshipRequestStatus.choices,
                                  default=MentorshipRequestStatus.REQUEST_PENDING)
     reject_reason = models.TextField(max_length=256, blank=True)  # Only if status is request_rejected
